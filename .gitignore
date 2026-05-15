@@ -1,0 +1,39 @@
+# ===== NODE =====
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ===== FRONTEND BUILD =====
+frontend/dist/
+frontend/dist-ssr/
+frontend/*.local
+
+# ===== PYTHON =====
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+dist/
+build/
+
+# ===== DJANGO =====
+backend/db.sqlite3
+backend/media/
+backend/*.log
+
+# ===== ENV =====
+.env
+.env.*
+!.env.example
+
+# ===== VENV =====
+venv/
+env/
+.venv/
+
+# ===== OS =====
+.DS_Store
+Thumbs.db
