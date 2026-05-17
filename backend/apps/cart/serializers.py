@@ -10,7 +10,7 @@ class CartItemSerializer(serializers.ModelSerializer):
 
     class Meta:
         model  = CartItem
-        fields = ('id', 'product', 'product_id', 'quantity', 'line_total')
+        fields = ('id', 'product','size', 'product_id', 'quantity', 'line_total')
         read_only_fields = ('id',)
 
 

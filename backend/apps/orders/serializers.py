@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from .models import Order, OrderItem
 from apps.products.serializers import ProductListSerializer
-from apps.users.serializers import AddressSerializer
+from apps.users.serializers import AddressSerializer,UserMiniSerializer  
 
 
 class OrderItemSerializer(serializers.ModelSerializer):
@@ -16,6 +16,8 @@ class OrderItemSerializer(serializers.ModelSerializer):
 class OrderSerializer(serializers.ModelSerializer):
     items   = OrderItemSerializer(many=True, read_only=True)
     address = AddressSerializer(read_only=True)
+    user = UserMiniSerializer(read_only=True)  # ← ADD THIS LINE
+
 
     class Meta:
         model  = Order

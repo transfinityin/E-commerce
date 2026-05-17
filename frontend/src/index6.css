@@ -1,0 +1,69 @@
+@import "tailwindcss";
+
+/* ============================================
+   THEME 3: BORDEAUX ELEGANCE
+   Wine Red + Warm Cream
+   Premium Sophisticated Feel
+   ============================================ */
+:root {
+  --color-primary:        #722F37;
+  --color-primary-light:  #F5E6E8;
+  --color-primary-dark:   #5C252C;
+
+  --color-secondary:      #1C1917;
+  --color-secondary-light:#292524;
+
+  --color-bg:             #FAF7F5;
+  --color-bg-alt:         #F2EDE8;
+  --color-surface:        #FFFFFF;
+  --color-surface-dark:   #1C1917;
+
+  --color-text:           #1C1917;
+  --color-text-inverse:   #FFFFFF;
+  --color-muted:          #78716C;
+  --color-muted-light:    #A8A29E;
+
+  --color-border:         #E7E5E4;
+  --color-border-light:   #D6D3D1;
+
+  --color-success:        #059669;
+  --color-success-bg:     #D1FAE5;
+  --color-danger:         #DC2626;
+  --color-danger-bg:      #FEE2E2;
+  --color-warning:        #D97706;
+  --color-warning-bg:     #FEF3C7;
+  --color-info:           #2563EB;
+  --color-info-bg:        #DBEAFE;
+
+  --color-btn:            #1C1917;
+  --color-btn-hover:      #292524;
+  --color-btn-text:       #FFFFFF;
+  --color-btn-outline:    #E7E5E4;
+
+  --color-scroll-track:   #F2EDE8;
+  --color-scroll-thumb:   #A8A29E;
+  --color-scroll-hover:   #78716C;
+
+  --shadow-sm:            0 1px 3px rgba(28,25,23,0.06);
+  --shadow-md:            0 4px 12px rgba(28,25,23,0.08);
+  --shadow-lg:            0 8px 24px rgba(28,25,23,0.12);
+  --shadow-gold:          0 4px 20px rgba(114,47,55,0.15);
+}
+
+@layer components {
+  .page-container {
+    width: 100%;
+    max-width: 1280px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 16px;
+  }
+
+  @media (min-width: 640px) {
+    .page-container { padding: 24px; }
+  }
+
+  @media (min-width: 1024px) {
+    .page-container { padding: 32px 24px; }
+  }
+}

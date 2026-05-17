@@ -1,18 +1,17 @@
 import { useEffect, useState, useRef } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'react-hot-toast'
-import { Link, useNavigate, useLocation } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import {
-  User, Package, Heart, Map, MapPin, Ticket, Shield, Bell, LogOut, ChevronRight,
-  Camera, CheckCircle, AlertCircle, Trash2, Key, Calendar, UserCircle,
-  ArrowLeft, Clock, CheckCircle2, Package as PackageIcon, Truck, CreditCard
+  User, Package, Heart, MapPin, Ticket, Shield, Bell, LogOut, ChevronRight,
+  Camera, ArrowLeft, Package as PackageIcon, Trash2, Sparkles
 } from 'lucide-react'
 import api from '../services/api'
 import useAuthStore from '../store/authStore'
 import Security from './Security'
 import Notifications from './Notifications'
 import Addresses from './Addresses'
-// Sidebar menu items
+
 const MENU_ITEMS = [
   { icon: User, label: 'My Profile', section: 'profile' },
   { icon: Package, label: 'My Orders', section: 'orders' },
@@ -28,11 +27,10 @@ export default function Profile() {
   const navigate = useNavigate()
   const location = useLocation()
   const fileInputRef = useRef(null)
-  
-  // Get active section from URL query param
+
   const queryParams = new URLSearchParams(location.search)
   const [activeSection, setActiveSection] = useState(queryParams.get('tab') || 'profile')
-  
+
   const { register, handleSubmit, reset, formState: { isSubmitting } } = useForm()
   const [stats, setStats] = useState({ orders: 0, wishlist: 0, addresses: 0 })
   const [orders, setOrders] = useState([])
@@ -42,116 +40,68 @@ export default function Profile() {
   const [uploadingPhoto, setUploadingPhoto] = useState(false)
   const [showDeleteModal, setShowDeleteModal] = useState(false)
 
-  // Update URL when section changes
   const handleSectionChange = (section) => {
     setActiveSection(section)
     navigate(`/profile?tab=${section}`, { replace: true })
   }
 
-  // Go back to profile
   const goBackToProfile = () => {
     handleSectionChange('profile')
   }
 
   useEffect(() => {
-    if (user) reset({ 
-      name: user.name, 
+    if (user) reset({
+      name: user.name,
       phone: user.phone,
       dob: user.dob || '',
       gender: user.gender || ''
     })
   }, [user, reset])
-useEffect(() => {
-  console.log('Active section:', activeSection) // DEBUG log
-  
-  if (activeSection === 'orders') {
-    setLoading(true)
-    api.get('/orders/my/')  // <-- CHANGE: /orders/ → /orders/my/
-      .then(r => {
-        console.log('Orders API success:', r.data) // DEBUG
-        setOrders(r.data.results || r.data || [])
-      })
-      .catch(err => {
-        console.error('Orders API error:', err.response?.status, err.response?.data)
-        toast.error('Failed to load orders')
-      })
-      .finally(() => setLoading(false))
-  }
-  
-  if (activeSection === 'wishlist') {
-    setLoading(true)
-    api.get('/wishlist/')  // Check this endpoint too
-      .then(r => {
-        console.log('Wishlist API success:', r.data)
-        setWishlist(r.data.results || r.data || [])
-      })
-      .catch(err => {
-        console.error('Wishlist API error:', err.response?.status)
-      })
-      .finally(() => setLoading(false))
-  }
-  
-  if (activeSection === 'addresses') {
-    setLoading(true)
-    api.get('/auth/addresses/')
-  // Check this endpoint too
-      .then(r => {
-        console.log('Addresses API success:', r.data)
-        setAddresses(r.data.results || r.data || [])
-      })
-      .catch(err => {
-        console.error('Addresses API error:', err.response?.status)
-      })
-      .finally(() => setLoading(false))
-  }
-}, [activeSection])
-  // Load stats
+
+  useEffect(() => {
+    if (activeSection === 'orders') {
+      setLoading(true)
+      api.get('/orders/my/')
+        .then(r => setOrders(r.data.results || r.data || []))
+        .catch(() => toast.error('Failed to load orders'))
+        .finally(() => setLoading(false))
+    }
+    if (activeSection === 'wishlist') {
+      setLoading(true)
+      api.get('/wishlist/')
+        .then(r => setWishlist(r.data.results || r.data || []))
+        .catch(() => {})
+        .finally(() => setLoading(false))
+    }
+    if (activeSection === 'addresses') {
+      setLoading(true)
+      api.get('/auth/addresses/')
+        .then(r => setAddresses(r.data.results || r.data || []))
+        .catch(() => {})
+        .finally(() => setLoading(false))
+    }
+  }, [activeSection])
+
   useEffect(() => {
     Promise.all([
       api.get('/orders/my/').catch(() => ({ data: { count: 0, results: [] } })),
       api.get('/wishlist/').catch(() => ({ data: { count: 0, results: [] } })),
       api.get('/auth/addresses/').catch(() => ({ data: { count: 0, results: [] } })),
-    ]).then(([orders, wishlist, addresses]) => {
+    ]).then(([o, w, a]) => {
       setStats({
-        orders: orders.data.count ?? orders.data.results?.length ?? 0,
-        wishlist: wishlist.data.count ?? wishlist.data.results?.length ?? 0,
-        addresses: addresses.data.count ?? addresses.data.results?.length ?? 0,
+        orders: o.data.count ?? o.data.results?.length ?? 0,
+        wishlist: w.data.count ?? w.data.results?.length ?? 0,
+        addresses: a.data.count ?? a.data.results?.length ?? 0,
       })
     })
   }, [])
 
-  // Load section data
-  useEffect(() => {
-    if (activeSection === 'orders') {
-      setLoading(true)
-      api.get('/orders/my/').then(r => {
-        setOrders(r.data.results || r.data || [])
-      }).finally(() => setLoading(false))
-    }
-    if (activeSection === 'wishlist') {
-      setLoading(true)
-      api.get('/wishlist/').then(r => {
-        setWishlist(r.data.results || r.data || [])
-      }).finally(() => setLoading(false))
-    }
-    if (activeSection === 'addresses') {
-      setLoading(true)
-      api.get('/auth/addresses/')
-.then(r => {
-        setAddresses(r.data.results || r.data || [])
-      }).finally(() => setLoading(false))
-    }
-  }, [activeSection])
-
-  // Profile Photo Upload
   const handlePhotoUpload = async (e) => {
     const file = e.target.files[0]
     if (!file) return
-    
     setUploadingPhoto(true)
     const formData = new FormData()
     formData.append('avatar', file)
-    
     try {
       const { data } = await api.patch('/auth/profile/', formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
@@ -192,7 +142,6 @@ useEffect(() => {
     toast.success('Logged out!')
   }
 
-  // ─── RENDER SECTION CONTENT ───
   const renderContent = () => {
     switch (activeSection) {
       case 'orders':
@@ -200,94 +149,78 @@ useEffect(() => {
       case 'wishlist':
         return <WishlistSection wishlist={wishlist} loading={loading} onBack={goBackToProfile} />
       case 'addresses':
-        return <Addresses addresses={addresses} loading={loading} onBack={goBackToProfile} />
+        return <Addresses onBack={goBackToProfile} />
       case 'coupons':
         return <CouponsSection onBack={goBackToProfile} />
       case 'security':
-          return <Security onBack={goBackToProfile} />
-
+        return <Security onBack={goBackToProfile} />
       case 'notifications':
         return <Notifications onBack={goBackToProfile} />
       default:
         return (
           <>
-            {/* Header / Stats Card */}
-            <div className="rounded-2xl shadow-sm" style={{ 
-              background: 'var(--color-surface)', 
-              border: '1px solid var(--color-border)', 
-              padding: '32px' 
-            }}>
-              <p className="text-xs font-bold tracking-widest uppercase" style={{ 
-                color: 'var(--color-primary)', 
-                marginBottom: '8px' 
-              }}>
-                Account Settings
+            {/* Stats Cards */}
+            <div className="bg-[var(--color-surface)] rounded-2xl border border-[var(--color-border)] shadow-sm p-6 lg:p-8">
+              <p className="text-[11px] font-bold tracking-[0.2em] uppercase text-[var(--color-primary)] mb-2">
+                Account Overview
               </p>
-              <h1 className="text-2xl font-bold" style={{ color: 'var(--color-primary)', marginBottom: '8px' }}>
+              <h1 className="text-2xl font-bold text-[var(--color-text)] mb-2">
                 My Profile
               </h1>
-              <p className="text-sm" style={{ color: 'var(--color-muted)', marginBottom: '32px' }}>
+              <p className="text-sm text-[var(--color-muted)] mb-6">
                 Manage your personal details and account preferences.
               </p>
 
-              <div className="grid grid-cols-3" style={{ gap: '16px' }}>
+              <div className="grid grid-cols-3 gap-3">
                 {[
-                  { value: stats.orders, label: 'Orders', section: 'orders' },
-                  { value: stats.wishlist, label: 'Wishlist', section: 'wishlist' },
-                  { value: stats.addresses, label: 'Addresses', section: 'addresses' },
-                ].map((stat) => (
-                  <button
-                    key={stat.label}
-                    onClick={() => handleSectionChange(stat.section)}
-                    className="text-center rounded-xl transition-all cursor-pointer border-none"
-                    style={{ 
-                      padding: '16px',
-                      background: 'var(--color-bg-alt)',
-                      border: '1px solid var(--color-border)'
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.borderColor = 'var(--color-primary)'
-                      e.currentTarget.style.boxShadow = 'var(--shadow-md)'
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.borderColor = 'var(--color-border)'
-                      e.currentTarget.style.boxShadow = 'none'
-                    }}
-                  >
-                    <div className="text-2xl font-bold" style={{ color: 'var(--color-primary)' }}>
-                      {stat.value}
-                    </div>
-                    <div className="text-xs font-medium" style={{ color: 'var(--color-muted)', marginTop: '4px' }}>
-                      {stat.label}
-                    </div>
-                  </button>
-                ))}
+                  { value: stats.orders, label: 'Orders', section: 'orders', icon: Package },
+                  { value: stats.wishlist, label: 'Wishlist', section: 'wishlist', icon: Heart },
+                  { value: stats.addresses, label: 'Addresses', section: 'addresses', icon: MapPin },
+                ].map((stat) => {
+                  const Icon = stat.icon
+                  return (
+                    <button
+                      key={stat.label}
+                      onClick={() => handleSectionChange(stat.section)}
+                      className="text-center rounded-xl transition-all duration-200 cursor-pointer border border-[var(--color-border)] bg-[var(--color-bg-alt)] hover:border-[var(--color-primary)] hover:shadow-md hover:-translate-y-0.5 p-4 group"
+                    >
+                      <Icon size={18} className="mx-auto mb-2 text-[var(--color-primary)] group-hover:scale-110 transition-transform" />
+                      <div className="text-xl font-bold text-[var(--color-primary)]">{stat.value}</div>
+                      <div className="text-[11px] font-medium mt-1 text-[var(--color-muted)]">{stat.label}</div>
+                    </button>
+                  )
+                })}
               </div>
             </div>
 
-            {/* Form Card */}
-            <div className="rounded-2xl shadow-sm" style={{ 
-              background: 'var(--color-surface)', 
-              border: '1px solid var(--color-border)', 
-              padding: '32px' 
-            }}>
-              <form onSubmit={handleSubmit(onSubmit)} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-                <div className="grid grid-cols-1 md:grid-cols-2" style={{ gap: '24px' }}>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                    <label className="block text-sm font-semibold" style={{ color: 'var(--color-text)' }}>Full Name</label>
-                    <input {...register('name')} className="w-full rounded-xl text-sm outline-none" style={{ padding: '12px 16px', background: 'var(--color-bg-alt)', border: '1px solid var(--color-border)', color: 'var(--color-text)' }} />
+            {/* Profile Form */}
+            <div className="bg-[var(--color-surface)] rounded-2xl border border-[var(--color-border)] shadow-sm p-6 lg:p-8">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-8 h-8 rounded-full bg-[var(--color-primary-light)] flex items-center justify-center">
+                  <User size={16} className="text-[var(--color-primary)]" />
+                </div>
+                <h2 className="text-sm font-bold uppercase tracking-wide text-[var(--color-text)]">
+                  Personal Information
+                </h2>
+              </div>
+
+              <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                  <div className="flex flex-col gap-2">
+                    <label className="text-sm font-semibold text-[var(--color-text)]">Full Name</label>
+                    <input {...register('name')} className="w-full rounded-xl text-sm bg-[var(--color-bg-alt)] border border-[var(--color-border)] text-[var(--color-text)] px-4 py-3 outline-none focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary-light)] transition-all" />
                   </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                    <label className="block text-sm font-semibold" style={{ color: 'var(--color-text)' }}>Phone Number</label>
-                    <input {...register('phone')} className="w-full rounded-xl text-sm outline-none" style={{ padding: '12px 16px', background: 'var(--color-bg-alt)', border: '1px solid var(--color-border)', color: 'var(--color-text)' }} />
+                  <div className="flex flex-col gap-2">
+                    <label className="text-sm font-semibold text-[var(--color-text)]">Phone Number</label>
+                    <input {...register('phone')} className="w-full rounded-xl text-sm bg-[var(--color-bg-alt)] border border-[var(--color-border)] text-[var(--color-text)] px-4 py-3 outline-none focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary-light)] transition-all" />
                   </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                    <label className="block text-sm font-semibold" style={{ color: 'var(--color-text)' }}>Date of Birth</label>
-                    <input type="date" {...register('dob')} className="w-full rounded-xl text-sm outline-none" style={{ padding: '12px 16px', background: 'var(--color-bg-alt)', border: '1px solid var(--color-border)', color: 'var(--color-text)' }} />
+                  <div className="flex flex-col gap-2">
+                    <label className="text-sm font-semibold text-[var(--color-text)]">Date of Birth</label>
+                    <input type="date" {...register('dob')} className="w-full rounded-xl text-sm bg-[var(--color-bg-alt)] border border-[var(--color-border)] text-[var(--color-text)] px-4 py-3 outline-none focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary-light)] transition-all" />
                   </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                    <label className="block text-sm font-semibold" style={{ color: 'var(--color-text)' }}>Gender</label>
-                    <select {...register('gender')} className="w-full rounded-xl text-sm outline-none" style={{ padding: '12px 16px', background: 'var(--color-bg-alt)', border: '1px solid var(--color-border)', color: 'var(--color-text)' }}>
+                  <div className="flex flex-col gap-2">
+                    <label className="text-sm font-semibold text-[var(--color-text)]">Gender</label>
+                    <select {...register('gender')} className="w-full rounded-xl text-sm bg-[var(--color-bg-alt)] border border-[var(--color-border)] text-[var(--color-text)] px-4 py-3 outline-none focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary-light)] transition-all">
                       <option value="">Select</option>
                       <option value="male">Male</option>
                       <option value="female">Female</option>
@@ -295,25 +228,39 @@ useEffect(() => {
                     </select>
                   </div>
                 </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                  <label className="block text-sm font-semibold" style={{ color: 'var(--color-text)' }}>Email</label>
-                  <input value={user?.email || ''} disabled className="w-full rounded-xl text-sm cursor-not-allowed" style={{ padding: '12px 16px', background: 'var(--color-bg-alt)', border: '1px solid var(--color-border)', color: 'var(--color-muted)' }} />
+                <div className="flex flex-col gap-2">
+                  <label className="text-sm font-semibold text-[var(--color-text)]">Email</label>
+                  <input value={user?.email || ''} disabled className="w-full rounded-xl text-sm bg-[var(--color-bg-alt)] border border-[var(--color-border)] text-[var(--color-muted)] px-4 py-3 cursor-not-allowed" />
                 </div>
-                <button type="submit" disabled={isSubmitting} className="text-white text-sm font-semibold rounded-xl" style={{ padding: '12px 32px', background: 'var(--color-primary)', opacity: isSubmitting ? 0.5 : 1 }}>
-                  {isSubmitting ? 'Saving...' : 'Save Changes'}
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="inline-flex items-center gap-2 bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] text-white text-sm font-semibold rounded-xl px-6 py-3 transition-all duration-300 disabled:opacity-50 self-start shadow-md hover:shadow-lg hover:-translate-y-0.5"
+                >
+                  {isSubmitting ? (
+                    <><span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Saving...</>
+                  ) : (
+                    'Save Changes'
+                  )}
                 </button>
               </form>
             </div>
 
             {/* Danger Zone */}
-            <div className="rounded-2xl" style={{ background: 'var(--color-surface)', border: '1px solid var(--color-danger)', padding: '32px' }}>
-              <h3 className="text-lg font-bold flex items-center gap-2" style={{ color: 'var(--color-danger)' }}>
-                <Trash2 size={20} /> Danger Zone
-              </h3>
-              <p className="text-sm" style={{ color: 'var(--color-muted)', margin: '16px 0 24px' }}>
-                Once deleted, all data permanently removed.
+            <div className="bg-[var(--color-surface)] rounded-2xl border border-[var(--color-danger)]/30 shadow-sm p-6 lg:p-8">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-8 h-8 rounded-full bg-[var(--color-danger-bg)] flex items-center justify-center">
+                  <Trash2 size={16} className="text-[var(--color-danger)]" />
+                </div>
+                <h3 className="text-lg font-bold text-[var(--color-danger)]">Danger Zone</h3>
+              </div>
+              <p className="text-sm text-[var(--color-muted)] mb-6">
+                Once deleted, all your data including orders, addresses, and wishlist will be permanently removed. This action cannot be undone.
               </p>
-              <button onClick={() => setShowDeleteModal(true)} className="text-sm font-semibold rounded-xl cursor-pointer" style={{ padding: '12px 24px', background: 'var(--color-danger-bg)', color: 'var(--color-danger)', border: '1px solid var(--color-danger)' }}>
+              <button
+                onClick={() => setShowDeleteModal(true)}
+                className="text-sm font-semibold rounded-xl cursor-pointer px-6 py-3 bg-[var(--color-danger-bg)] text-[var(--color-danger)] border border-[var(--color-danger)] hover:bg-[var(--color-danger)] hover:text-white transition-all duration-200"
+              >
                 Delete Account
               </button>
             </div>
@@ -323,31 +270,33 @@ useEffect(() => {
   }
 
   return (
-    <div className="min-h-screen" style={{ background: 'var(--color-bg)' }}>
-      <div className="max-w-7xl mx-auto page-box">
-        <div className="flex flex-col lg:flex-row" style={{ gap: '32px' }}>
+    <div className="min-h-screen bg-[var(--color-bg)]">
+      <div className="page-container py-8 lg:py-10">
+        <div className="flex flex-col lg:flex-row gap-8">
 
-          {/* ── SIDEBAR ── */}
-          <aside className="w-full lg:w-72 shrink-0" style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-            
-            {/* Profile Card */}
-            <div className="rounded-2xl shadow-sm text-center" style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)', padding: '24px' }}>
-              <div className="relative mx-auto" style={{ width: '80px', height: '80px', marginBottom: '16px' }}>
-                <div className="w-full h-full rounded-full flex items-center justify-center font-bold text-white overflow-hidden" style={{ background: 'var(--color-primary)', fontSize: '24px' }}>
+          {/* Sidebar */}
+          <aside className="w-full lg:w-72 shrink-0 flex flex-col gap-6">
+            {/* User Card */}
+            <div className="bg-[var(--color-surface)] rounded-2xl border border-[var(--color-border)] shadow-sm text-center p-6">
+              <div className="relative mx-auto w-20 h-20 mb-4">
+                <div className="w-full h-full rounded-full bg-[var(--color-primary)] flex items-center justify-center font-bold text-white overflow-hidden text-2xl">
                   {user?.avatar ? <img src={user.avatar} alt="" className="w-full h-full object-cover" /> : user?.name?.[0]?.toUpperCase()}
                 </div>
-                <button onClick={() => fileInputRef.current?.click()} className="absolute bottom-0 right-0 w-7 h-7 rounded-full flex items-center justify-center border-none cursor-pointer" style={{ background: 'var(--color-secondary)', color: 'var(--color-text-inverse)', border: '2px solid var(--color-surface)' }}>
+                <button
+                  onClick={() => fileInputRef.current?.click()}
+                  className="absolute bottom-0 right-0 w-7 h-7 rounded-full flex items-center justify-center border-2 border-[var(--color-surface)] cursor-pointer bg-[var(--color-secondary)] text-[var(--color-text-inverse)] hover:bg-[var(--color-secondary-light)] transition-colors"
+                >
                   {uploadingPhoto ? <div className="w-3 h-3 border-2 border-t-transparent rounded-full animate-spin" /> : <Camera size={14} />}
                 </button>
                 <input ref={fileInputRef} type="file" accept="image/*" onChange={handlePhotoUpload} className="hidden" />
               </div>
-              <h2 className="text-lg font-bold" style={{ color: 'var(--color-primary)' }}>{user?.name}</h2>
-              <p className="text-sm" style={{ color: 'var(--color-muted)', marginTop: '4px' }}>{user?.email}</p>
+              <h2 className="text-lg font-bold text-[var(--color-text)]">{user?.name}</h2>
+              <p className="text-sm mt-1 text-[var(--color-muted)]">{user?.email}</p>
             </div>
 
             {/* Navigation */}
-            <div className="rounded-2xl shadow-sm" style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)', padding: '12px' }}>
-              <nav className="flex flex-col" style={{ gap: '4px' }}>
+            <div className="bg-[var(--color-surface)] rounded-2xl border border-[var(--color-border)] shadow-sm p-3">
+              <nav className="flex flex-col gap-1">
                 {MENU_ITEMS.map((item) => {
                   const Icon = item.icon
                   const isActive = activeSection === item.section
@@ -355,33 +304,22 @@ useEffect(() => {
                     <button
                       key={item.label}
                       onClick={() => handleSectionChange(item.section)}
-                      className="flex items-center rounded-xl text-sm font-medium transition-all w-full text-left border-none cursor-pointer"
-                      style={{ 
-                        padding: '12px 16px', 
-                        gap: '12px',
-                        background: isActive ? 'var(--color-primary)' : 'transparent',
-                        color: isActive ? 'var(--color-btn-text)' : 'var(--color-muted)',
-                      }}
-                      onMouseEnter={(e) => {
-                        if (!isActive) {
-                          e.currentTarget.style.background = 'var(--color-bg-alt)'
-                          e.currentTarget.style.color = 'var(--color-primary)'
-                        }
-                      }}
-                      onMouseLeave={(e) => {
-                        if (!isActive) {
-                          e.currentTarget.style.background = 'transparent'
-                          e.currentTarget.style.color = 'var(--color-muted)'
-                        }
-                      }}
+                      className={`flex items-center rounded-xl text-sm font-medium transition-all duration-200 w-full text-left border-none cursor-pointer px-4 py-3 gap-3 ${
+                        isActive
+                          ? 'bg-[var(--color-primary)] text-[var(--color-btn-text)] shadow-md'
+                          : 'bg-transparent text-[var(--color-muted)] hover:bg-[var(--color-bg-alt)] hover:text-[var(--color-primary)]'
+                      }`}
                     >
                       <Icon size={18} />
                       <span className="flex-1">{item.label}</span>
-                      <ChevronRight size={14} style={{ color: isActive ? 'rgba(255,255,255,0.6)' : 'var(--color-muted)' }} />
+                      <ChevronRight size={14} className={isActive ? 'text-white/60' : 'text-[var(--color-muted)]'} />
                     </button>
                   )
                 })}
-                <button onClick={handleLogout} className="flex items-center w-full rounded-xl text-sm font-medium transition-all border-none cursor-pointer" style={{ padding: '12px 16px', gap: '12px', marginTop: '4px', color: 'var(--color-danger)', borderTop: '1px solid var(--color-border)' }}>
+                <button
+                  onClick={handleLogout}
+                  className="flex items-center w-full rounded-xl text-sm font-medium transition-all border-none cursor-pointer px-4 py-3 gap-3 mt-1 text-[var(--color-danger)] hover:bg-[var(--color-danger-bg)] border-t border-[var(--color-border)]"
+                >
                   <LogOut size={18} />
                   <span className="flex-1 text-left">Logout</span>
                 </button>
@@ -389,8 +327,8 @@ useEffect(() => {
             </div>
           </aside>
 
-          {/* ── MAIN CONTENT ── */}
-          <section className="flex-1" style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+          {/* Main Content */}
+          <section className="flex-1 flex flex-col gap-6">
             {renderContent()}
           </section>
 
@@ -399,108 +337,83 @@ useEffect(() => {
 
       {/* Delete Modal */}
       {showDeleteModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ background: 'rgba(0,0,0,0.5)' }}>
-          <div className="rounded-2xl w-full max-w-md" style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)', padding: '32px' }}>
-            <h3 className="text-lg font-bold" style={{ color: 'var(--color-danger)', marginBottom: '16px' }}>Delete Account?</h3>
-            <p className="text-sm" style={{ color: 'var(--color-muted)', marginBottom: '24px' }}>This cannot be undone.</p>
-            <div className="flex" style={{ gap: '12px' }}>
-              <button onClick={handleDeleteAccount} className="flex-1 text-sm font-semibold rounded-xl border-none cursor-pointer" style={{ padding: '12px', background: 'var(--color-danger)', color: 'var(--color-text-inverse)' }}>Delete</button>
-              <button onClick={() => setShowDeleteModal(false)} className="flex-1 text-sm font-semibold rounded-xl cursor-pointer" style={{ padding: '12px', background: 'var(--color-bg-alt)', color: 'var(--color-text)', border: '1px solid var(--color-border)' }}>Cancel</button>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm px-4">
+          <div className="bg-[var(--color-surface)] rounded-2xl border border-[var(--color-border)] shadow-2xl w-full max-w-md p-6 lg:p-8 animate-fadeUp">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-full bg-[var(--color-danger-bg)] flex items-center justify-center">
+                <Trash2 size={20} className="text-[var(--color-danger)]" />
+              </div>
+              <h3 className="text-lg font-bold text-[var(--color-danger)]">Delete Account?</h3>
+            </div>
+            <p className="text-sm text-[var(--color-muted)] mb-6">
+              This action is permanent and cannot be undone. All your data will be permanently removed from our servers.
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={handleDeleteAccount}
+                className="flex-1 text-sm font-semibold rounded-xl border-none cursor-pointer py-3 bg-[var(--color-danger)] text-white hover:bg-[var(--color-danger)]/90 transition-colors"
+              >
+                Delete
+              </button>
+              <button
+                onClick={() => setShowDeleteModal(false)}
+                className="flex-1 text-sm font-semibold rounded-xl cursor-pointer py-3 bg-[var(--color-bg-alt)] text-[var(--color-text)] border border-[var(--color-border)] hover:bg-[var(--color-border-light)] transition-colors"
+              >
+                Cancel
+              </button>
             </div>
           </div>
         </div>
       )}
+
+      <style>{`
+        @keyframes fadeUp {
+          from { opacity: 0; transform: translateY(16px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fadeUp {
+          animation: fadeUp 0.3s ease forwards;
+        }
+      `}</style>
     </div>
   )
 }
 
-// ─── SUB-SECTIONS ───
-
 function OrdersSection({ orders, loading, onBack }) {
-  // Debug log
-  console.log('Orders:', orders)
-  console.log('Loading:', loading)
-  
   return (
-    <div className="rounded-2xl shadow-sm" style={{ 
-      background: 'var(--color-surface)', 
-      border: '1px solid var(--color-border)', 
-      padding: '32px' 
-    }}>
-      <button onClick={onBack} className="flex items-center text-sm font-medium border-none cursor-pointer" style={{ 
-        color: 'var(--color-muted)', 
-        marginBottom: '24px', 
-        gap: '8px', 
-        background: 'transparent' 
-      }}>
+    <div className="bg-[var(--color-surface)] rounded-2xl border border-[var(--color-border)] shadow-sm p-6 lg:p-8">
+      <button onClick={onBack} className="flex items-center text-sm font-medium text-[var(--color-muted)] hover:text-[var(--color-text)] transition-colors border-none cursor-pointer mb-6 gap-2 bg-transparent">
         <ArrowLeft size={18} /> Back to Profile
       </button>
-      
-      <h2 className="text-2xl font-bold" style={{ color: 'var(--color-primary)', marginBottom: '8px' }}>
-        My Orders
-      </h2>
-      <p className="text-sm" style={{ color: 'var(--color-muted)', marginBottom: '32px' }}>
-        Track and manage your orders.
-      </p>
-
-      {/* DEBUG INFO - Remove after fix */}
-      <div style={{ 
-        padding: '12px', 
-        background: 'var(--color-warning-bg)', 
-        borderRadius: '8px', 
-        marginBottom: '16px',
-        fontSize: '12px',
-        color: 'var(--color-warning)'
-      }}>
-        Debug: Orders count = {orders?.length || 0}, Loading = {String(loading)}
-      </div>
+      <p className="text-[11px] font-bold tracking-[0.2em] uppercase text-[var(--color-primary)] mb-2">Order History</p>
+      <h2 className="text-2xl font-bold text-[var(--color-text)] mb-2">My Orders</h2>
+      <p className="text-sm text-[var(--color-muted)] mb-8">Track and manage your orders.</p>
 
       {loading ? (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-          {[1,2,3].map(i => (
-            <div key={i} className="h-20 rounded-xl animate-pulse" style={{ background: 'var(--color-bg-alt)' }} />
-          ))}
+        <div className="flex flex-col gap-3">
+          {[1, 2, 3].map(i => <div key={i} className="h-20 rounded-xl bg-[var(--color-bg-alt)] animate-pulse" />)}
         </div>
       ) : !orders || orders.length === 0 ? (
-        <div className="text-center" style={{ padding: '48px' }}>
-          <PackageIcon size={48} style={{ color: 'var(--color-muted)', margin: '0 auto 16px' }} />
-          <p style={{ color: 'var(--color-muted)' }}>No orders yet</p>
-          <p className="text-xs" style={{ color: 'var(--color-muted)', marginTop: '8px' }}>
-            Try placing an order from the shop!
-          </p>
+        <div className="text-center py-12">
+          <PackageIcon size={48} className="mx-auto mb-4 text-[var(--color-muted)]" />
+          <p className="text-[var(--color-muted)]">No orders yet</p>
+          <p className="text-xs mt-2 text-[var(--color-muted)]">Try placing an order from the shop!</p>
         </div>
       ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        <div className="flex flex-col gap-4">
           {orders.map(order => (
-            <div key={order.id} className="rounded-xl" style={{ 
-              background: 'var(--color-bg-alt)', 
-              border: '1px solid var(--color-border)', 
-              padding: '20px' 
-            }}>
-              <div className="flex items-center justify-between" style={{ marginBottom: '12px' }}>
-                <span className="font-mono text-sm font-bold" style={{ color: 'var(--color-text)' }}>
-                  #{order.id?.slice(0,8).toUpperCase()}
-                </span>
-                <span className="text-xs font-bold px-2 py-1 rounded-full" style={{ 
-                  background: order.status === 'delivered' ? 'var(--color-success-bg)' : 
-                              order.status === 'cancelled' ? 'var(--color-danger-bg)' : 'var(--color-warning-bg)',
-                  color: order.status === 'delivered' ? 'var(--color-success)' : 
-                         order.status === 'cancelled' ? 'var(--color-danger)' : 'var(--color-warning)'
-                }}>
+            <div key={order.id} className="rounded-xl p-5 bg-[var(--color-bg-alt)] border border-[var(--color-border)] hover:border-[var(--color-primary)]/30 transition-colors">
+              <div className="flex items-center justify-between mb-3">
+                <span className="font-mono text-sm font-bold text-[var(--color-text)]">#{order.id?.slice(0, 8).toUpperCase()}</span>
+                <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-[var(--color-success-bg)] text-[var(--color-success)]">
                   {order.status}
                 </span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm" style={{ color: 'var(--color-muted)' }}>
-                  {order.items?.length || 0} items
-                </span>
-                <span className="font-bold" style={{ color: 'var(--color-primary)' }}>
-                  ₹{order.total}
-                </span>
+                <span className="text-sm text-[var(--color-muted)]">{order.items?.length || 0} items</span>
+                <span className="font-bold text-[var(--color-primary)]">₹{order.total}</span>
               </div>
-              <p className="text-xs" style={{ color: 'var(--color-muted)', marginTop: '8px' }}>
-                {new Date(order.created_at).toLocaleDateString('en-IN')}
-              </p>
+              <p className="text-xs mt-2 text-[var(--color-muted)]">{new Date(order.created_at).toLocaleDateString('en-IN')}</p>
             </div>
           ))}
         </div>
@@ -511,75 +424,36 @@ function OrdersSection({ orders, loading, onBack }) {
 
 function WishlistSection({ wishlist, loading, onBack }) {
   return (
-    <div className="rounded-2xl shadow-sm" style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)', padding: '32px' }}>
-      <button onClick={onBack} className="flex items-center text-sm font-medium border-none cursor-pointer" style={{ color: 'var(--color-muted)', marginBottom: '24px', gap: '8px', background: 'transparent' }}>
+    <div className="bg-[var(--color-surface)] rounded-2xl border border-[var(--color-border)] shadow-sm p-6 lg:p-8">
+      <button onClick={onBack} className="flex items-center text-sm font-medium text-[var(--color-muted)] hover:text-[var(--color-text)] transition-colors border-none cursor-pointer mb-6 gap-2 bg-transparent">
         <ArrowLeft size={18} /> Back to Profile
       </button>
-      
-      <h2 className="text-2xl font-bold" style={{ color: 'var(--color-primary)', marginBottom: '8px' }}>My Wishlist</h2>
-      <p className="text-sm" style={{ color: 'var(--color-muted)', marginBottom: '32px' }}>Products you've saved for later.</p>
+      <p className="text-[11px] font-bold tracking-[0.2em] uppercase text-[var(--color-primary)] mb-2">Saved Items</p>
+      <h2 className="text-2xl font-bold text-[var(--color-text)] mb-2">My Wishlist</h2>
+      <p className="text-sm text-[var(--color-muted)] mb-8">Products you've saved for later.</p>
 
       {loading ? (
-        <div className="grid grid-cols-2 md:grid-cols-3" style={{ gap: '16px' }}>
-          {[1,2,3].map(i => <div key={i} className="h-48 rounded-xl animate-pulse" style={{ background: 'var(--color-bg-alt)' }} />)}
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+          {[1, 2, 3].map(i => <div key={i} className="h-48 rounded-xl bg-[var(--color-bg-alt)] animate-pulse" />)}
         </div>
       ) : wishlist.length === 0 ? (
-        <div className="text-center" style={{ padding: '48px' }}>
-          <Heart size={48} style={{ color: 'var(--color-muted)', margin: '0 auto 16px' }} />
-          <p style={{ color: 'var(--color-muted)' }}>No items in wishlist</p>
+        <div className="text-center py-12">
+          <Heart size={48} className="mx-auto mb-4 text-[var(--color-muted)]" />
+          <p className="text-[var(--color-muted)]">No items in wishlist</p>
         </div>
       ) : (
-        <div className="grid grid-cols-2 md:grid-cols-3" style={{ gap: '16px' }}>
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
           {wishlist.map(item => (
-            <div key={item.id} className="rounded-xl overflow-hidden" style={{ background: 'var(--color-bg-alt)', border: '1px solid var(--color-border)' }}>
-              <div className="w-full" style={{ height: '160px', background: 'var(--color-muted-light)' }}>
+            <div key={item.id} className="rounded-xl overflow-hidden bg-[var(--color-bg-alt)] border border-[var(--color-border)] hover:border-[var(--color-primary)]/30 transition-all hover:shadow-md group">
+              <div className="w-full h-40 bg-[var(--color-muted-light)] relative overflow-hidden">
                 {item.product?.primary_image?.image && (
-                  <img src={item.product.primary_image.image} alt={item.product_name} className="w-full h-full object-cover" />
+                  <img src={item.product.primary_image.image} alt={item.product_name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                 )}
               </div>
-              <div style={{ padding: '12px' }}>
-                <p className="text-sm font-semibold truncate" style={{ color: 'var(--color-text)' }}>{item.product_name}</p>
-                <p className="text-xs" style={{ color: 'var(--color-primary)', marginTop: '4px' }}>₹{item.product?.effective_price}</p>
+              <div className="p-3">
+                <p className="text-sm font-semibold truncate text-[var(--color-text)]">{item.product_name}</p>
+                <p className="text-xs mt-1 text-[var(--color-primary)] font-bold">₹{item.product?.effective_price}</p>
               </div>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  )
-}
-
-function AddressesSection({ addresses, loading, onBack }) {
-  return (
-    <div className="rounded-2xl shadow-sm" style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)', padding: '32px' }}>
-      <button onClick={onBack} className="flex items-center text-sm font-medium border-none cursor-pointer" style={{ color: 'var(--color-muted)', marginBottom: '24px', gap: '8px', background: 'transparent' }}>
-        <ArrowLeft size={18} /> Back to Profile
-      </button>
-      
-      <h2 className="text-2xl font-bold" style={{ color: 'var(--color-primary)', marginBottom: '8px' }}>Saved Addresses</h2>
-      <p className="text-sm" style={{ color: 'var(--color-muted)', marginBottom: '32px' }}>Manage delivery addresses.</p>
-
-      {loading ? (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-          {[1,2].map(i => <div key={i} className="h-24 rounded-xl animate-pulse" style={{ background: 'var(--color-bg-alt)' }} />)}
-        </div>
-      ) : addresses.length === 0 ? (
-        <div className="text-center" style={{ padding: '48px' }}>
-          <MapPin size={48} style={{ color: 'var(--color-muted)', margin: '0 auto 16px' }} />
-          <p style={{ color: 'var(--color-muted)' }}>No addresses saved</p>
-        </div>
-      ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          {addresses.map(addr => (
-            <div key={addr.id} className="rounded-xl" style={{ background: 'var(--color-bg-alt)', border: '1px solid var(--color-border)', padding: '20px' }}>
-              <div className="flex items-center justify-between" style={{ marginBottom: '8px' }}>
-                <span className="font-bold text-sm" style={{ color: 'var(--color-text)' }}>{addr.full_name}</span>
-                {addr.is_default && (
-                  <span className="text-xs font-bold px-2 py-1 rounded" style={{ background: 'var(--color-success-bg)', color: 'var(--color-success)' }}>Default</span>
-                )}
-              </div>
-              <p className="text-sm" style={{ color: 'var(--color-muted)' }}>{addr.line1}, {addr.city}, {addr.state} - {addr.pincode}</p>
-              <p className="text-sm" style={{ color: 'var(--color-muted)', marginTop: '4px' }}>📞 {addr.phone}</p>
             </div>
           ))}
         </div>
@@ -590,50 +464,22 @@ function AddressesSection({ addresses, loading, onBack }) {
 
 function CouponsSection({ onBack }) {
   return (
-    <div className="rounded-2xl shadow-sm" style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)', padding: '32px' }}>
-      <button onClick={onBack} className="flex items-center text-sm font-medium border-none cursor-pointer" style={{ color: 'var(--color-muted)', marginBottom: '24px', gap: '8px', background: 'transparent' }}>
+    <div className="bg-[var(--color-surface)] rounded-2xl border border-[var(--color-border)] shadow-sm p-6 lg:p-8">
+      <button onClick={onBack} className="flex items-center text-sm font-medium text-[var(--color-muted)] hover:text-[var(--color-text)] transition-colors border-none cursor-pointer mb-6 gap-2 bg-transparent">
         <ArrowLeft size={18} /> Back to Profile
       </button>
-      <h2 className="text-2xl font-bold" style={{ color: 'var(--color-primary)' }}>Coupons</h2>
-      <p style={{ color: 'var(--color-muted)', marginTop: '8px' }}>Available coupons will appear here.</p>
-    </div>
-  )
-}
-
-function SecuritySection({ onBack }) {
-  return (
-    <div className="rounded-2xl shadow-sm" style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)', padding: '32px' }}>
-      <button onClick={onBack} className="flex items-center text-sm font-medium border-none cursor-pointer" style={{ color: 'var(--color-muted)', marginBottom: '24px', gap: '8px', background: 'transparent' }}>
-        <ArrowLeft size={18} /> Back to Profile
-      </button>
-      <h2 className="text-2xl font-bold" style={{ color: 'var(--color-primary)' }}>Security</h2>
-      <div style={{ marginTop: '24px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-        <div className="rounded-xl" style={{ background: 'var(--color-bg-alt)', border: '1px solid var(--color-border)', padding: '20px' }}>
-          <h3 className="font-bold text-sm" style={{ color: 'var(--color-text)' }}>Change Password</h3>
-          <p className="text-xs" style={{ color: 'var(--color-muted)', margin: '8px 0 16px' }}>Update your password regularly.</p>
-          <button className="text-sm font-semibold rounded-xl border-none cursor-pointer" style={{ padding: '10px 20px', background: 'var(--color-primary)', color: 'var(--color-text-inverse)' }}>
-            Update Password
-          </button>
+      <div className="flex items-center gap-3 mb-2">
+        <div className="w-8 h-8 rounded-full bg-[var(--color-primary-light)] flex items-center justify-center">
+          <Ticket size={16} className="text-[var(--color-primary)]" />
         </div>
+        <h2 className="text-2xl font-bold text-[var(--color-text)]">Coupons</h2>
       </div>
-    </div>
-  )
-}
+      <p className="text-sm text-[var(--color-muted)] mt-2">Available coupons will appear here.</p>
 
-function NotificationsSection({ onBack }) {
-  return (
-    <div className="rounded-2xl shadow-sm" style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)', padding: '32px' }}>
-      <button onClick={onBack} className="flex items-center text-sm font-medium border-none cursor-pointer" style={{ color: 'var(--color-muted)', marginBottom: '24px', gap: '8px', background: 'transparent' }}>
-        <ArrowLeft size={18} /> Back to Profile
-      </button>
-      <h2 className="text-2xl font-bold" style={{ color: 'var(--color-primary)' }}>Notifications</h2>
-      <div style={{ marginTop: '24px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-        {['Order Updates', 'Promotional Emails', 'SMS Alerts', 'WhatsApp Updates'].map((item) => (
-          <div key={item} className="flex items-center justify-between rounded-xl" style={{ background: 'var(--color-bg-alt)', border: '1px solid var(--color-border)', padding: '16px 20px' }}>
-            <span className="text-sm font-medium" style={{ color: 'var(--color-text)' }}>{item}</span>
-            <input type="checkbox" defaultChecked className="w-4 h-4 cursor-pointer" style={{ accentColor: 'var(--color-primary)' }} />
-          </div>
-        ))}
+      <div className="mt-8 flex flex-col items-center text-center py-12">
+        <Sparkles size={48} className="text-[var(--color-muted-light)] mb-4" />
+        <p className="text-sm text-[var(--color-muted)]">No active coupons at the moment</p>
+        <p className="text-xs text-[var(--color-muted-light)] mt-1">Check back later for exclusive offers</p>
       </div>
     </div>
   )

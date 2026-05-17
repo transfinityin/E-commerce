@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
-import { Search, ShoppingBag, Heart, User, Menu, X, ChevronDown, Bell } from 'lucide-react'
+import { Search, ShoppingBag, Heart, User, Menu, X, ChevronDown, Zap, QrCode } from 'lucide-react'
 import useAuthStore from '../store/authStore'
 import useCartStore from '../store/cartStore'
 
@@ -58,9 +58,6 @@ export default function Navbar() {
 
   const navLinks = [
     { label: 'Shop',      to: '/products' },
-    // { label: 'New In',    to: '/products?ordering=-created_at' },
-    // { label: 'Featured',  to: '/products?is_featured=true' },
-    // { label: 'Offers',    to: '/products?sale=true' },
   ]
 
   const cartCount = cart?.total_items || 0
@@ -69,82 +66,63 @@ export default function Navbar() {
     <>
       <nav className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-300 ${
         scrolled 
-          ? 'bg-[rgba(250,250,248,0.96)] backdrop-blur-[12px] border-b border-[#E8E4DE] shadow-[0_1px_3px_rgba(13,13,13,0.06)]' 
-          : 'bg-[#FAFAF8] border-b border-transparent'
+          ? 'bg-[var(--color-bg)]/96 backdrop-blur-xl border-b border-[var(--color-border)] shadow-[var(--shadow-sm)]' 
+          : 'bg-[var(--color-bg)] border-b border-transparent'
       }`}>
         {/* Top strip */}
-        <div className="bg-[#0D0D0D] text-white text-center font-medium" style={{ padding: '8px 16px', fontSize: '12px', letterSpacing: '0.08em' }}>
+        <div className="bg-[var(--color-secondary)] text-[var(--color-text-inverse)] text-center font-medium text-xs tracking-widest py-2 px-4">
           ✦ Free shipping on orders above ₹999 &nbsp;|&nbsp; Easy 7-day returns ✦
         </div>
 
         {/* Main nav */}
-        <div className="flex items-center mx-auto" style={{ maxWidth: '1400px', padding: '0 24px', height: '68px', gap: '32px' }}>
+        <div className="flex items-center mx-auto max-w-[1400px] px-6 h-[68px] gap-8">
           {/* Logo */}
-          {/* <Link to="/" className="font-[Playfair_Display] text-[24px] font-bold text-[#0D0D0D] no-underline tracking-tight shrink-0">
-            Trans<span className="text-[#C8A96E]">Finity</span>
-          </Link> */}
-
-          {/* Logo only — no text */}
-<Link to="/" className="flex items-center no-underline shrink-0" style={{ gap: '8px' }}>
-  <img
-    src="/logo.png"
-    alt="Transfinity Logo"
-    style={{
-      height: '52px',
-      width: '52px',
-      objectFit: 'contain',
-      borderRadius: '4px',
-    }}
-  />
-  <div style={{ lineHeight: 1.1 }}>
-    <span style={{
-      display: 'block',
-      fontFamily: 'Playfair Display, serif',
-      fontSize: '20px', fontWeight: 700,
-      color: '#0D0D0D', letterSpacing: '-0.01em',
-    }}>
-      Trans<span style={{ color: '#C8A96E' }}>finity</span>
-    </span>
-    <span style={{
-      display: 'block',
-      fontSize: '9px', fontWeight: 600,
-      color: '#8A8A8A', letterSpacing: '0.2em',
-      textTransform: 'uppercase',
-    }}>
-      Beyond The Limits
-    </span>
-  </div>
-</Link>
+          <Link to="/" className="flex items-center no-underline shrink-0">
+            <div className="flex flex-col gap-1 leading-tight">
+              <img
+                src="/logosign1.png"
+                alt="Transfinity Sign"
+                className="h-12 w-auto object-contain self-start"
+              />
+              <span className="text-[6px] font-semibold text-[var(--color-muted)] tracking-[0.2em] uppercase">
+                Beyond The Limits
+              </span>
+            </div>
+          </Link>
 
           {/* Nav links — desktop */}
-          <div className="hidden md:flex flex-1" style={{ gap: '4px' }}>
+          <div className="hidden md:flex flex-1 gap-1">
             {navLinks.map(link => (
               <Link 
                 key={link.label} 
                 to={link.to} 
-                className={`text-sm font-medium no-underline rounded-full transition-all duration-200 ${
+                className={`text-sm font-medium no-underline rounded-full transition-all duration-200 px-4 py-2 ${
                   location.pathname === link.to 
-                    ? 'bg-[#F5F2EE] text-[#0D0D0D]' 
-                    : 'bg-transparent text-[#3A3A3A] hover:bg-[#F5F2EE] hover:text-[#0D0D0D]'
+                    ? 'bg-[var(--color-bg-alt)] text-[var(--color-text)]' 
+                    : 'bg-transparent text-[var(--color-muted)] hover:bg-[var(--color-bg-alt)] hover:text-[var(--color-text)]'
                 }`}
-                style={{ padding: '8px 16px' }}
               >
                 {link.label}
               </Link>
             ))}
           </div>
 
-          <Link to="/scan" className="text-sm font-medium text-[#3A3A3A] no-underline rounded-full transition-all duration-200 hover:bg-[#F5F2EE] hover:text-[#0D0D0D]" style={{ padding: '8px 16px' }}>
-            📱 Scan QR
+          {/* Scan QR Link */}
+          <Link 
+            to="/scan" 
+            className="hidden md:flex items-center gap-1.5 text-sm font-medium text-[var(--color-muted)] no-underline rounded-full transition-all duration-200 px-4 py-2 hover:bg-[var(--color-bg-alt)] hover:text-[var(--color-text)]"
+          >
+            <QrCode size={16} className="text-[var(--color-primary)]" />
+            Scan QR
           </Link>
 
           {/* Right icons */}
-          <div className="flex items-center ml-auto" style={{ gap: '4px' }}>
+          <div className="flex items-center ml-auto gap-1">
 
             {/* Search */}
             <button 
               onClick={() => setSearchOpen(true)} 
-              className="w-10 h-10 border-none bg-transparent cursor-pointer rounded-full flex items-center justify-center text-[#3A3A3A] transition-all duration-200 hover:bg-[#F5F2EE] hover:text-[#0D0D0D]"
+              className="w-10 h-10 border-none bg-transparent cursor-pointer rounded-full flex items-center justify-center text-[var(--color-muted)] transition-all duration-200 hover:bg-[var(--color-bg-alt)] hover:text-[var(--color-text)]"
             >
               <Search size={20} />
             </button>
@@ -152,7 +130,7 @@ export default function Navbar() {
             {/* Wishlist */}
             <Link 
               to="/wishlist" 
-              className="w-10 h-10 flex items-center justify-center text-[#3A3A3A] rounded-full transition-all duration-200 no-underline hover:bg-[#F5F2EE] hover:text-[#0D0D0D]"
+              className="w-10 h-10 flex items-center justify-center text-[var(--color-muted)] rounded-full transition-all duration-200 no-underline hover:bg-[var(--color-bg-alt)] hover:text-[var(--color-text)]"
             >
               <Heart size={20} />
             </Link>
@@ -160,11 +138,11 @@ export default function Navbar() {
             {/* Cart */}
             <Link 
               to="/cart" 
-              className="w-10 h-10 flex items-center justify-center text-[#3A3A3A] rounded-full transition-all duration-200 no-underline relative hover:bg-[#F5F2EE] hover:text-[#0D0D0D]"
+              className="w-10 h-10 flex items-center justify-center text-[var(--color-muted)] rounded-full transition-all duration-200 no-underline relative hover:bg-[var(--color-bg-alt)] hover:text-[var(--color-text)]"
             >
               <ShoppingBag size={20} />
               {cartCount > 0 && (
-                <span className="absolute top-1 right-1 bg-[#C8A96E] text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center leading-none">
+                <span className="absolute top-1 right-1 bg-[var(--color-primary)] text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center leading-none">
                   {cartCount}
                 </span>
               )}
@@ -175,34 +153,31 @@ export default function Navbar() {
               <div ref={profileRef} className="relative">
                 <button 
                   onClick={() => setProfileOpen(!profileOpen)} 
-                  className={`flex items-center cursor-pointer rounded-full transition-all duration-200 ${
+                  className={`flex items-center cursor-pointer rounded-full transition-all duration-200 gap-2 pl-1.5 pr-3 py-1.5 ${
                     profileOpen 
-                      ? 'bg-[#F5F2EE] border border-[#E8E4DE]' 
-                      : 'bg-transparent border border-transparent hover:bg-[#F5F2EE] hover:border-[#E8E4DE]'
+                      ? 'bg-[var(--color-bg-alt)] border border-[var(--color-border)]' 
+                      : 'bg-transparent border border-transparent hover:bg-[var(--color-bg-alt)] hover:border-[var(--color-border)]'
                   }`}
-                  style={{ gap: '8px', padding: '6px 12px 6px 6px' }}
                 >
-                  <div className="w-7 h-7 bg-[#0D0D0D] text-white rounded-full flex items-center justify-center text-xs font-bold font-[Playfair_Display]">
+                  <div className="w-7 h-7 bg-[var(--color-secondary)] text-[var(--color-text-inverse)] rounded-full flex items-center justify-center text-xs font-bold">
                     {user?.name?.[0]?.toUpperCase()}
                   </div>
-                  <span className="text-[13px] font-medium text-[#0D0D0D]">
+                  <span className="text-[13px] font-medium text-[var(--color-text)]">
                     {user?.name?.split(' ')[0]}
                   </span>
                   <ChevronDown 
                     size={14} 
-                    className={`text-[#8A8A8A] transition-transform duration-200 ${profileOpen ? 'rotate-180' : ''}`} 
+                    className={`text-[var(--color-muted)] transition-transform duration-200 ${profileOpen ? 'rotate-180' : ''}`} 
                   />
                 </button>
 
                 {profileOpen && (
-                  <div 
-                    className="absolute right-0 top-[calc(100%+8px)] bg-white border border-[#E8E4DE] rounded-[20px] shadow-[0_12px_40px_rgba(13,13,13,0.12)] min-w-[200px] overflow-hidden animate-[slideDown_0.2s_ease] z-[200]"
-                  >
-                    <div className="border-b border-[#E8E4DE]" style={{ padding: '16px' }}>
-                      <p className="text-[13px] font-semibold text-[#0D0D0D]">{user?.name}</p>
-                      <p className="text-xs text-[#8A8A8A] mt-0.5">{user?.email}</p>
+                  <div className="absolute right-0 top-[calc(100%+8px)] bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl shadow-[var(--shadow-lg)] min-w-[200px] overflow-hidden z-[200] animate-slideDown">
+                    <div className="border-b border-[var(--color-border)] p-4">
+                      <p className="text-[13px] font-semibold text-[var(--color-text)]">{user?.name}</p>
+                      <p className="text-xs text-[var(--color-muted)] mt-0.5">{user?.email}</p>
                     </div>
-                    <div style={{ padding: '8px' }}>
+                    <div className="p-2">
                       {[
                         { label: 'My Profile',   to: '/profile' },
                         { label: 'My Orders',    to: '/orders' },
@@ -213,8 +188,7 @@ export default function Navbar() {
                           key={item.label} 
                           to={item.to} 
                           onClick={() => setProfileOpen(false)} 
-                          className="block text-[13px] text-[#3A3A3A] no-underline rounded-md transition-all duration-150 hover:bg-[#F5F2EE] hover:text-[#0D0D0D]"
-                          style={{ padding: '10px 12px' }}
+                          className="block text-[13px] text-[var(--color-muted)] no-underline rounded-lg transition-all duration-150 hover:bg-[var(--color-bg-alt)] hover:text-[var(--color-text)] py-2.5 px-3"
                         >
                           {item.label}
                         </Link>
@@ -223,17 +197,18 @@ export default function Navbar() {
                         <Link 
                           to="/admin" 
                           onClick={() => setProfileOpen(false)} 
-                          className="block text-[13px] text-[#A8873E] font-semibold no-underline rounded-md transition-all duration-150 hover:bg-[#F2E8D5]"
-                          style={{ padding: '10px 12px' }}
+                          className="block text-[13px] text-[var(--color-primary)] font-semibold no-underline rounded-lg transition-all duration-150 hover:bg-[var(--color-primary-light)] py-2.5 px-3"
                         >
-                          ⚡ Admin Panel
+                          <span className="flex items-center gap-1.5">
+                            <Zap size={14} />
+                            Admin Panel
+                          </span>
                         </Link>
                       )}
-                      <hr className="border-none border-t border-[#E8E4DE] my-1" />
+                      <hr className="border-none border-t border-[var(--color-border)] my-1" />
                       <button 
                         onClick={() => { logout(); setProfileOpen(false) }} 
-                        className="w-full text-left bg-transparent border-none text-[13px] text-[#D64545] cursor-pointer rounded-md transition-all duration-150 font-['DM_Sans'] hover:bg-[#FDECEA]"
-                        style={{ padding: '10px 12px' }}
+                        className="w-full text-left bg-transparent border-none text-[13px] text-[var(--color-danger)] cursor-pointer rounded-lg transition-all duration-150 hover:bg-[var(--color-danger-bg)] py-2.5 px-3"
                       >
                         Sign Out
                       </button>
@@ -242,18 +217,16 @@ export default function Navbar() {
                 )}
               </div>
             ) : (
-              <div className="flex" style={{ gap: '8px' }}>
+              <div className="flex gap-2">
                 <Link 
                   to="/login" 
-                  className="text-[13px] font-medium text-[#0D0D0D] no-underline rounded-full transition-all duration-200 hover:bg-[#F5F2EE]"
-                  style={{ padding: '8px 18px' }}
+                  className="text-[13px] font-medium text-[var(--color-text)] no-underline rounded-full transition-all duration-200 hover:bg-[var(--color-bg-alt)] px-4 py-2"
                 >
                   Sign in
                 </Link>
                 <Link 
                   to="/register" 
-                  className="text-[13px] font-medium text-white no-underline bg-[#0D0D0D] rounded-full transition-all duration-200 hover:bg-[#3A3A3A]"
-                  style={{ padding: '8px 18px' }}
+                  className="text-[13px] font-medium text-[var(--color-text-inverse)] no-underline bg-[var(--color-secondary)] rounded-full transition-all duration-200 hover:bg-[var(--color-secondary-light)] px-4 py-2"
                 >
                   Join
                 </Link>
@@ -263,7 +236,7 @@ export default function Navbar() {
             {/* Mobile menu */}
             <button 
               onClick={() => setMenuOpen(!menuOpen)} 
-              className="md:hidden w-10 h-10 border-none bg-transparent cursor-pointer rounded-full items-center justify-center text-[#0D0D0D] flex"
+              className="md:hidden w-10 h-10 border-none bg-transparent cursor-pointer rounded-full items-center justify-center text-[var(--color-text)] flex"
             >
               {menuOpen ? <X size={20} /> : <Menu size={20} />}
             </button>
@@ -272,17 +245,23 @@ export default function Navbar() {
 
         {/* Mobile menu */}
         {menuOpen && (
-          <div className="bg-white border-t border-[#E8E4DE] animate-[slideDown_0.2s_ease]" style={{ padding: '16px' }}>
+          <div className="bg-[var(--color-surface)] border-t border-[var(--color-border)] p-4 animate-slideDown">
             {navLinks.map(link => (
               <Link 
                 key={link.label} 
                 to={link.to} 
-                className="block text-[15px] font-medium text-[#0D0D0D] no-underline rounded-xl transition-colors duration-150 hover:bg-[#F5F2EE]"
-                style={{ padding: '14px 16px' }}
+                className="block text-[15px] font-medium text-[var(--color-text)] no-underline rounded-xl transition-colors duration-150 hover:bg-[var(--color-bg-alt)] py-3.5 px-4"
               >
                 {link.label}
               </Link>
             ))}
+            <Link 
+              to="/scan" 
+              className="flex items-center gap-2 text-[15px] font-medium text-[var(--color-text)] no-underline rounded-xl transition-colors duration-150 hover:bg-[var(--color-bg-alt)] py-3.5 px-4"
+            >
+              <QrCode size={18} className="text-[var(--color-primary)]" />
+              Scan QR
+            </Link>
           </div>
         )}
       </nav>
@@ -290,43 +269,40 @@ export default function Navbar() {
       {/* Search overlay */}
       {searchOpen && (
         <div 
-          className="fixed inset-0 z-[200] bg-[rgba(13,13,13,0.6)] backdrop-blur-[8px] flex items-start justify-center animate-[fadeIn_0.2s_ease]"
-          style={{ paddingTop: '120px' }}
+          className="fixed inset-0 z-[200] bg-[var(--color-secondary)]/60 backdrop-blur-lg flex items-start justify-center pt-[120px] animate-fadeIn"
           onClick={(e) => { if (e.target === e.currentTarget) setSearchOpen(false) }}
         >
-          <div className="w-full animate-[fadeUp_0.25s_ease]" style={{ maxWidth: '640px', margin: '0 16px' }}>
+          <div className="w-full max-w-[640px] mx-4 animate-fadeUp">
             <form 
               onSubmit={handleSearch} 
-              className="flex bg-white border-2 border-[#0D0D0D] rounded-[28px] shadow-[0_24px_60px_rgba(13,13,13,0.16)]"
-              style={{ gap: '12px', padding: '8px 8px 8px 20px' }}
+              className="flex bg-[var(--color-surface)] border-2 border-[var(--color-secondary)] rounded-[28px] shadow-[var(--shadow-lg)] gap-3 py-2 pl-5 pr-2"
             >
-              <Search size={20} className="text-[#8A8A8A] shrink-0 self-center" />
+              <Search size={20} className="text-[var(--color-muted)] shrink-0 self-center" />
               <input
                 ref={searchRef}
                 type="text"
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
                 placeholder="Search for products, brands, categories..."
-                className="flex-1 border-none outline-none text-base font-['DM_Sans'] bg-transparent text-[#0D0D0D]"
+                className="flex-1 border-none outline-none text-base bg-transparent text-[var(--color-text)] placeholder:text-[var(--color-muted-light)]"
               />
               <button 
                 type="submit" 
-                className="bg-[#0D0D0D] text-white border-none rounded-[20px] text-sm font-semibold cursor-pointer font-['DM_Sans'] shrink-0 transition-all duration-200 hover:bg-[#3A3A3A]"
-                style={{ padding: '10px 24px' }}
+                className="bg-[var(--color-secondary)] text-[var(--color-text-inverse)] border-none rounded-[20px] text-sm font-semibold cursor-pointer shrink-0 transition-all duration-200 hover:bg-[var(--color-secondary-light)] px-6 py-2.5"
               >
                 Search
               </button>
             </form>
-            <p className="text-[rgba(255,255,255,0.6)] text-[13px] text-center mt-4">
-              Press <kbd className="bg-[rgba(255,255,255,0.15)] px-1.5 py-0.5 rounded text-[11px]">ESC</kbd> to close
+            <p className="text-white/60 text-[13px] text-center mt-4">
+              Press <kbd className="bg-white/15 px-1.5 py-0.5 rounded text-[11px]">ESC</kbd> to close
             </p>
           </div>
         </div>
       )}
 
       {/* Spacer */}
-      <div style={{ height: '68px' }} />
-      <div className="bg-[#0D0D0D]" style={{ height: '32px' }} />
+      <div className="h-[68px]" />
+      <div className="bg-[var(--color-secondary)] h-8" />
     </>
   )
 }

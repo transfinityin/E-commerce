@@ -2,15 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Html5QrcodeScanner } from 'html5-qrcode';
 import {
-  ScanLine,
-  Copy,
-  Check,
-  ShoppingBag,
-  RotateCcw,
-  Clock,
-  AlertCircle,
-  Sparkles,
-  Camera,
+  ScanLine, Copy, Check, ShoppingBag, RotateCcw, Clock,
+  AlertCircle, Sparkles, Camera, Ticket, ChevronRight, Zap
 } from 'lucide-react';
 
 const QRScanner = () => {
@@ -20,6 +13,7 @@ const QRScanner = () => {
   const [revealedData, setRevealedData] = useState(null);
   const [copied, setCopied] = useState(false);
   const [manualCode, setManualCode] = useState('');
+  const [scanActive, setScanActive] = useState(true);
   const scannerRef = useRef(null);
   const navigate = useNavigate();
 
@@ -33,7 +27,7 @@ const QRScanner = () => {
   };
 
   useEffect(() => {
-    if (!revealedData && !error) {
+    if (!revealedData && !error && scanActive) {
       initScanner();
     }
     return () => {
@@ -41,7 +35,7 @@ const QRScanner = () => {
         scannerRef.current.clear();
       }
     };
-  }, [revealedData, error]);
+  }, [revealedData, error, scanActive]);
 
   const initScanner = () => {
     const scanner = new Html5QrcodeScanner('qr-reader', {
@@ -56,6 +50,7 @@ const QRScanner = () => {
     if (scannerRef.current) {
       scannerRef.current.clear();
     }
+    setScanActive(false);
     const qrCodeId = decodedText.split('/').pop();
     await handleScan(qrCodeId);
   };
@@ -65,6 +60,7 @@ const QRScanner = () => {
   const handleManualSubmit = (e) => {
     e.preventDefault();
     if (manualCode.trim()) {
+      setScanActive(false);
       handleScan(manualCode.trim());
     }
   };
@@ -118,90 +114,108 @@ const QRScanner = () => {
     setRevealedData(null);
     setError('');
     setManualCode('');
+    setScanActive(true);
   };
 
   const savedCoupons = JSON.parse(localStorage.getItem('qr_coupons') || '[]');
 
   return (
-    <div className="min-h-screen  place-items-center bg-slate-50">
-      <div className="max-w-lg mx-auto" style={{ padding: '32px 16px' }}>
+    <div className="min-h-screen bg-[var(--color-bg)] flex items-center justify-center px-4 py-8 lg:py-12">
+      <div className="max-w-lg w-full">
 
         {/* Header */}
-        <div className="text-center" style={{ marginBottom: '32px' }}>
-          <p className="text-xs font-bold tracking-widest uppercase text-amber-600" style={{ marginBottom: '8px' }}>
-            Exclusive Offers
-          </p>
-          <h1 className="text-3xl font-bold text-slate-900" style={{ marginBottom: '8px' }}>
+        <div className="text-center mb-8 lg:mb-10">
+          <div className="inline-flex items-center gap-2 bg-[var(--color-primary-light)] rounded-full px-4 py-1.5 mb-4">
+            <Zap size={14} className="text-[var(--color-primary)]" />
+            <p className="text-[11px] font-bold tracking-[0.2em] uppercase text-[var(--color-primary)]">
+              Exclusive Offers
+            </p>
+          </div>
+          <h1 className="text-3xl lg:text-4xl font-bold text-[var(--color-text)] mb-3 tracking-tight">
             Scan & Reveal
           </h1>
-          <p className="text-sm text-slate-500">
+          <p className="text-sm text-[var(--color-muted)] max-w-xs mx-auto">
             Point your camera at a QR code to unlock secret discounts
           </p>
         </div>
 
         {/* Main Card */}
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden" style={{ marginBottom: '24px' }}>
+        <div className="bg-[var(--color-surface)] rounded-2xl border border-[var(--color-border)] shadow-[var(--shadow-md)] overflow-hidden mb-6 transition-all duration-300">
 
-          {/* Scanner */}
+          {/* Scanner View */}
           {!revealedData && !error && !loading && (
-            <div style={{ padding: '24px' }}>
-              <div className="relative rounded-xl overflow-hidden bg-slate-900" style={{ minHeight: '300px' }}>
-                {/* Corner brackets */}
-                <div className="absolute w-6 h-6 border-l-2 border-t-2 border-amber-400 rounded-tl-sm" style={{ top: '20px', left: '20px' }} />
-                <div className="absolute w-6 h-6 border-r-2 border-t-2 border-amber-400 rounded-tr-sm" style={{ top: '20px', right: '20px' }} />
-                <div className="absolute w-6 h-6 border-l-2 border-b-2 border-amber-400 rounded-bl-sm" style={{ bottom: '20px', left: '20px' }} />
-                <div className="absolute w-6 h-6 border-r-2 border-b-2 border-amber-400 rounded-br-sm" style={{ bottom: '20px', right: '20px' }} />
-                {/* Scan line */}
-                <div className="absolute left-0 right-0 h-0.5 bg-amber-400/80 shadow-[0_0_12px_rgba(251,191,36,0.6)] animate-[scan_2s_ease-in-out_infinite]" style={{ top: '40%' }} />
-                <div id="qr-reader" style={{ minHeight: '300px' }} />
+            <div className="p-6 lg:p-8">
+              {/* Scanner Frame */}
+              <div className="relative rounded-xl overflow-hidden bg-[var(--color-secondary)] min-h-[300px] lg:min-h-[340px] shadow-inner">
+                {/* Corner Brackets - Premium Gold */}
+                <div className="absolute w-8 h-8 border-l-[3px] border-t-[3px] border-[var(--color-primary)] rounded-tl-lg top-6 left-6 z-20" />
+                <div className="absolute w-8 h-8 border-r-[3px] border-t-[3px] border-[var(--color-primary)] rounded-tr-lg top-6 right-6 z-20" />
+                <div className="absolute w-8 h-8 border-l-[3px] border-b-[3px] border-[var(--color-primary)] rounded-bl-lg bottom-6 left-6 z-20" />
+                <div className="absolute w-8 h-8 border-r-[3px] border-b-[3px] border-[var(--color-primary)] rounded-br-lg bottom-6 right-6 z-20" />
+
+                {/* Animated Scan Line */}
+                <div className="absolute left-4 right-4 h-[2px] bg-[var(--color-primary)] z-20 animate-scan shadow-[0_0_20px_rgba(200,169,110,0.8)]" style={{ top: '30%' }} />
+
+                {/* Subtle Grid Pattern */}
+                <div className="absolute inset-0 opacity-10 z-10" style={{
+                  backgroundImage: 'linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)',
+                  backgroundSize: '40px 40px'
+                }} />
+
+                <div id="qr-reader" className="min-h-[300px] lg:min-h-[340px]" />
               </div>
 
-              <div className="flex items-center justify-center text-slate-500 text-xs" style={{ marginTop: '16px', gap: '6px' }}>
-                <Camera size={16} />
-                <span>Position QR code within the frame</span>
+              {/* Helper Text */}
+              <div className="flex items-center justify-center text-[var(--color-muted)] text-xs mt-5 gap-2">
+                <Camera size={16} className="text-[var(--color-primary)]" />
+                <span>Position QR code within the golden frame</span>
               </div>
 
               {/* Manual Entry */}
-              <form onSubmit={handleManualSubmit} className="flex" style={{ marginTop: '20px', gap: '8px' }}>
-                <input
-                  type="text"
-                  placeholder="Or enter code manually..."
-                  value={manualCode}
-                  onChange={(e) => setManualCode(e.target.value)}
-                  className="flex-1 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 transition-all"
-                  style={{ padding: '12px 16px' }}
-                />
+              <form onSubmit={handleManualSubmit} className="flex mt-6 gap-3">
+                <div className="flex-1 relative">
+                  <input
+                    type="text"
+                    placeholder="Or enter code manually..."
+                    value={manualCode}
+                    onChange={(e) => setManualCode(e.target.value)}
+                    className="w-full bg-[var(--color-bg-alt)] border border-[var(--color-border)] rounded-xl text-sm text-[var(--color-text)] outline-none focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary-light)] transition-all duration-200 pl-4 pr-4 py-3.5 placeholder:text-[var(--color-muted-light)]"
+                  />
+                </div>
                 <button
                   type="submit"
-                  className="flex items-center bg-slate-900 text-white rounded-xl text-sm font-semibold hover:bg-slate-800 transition-all border-none cursor-pointer shrink-0"
-                  style={{ padding: '12px 20px', gap: '8px' }}
+                  className="flex items-center gap-2 bg-[var(--color-secondary)] text-[var(--color-text-inverse)] rounded-xl text-sm font-semibold hover:bg-[var(--color-secondary-light)] transition-all duration-200 border-none cursor-pointer shrink-0 px-5 py-3.5 shadow-[var(--shadow-sm)]"
                 >
                   <ScanLine size={16} />
-                  Scan
+                  <span className="hidden sm:inline">Scan</span>
                 </button>
               </form>
             </div>
           )}
 
-          {/* Loading */}
+          {/* Loading State */}
           {loading && (
-            <div className="flex flex-col items-center text-center" style={{ padding: '64px 24px' }}>
-              <div className="w-12 h-12 rounded-full border-4 border-slate-100 border-t-amber-500 animate-spin" style={{ marginBottom: '20px' }} />
-              <p className="text-sm font-medium text-slate-600">Revealing your exclusive offer...</p>
+            <div className="flex flex-col items-center text-center py-16 lg:py-20 px-6">
+              <div className="relative mb-6">
+                <div className="w-16 h-16 rounded-full border-4 border-[var(--color-bg-alt)] border-t-[var(--color-primary)] animate-spin" />
+                <div className="absolute inset-0 w-16 h-16 rounded-full border-4 border-transparent border-t-[var(--color-primary)] animate-spin opacity-30" style={{ animationDirection: 'reverse', animationDuration: '1.5s' }} />
+              </div>
+              <p className="text-sm font-medium text-[var(--color-text)] mb-1">Revealing your exclusive offer...</p>
+              <p className="text-xs text-[var(--color-muted)]">Please wait a moment</p>
             </div>
           )}
 
-          {/* Error */}
+          {/* Error State */}
           {error && (
-            <div className="flex flex-col items-center text-center" style={{ padding: '48px 24px' }}>
-              <div className="w-14 h-14 rounded-full bg-red-50 text-red-500 flex items-center justify-center" style={{ marginBottom: '16px' }}>
-                <AlertCircle size={28} />
+            <div className="flex flex-col items-center text-center py-12 lg:py-16 px-6">
+              <div className="w-16 h-16 rounded-full bg-[var(--color-danger-bg)] text-[var(--color-danger)] flex items-center justify-center mb-5 animate-bounce">
+                <AlertCircle size={32} />
               </div>
-              <h3 className="text-lg font-bold text-slate-900" style={{ marginBottom: '8px' }}>Oops!</h3>
-              <p className="text-sm text-slate-500" style={{ marginBottom: '24px' }}>{error}</p>
+              <h3 className="text-xl font-bold text-[var(--color-text)] mb-2">Oops!</h3>
+              <p className="text-sm text-[var(--color-muted)] mb-2 max-w-xs">{error}</p>
+              <p className="text-xs text-[var(--color-muted-light)] mb-8">Try scanning again or enter the code manually</p>
               <button
-                className="flex items-center bg-slate-900 text-white rounded-xl text-sm font-semibold hover:bg-slate-800 transition-all border-none cursor-pointer"
-                style={{ padding: '12px 24px', gap: '8px' }}
+                className="flex items-center gap-2 bg-[var(--color-secondary)] text-[var(--color-text-inverse)] rounded-xl text-sm font-semibold hover:bg-[var(--color-secondary-light)] transition-all duration-200 border-none cursor-pointer px-6 py-3.5 shadow-[var(--shadow-sm)]"
                 onClick={handleRescan}
               >
                 <RotateCcw size={16} />
@@ -210,58 +224,67 @@ const QRScanner = () => {
             </div>
           )}
 
-          {/* Revealed Discount */}
+          {/* Success - Revealed Discount */}
           {revealedData && (
-            <div className="text-center" style={{ padding: '40px 24px' }}>
-              <div style={{ marginBottom: '24px' }}>
-                <div className="w-16 h-16 mx-auto rounded-full bg-amber-50 text-amber-600 flex items-center justify-center" style={{ marginBottom: '16px' }}>
-                  <Sparkles size={32} />
+            <div className="text-center py-10 lg:py-12 px-6 lg:px-8">
+              {/* Success Icon */}
+              <div className="mb-6">
+                <div className="w-20 h-20 mx-auto rounded-full bg-[var(--color-primary-light)] flex items-center justify-center mb-4 animate-bounce">
+                  <Sparkles size={40} className="text-[var(--color-primary)]" />
                 </div>
-                <h2 className="text-2xl font-bold text-slate-900" style={{ marginBottom: '8px' }}>Congratulations!</h2>
-                <p className="text-sm text-slate-500">{revealedData.message}</p>
+                <h2 className="text-2xl lg:text-3xl font-bold text-[var(--color-text)] mb-2">Congratulations!</h2>
+                <p className="text-sm text-[var(--color-muted)]">{revealedData.message}</p>
               </div>
 
-              <div className="bg-slate-900 rounded-2xl text-white relative overflow-hidden" style={{ padding: '32px 24px', marginBottom: '24px' }}>
-                {/* Decorative circles */}
-                <div className="absolute rounded-full bg-white/5" style={{ width: '120px', height: '120px', top: '-40px', right: '-40px' }} />
-                <div className="absolute rounded-full bg-white/5" style={{ width: '80px', height: '80px', bottom: '-20px', left: '-20px' }} />
+              {/* Coupon Card */}
+              <div className="bg-[var(--color-secondary)] rounded-2xl text-white relative overflow-hidden py-8 px-6 lg:px-8 mb-6 shadow-[var(--shadow-lg)]">
+                {/* Decorative Elements */}
+                <div className="absolute w-[140px] h-[140px] rounded-full bg-[var(--color-primary)]/10 -top-12 -right-12" />
+                <div className="absolute w-[100px] h-[100px] rounded-full bg-[var(--color-primary)]/10 -bottom-8 -left-8" />
+                <div className="absolute top-4 right-4 w-2 h-2 rounded-full bg-[var(--color-primary)]/40 animate-pulse" />
+                <div className="absolute bottom-8 left-8 w-1.5 h-1.5 rounded-full bg-[var(--color-primary)]/30 animate-pulse" style={{ animationDelay: '0.5s' }} />
 
-                <p className="text-xs font-bold uppercase tracking-widest text-white/60" style={{ marginBottom: '8px' }}>You Won</p>
-                <div className="text-5xl font-bold text-amber-400" style={{ marginBottom: '8px' }}>
-                  {revealedData.discount}<span className="text-2xl">%</span>
+                <p className="text-xs font-bold uppercase tracking-[0.2em] text-white/50 mb-3">You Won</p>
+                <div className="text-6xl lg:text-7xl font-bold text-[var(--color-primary)] mb-2 tracking-tight">
+                  {revealedData.discount}<span className="text-3xl lg:text-4xl">%</span>
                 </div>
-                <p className="text-sm font-medium text-white/80" style={{ marginBottom: '20px' }}>{revealedData.title}</p>
+                <p className="text-base font-medium text-white/80 mb-6">{revealedData.title}</p>
 
-                <div className="flex items-center bg-white/10 rounded-xl border border-white/10" style={{ padding: '12px 16px', gap: '12px' }}>
-                  <span className="flex-1 font-mono text-sm font-bold tracking-wider">{revealedData.coupon_code}</span>
+                {/* Code Box */}
+                <div className="flex items-center bg-white/10 rounded-xl border border-white/20 backdrop-blur-sm py-3 px-4 gap-3">
+                  <span className="flex-1 font-mono text-lg font-bold tracking-wider text-white">{revealedData.coupon_code}</span>
                   <button
                     onClick={handleCopyCode}
-                    className={`flex items-center rounded-lg text-xs font-bold border-none cursor-pointer transition-all ${copied ? 'bg-emerald-500 text-white' : 'bg-white/20 text-white hover:bg-white/30'}`}
-                    style={{ padding: '8px 14px', gap: '6px' }}
+                    className={`flex items-center rounded-lg text-xs font-bold border-none cursor-pointer transition-all duration-200 px-4 py-2.5 gap-1.5 ${
+                      copied
+                        ? 'bg-[var(--color-success)] text-white'
+                        : 'bg-white/20 text-white hover:bg-white/30'
+                    }`}
                   >
                     {copied ? <Check size={14} /> : <Copy size={14} />}
-                    {copied ? 'Copied' : 'Copy'}
+                    {copied ? 'Copied!' : 'Copy'}
                   </button>
                 </div>
 
-                <div className="flex items-center justify-center text-white/50 text-xs" style={{ marginTop: '16px', gap: '6px' }}>
+                {/* Expiry */}
+                <div className="flex items-center justify-center text-white/40 text-xs mt-4 gap-1.5">
                   <Clock size={14} />
                   <span>Valid until {new Date(revealedData.expires_at).toLocaleTimeString()}</span>
                 </div>
               </div>
 
-              <div className="flex flex-col" style={{ gap: '12px' }}>
+              {/* Action Buttons */}
+              <div className="flex flex-col gap-3">
                 <button
-                  className="w-full flex items-center justify-center bg-amber-500 text-white rounded-xl text-sm font-bold hover:bg-amber-600 transition-all border-none cursor-pointer"
-                  style={{ padding: '14px 24px', gap: '8px' }}
+                  className="w-full flex items-center justify-center gap-2 bg-[var(--color-primary)] text-white rounded-xl text-sm font-bold hover:bg-[var(--color-primary-dark)] transition-all duration-300 border-none cursor-pointer py-4 shadow-[var(--shadow-gold)] hover:shadow-lg hover:-translate-y-0.5"
                   onClick={() => navigate('/products')}
                 >
                   <ShoppingBag size={18} />
                   Start Shopping
+                  <ChevronRight size={16} />
                 </button>
                 <button
-                  className="w-full flex items-center justify-center bg-white text-slate-700 border border-slate-200 rounded-xl text-sm font-semibold hover:bg-slate-50 transition-all cursor-pointer"
-                  style={{ padding: '12px 24px', gap: '8px' }}
+                  className="w-full flex items-center justify-center gap-2 bg-[var(--color-surface)] text-[var(--color-text)] border border-[var(--color-border)] rounded-xl text-sm font-semibold hover:bg-[var(--color-bg-alt)] transition-all duration-200 cursor-pointer py-3"
                   onClick={handleRescan}
                 >
                   <RotateCcw size={16} />
@@ -274,31 +297,41 @@ const QRScanner = () => {
 
         {/* Saved Coupons History */}
         {savedCoupons.length > 0 && !revealedData && (
-          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm" style={{ padding: '24px' }}>
-            <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider" style={{ marginBottom: '16px' }}>
-              Your Saved Offers
-            </h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+          <div className="bg-[var(--color-surface)] rounded-2xl border border-[var(--color-border)] shadow-[var(--shadow-sm)] p-6 lg:p-8">
+            <div className="flex items-center gap-2 mb-5">
+              <div className="w-8 h-8 rounded-lg bg-[var(--color-primary-light)] flex items-center justify-center">
+                <Ticket size={16} className="text-[var(--color-primary)]" />
+              </div>
+              <h3 className="text-sm font-bold text-[var(--color-text)] uppercase tracking-wider">
+                Your Saved Offers
+              </h3>
+              <span className="ml-auto text-xs font-bold text-[var(--color-primary)] bg-[var(--color-primary-light)] rounded-full px-2.5 py-0.5">
+                {savedCoupons.length}
+              </span>
+            </div>
+            <div className="flex flex-col gap-3">
               {savedCoupons.slice(-3).reverse().map((coupon, idx) => (
                 <div
                   key={idx}
-                  className="flex items-center justify-between bg-slate-50 rounded-xl border border-slate-100"
-                  style={{ padding: '14px 16px' }}
+                  className="flex items-center justify-between bg-[var(--color-bg-alt)] rounded-xl border border-[var(--color-border)] py-3.5 px-4 hover:border-[var(--color-primary)]/30 transition-all duration-200 group"
                 >
-                  <div className="flex items-center" style={{ gap: '12px' }}>
-                    <div className="w-10 h-10 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center text-xs font-bold">
+                  <div className="flex items-center gap-3">
+                    <div className="w-11 h-11 rounded-full bg-[var(--color-primary-light)] text-[var(--color-primary-dark)] flex items-center justify-center text-sm font-bold shadow-sm">
                       {coupon.discount}%
                     </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                      <span className="text-sm font-semibold text-slate-900">{coupon.title}</span>
-                      <span className="text-xs text-slate-500">
+                    <div className="flex flex-col gap-0.5">
+                      <span className="text-sm font-semibold text-[var(--color-text)] group-hover:text-[var(--color-primary)] transition-colors">{coupon.title}</span>
+                      <span className="text-xs text-[var(--color-muted)]">
                         Expires {new Date(coupon.expires_at).toLocaleDateString()}
                       </span>
                     </div>
                   </div>
-                  <span className="font-mono text-xs font-bold text-slate-700 bg-white border border-slate-200 rounded-lg" style={{ padding: '6px 12px' }}>
-                    {coupon.code}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono text-xs font-bold text-[var(--color-text)] bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg px-3 py-1.5">
+                      {coupon.code}
+                    </span>
+                    <ChevronRight size={14} className="text-[var(--color-muted)]" />
+                  </div>
                 </div>
               ))}
             </div>
@@ -306,13 +339,23 @@ const QRScanner = () => {
         )}
       </div>
 
-      {/* Scan line animation */}
+      {/* Scan Animation Styles */}
       <style>{`
         @keyframes scan {
-          0%, 100% { top: 20%; opacity: 0; }
+          0%, 100% { top: 15%; opacity: 0; }
           10% { opacity: 1; }
           90% { opacity: 1; }
-          50% { top: 80%; }
+          50% { top: 85%; }
+        }
+        .animate-scan {
+          animation: scan 2.5s ease-in-out infinite;
+        }
+        @keyframes fadeInUp {
+          from { opacity: 0; transform: translateY(20px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fadeInUp {
+          animation: fadeInUp 0.5s ease forwards;
         }
       `}</style>
     </div>

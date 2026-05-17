@@ -27,8 +27,8 @@ import Profile       from './pages/Profile'
 // Addresses separate page remove — profile tab-la render aagum
 import SearchResults from './pages/SearchResults'
 import NotFound      from './pages/NotFound'
-import Addresses     from './pages/Addresses'  // ✅ Add back
-import Wishlist      from './pages/Wishlist'  // ✅ Add back
+import Addresses     from './pages/Addresses' 
+import Wishlist      from './pages/Wishlist'  
 
 // Admin
 import AdminDashboard from './pages/admin/Dashboard'
@@ -73,8 +73,7 @@ export default function App() {
           {/* Profile with tabs — single route only */}
           <Route path="/profile"          element={<Profile />} />
           <Route path="/wishlist" element={<Wishlist />} />
-          <Route path="/addresses"        element={<Addresses />} />      // ✅ Add back
-
+          <Route path="/addresses"        element={<Addresses />} />     
           
           {/* Keep separate pages for direct access from other places (optional) */}
           <Route path="/orders"           element={<OrderHistory />} />

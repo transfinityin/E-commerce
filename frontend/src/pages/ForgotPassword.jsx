@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { toast } from 'react-hot-toast'
+import { Mail, ArrowRight, KeyRound, CheckCircle2 } from 'lucide-react'
 import api from '../services/api'
 
 export default function ForgotPassword() {
@@ -24,128 +25,123 @@ export default function ForgotPassword() {
   }
 
   return (
-    <div className="min-h-screen" style={{ 
-      background: 'var(--color-bg)',
-      display: 'flex',
-      flexDirection: 'column'
-    }}>
-      
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col lg:flex-row" style={{ minHeight: 'calc(100vh - 200px)' }}>
-        
-        {/* Left Panel */}
-        <div className="hidden lg:flex flex-col justify-center" style={{ 
-          flex: '1',
-          background: 'var(--color-secondary)',
-          padding: '64px',
-          gap: '24px'
-        }}>
-          <div style={{ maxWidth: '480px' }}>
-            <h2 className="text-4xl font-bold" style={{ color: 'var(--color-text-inverse)', marginBottom: '48px' }}>
-              Trans<span style={{ color: 'var(--color-primary)' }}>Finity</span>
-            </h2>
+    <div className="min-h-screen bg-[var(--color-bg)] flex flex-col">
 
-            <h3 className="text-5xl font-bold" style={{ 
-              color: 'var(--color-text-inverse)', 
-              marginBottom: '24px',
-              lineHeight: '1.2'
-            }}>
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col lg:flex-row min-h-[calc(100vh-200px)]">
+
+        {/* Left Panel */}
+        <div className="hidden lg:flex flex-1 flex-col justify-center bg-[var(--color-secondary)] px-16 py-16 gap-6">
+          <div className="max-w-lg">
+            <Link to="/" className="font-[Playfair_Display] text-3xl font-bold text-white block mb-12">
+              Trans<span className="text-[var(--color-primary)]">Finity</span>
+            </Link>
+
+            <h3 className="text-5xl lg:text-6xl font-bold text-white leading-tight mb-6">
               Reset <br />
-              <span className="italic" style={{ color: 'var(--color-primary)' }}>access.</span>
+              <span className="italic text-[var(--color-primary)]">access.</span>
             </h3>
 
-            <p style={{ 
-              color: 'rgba(255,255,255,0.6)', 
-              fontSize: '16px',
-              lineHeight: '1.6'
-            }}>
-              Enter your email and we'll send you a secure password reset link.
+            <p className="text-base text-white/60 leading-relaxed max-w-md">
+              Enter your email and we'll send you a secure password reset link. Your account security is our priority.
             </p>
+
+            {/* Decorative circles */}
+            <div className="mt-12 flex items-center gap-4">
+              <div className="w-12 h-12 rounded-full bg-[var(--color-primary)]/10 flex items-center justify-center">
+                <KeyRound size={22} className="text-[var(--color-primary)]" />
+              </div>
+              <div className="text-sm text-white/40">
+                <p className="font-semibold text-white/70">Secure Reset</p>
+                <p>Link expires in 15 minutes</p>
+              </div>
+            </div>
           </div>
         </div>
 
         {/* Right Panel */}
-        <div className="flex-1 flex items-center justify-center" style={{ 
-          background: 'var(--color-surface)',
-          padding: '32px 24px'
-        }}>
-          <div style={{ width: '100%', maxWidth: '420px' }}>
-            
-            <h1 className="text-3xl font-bold" style={{ 
-              color: 'var(--color-text)', 
-              marginBottom: '8px' 
-            }}>
-              Forgot Password
-            </h1>
+        <div className="flex-1 flex items-center justify-center bg-[var(--color-surface)] px-6 py-12">
+          <div className="w-full max-w-md">
 
-            <p style={{ 
-              color: 'var(--color-muted)', 
-              fontSize: '14px',
-              marginBottom: '32px'
-            }}>
-              Enter your email to receive a reset link.
-            </p>
+            {/* Mobile Logo */}
+            <Link to="/" className="lg:hidden font-[Playfair_Display] text-2xl font-bold text-[var(--color-text)] block text-center mb-10">
+              Trans<span className="text-[var(--color-primary)]">Finity</span>
+            </Link>
 
+            <div className="mb-8">
+              <p className="text-[11px] font-bold tracking-[0.2em] uppercase text-[var(--color-primary)] mb-2">
+                Account Recovery
+              </p>
+              <h1 className="text-3xl font-bold text-[var(--color-text)] mb-2">
+                Forgot Password
+              </h1>
+              <p className="text-sm text-[var(--color-muted)]">
+                Enter your email to receive a reset link.
+              </p>
+            </div>
+
+            {/* Success State */}
             {sent && (
-              <div className="rounded-xl text-sm font-semibold" style={{ 
-                background: 'var(--color-primary-light)', 
-                border: '1px solid var(--color-border)',
-                color: 'var(--color-primary-dark)',
-                padding: '16px 20px',
-                marginBottom: '24px'
-              }}>
-                Reset link sent successfully. Please check your email.
+              <div className="rounded-xl text-sm font-semibold bg-[var(--color-primary-light)] border border-[var(--color-border)] text-[var(--color-primary-dark)] px-5 py-4 mb-6 flex items-start gap-3 animate-fadeIn">
+                <CheckCircle2 size={18} className="shrink-0 mt-0.5" />
+                <div>
+                  <p className="font-bold mb-0.5">Reset link sent!</p>
+                  <p className="font-normal text-xs opacity-80">Please check your email inbox and spam folder.</p>
+                </div>
               </div>
             )}
 
-            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                <label className="text-sm font-semibold" style={{ color: 'var(--color-text)' }}>
+            <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+              <div className="flex flex-col gap-2">
+                <label className="text-sm font-semibold text-[var(--color-text)]">
                   Email Address
                 </label>
-
-                <input
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  type="email"
-                  placeholder="you@example.com"
-                  required
-                  className="w-full rounded-xl text-sm outline-none transition-all"
-                  style={{ 
-                    padding: '14px 18px',
-                    background: 'var(--color-bg-alt)',
-                    border: '1px solid var(--color-border)',
-                    color: 'var(--color-text)'
-                  }}
-                />
+                <div className="relative">
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--color-muted)] pointer-events-none">
+                    <Mail size={16} />
+                  </span>
+                  <input
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    type="email"
+                    placeholder="you@example.com"
+                    required
+                    className="w-full rounded-xl text-sm bg-[var(--color-bg-alt)] border border-[var(--color-border)] text-[var(--color-text)] pl-11 pr-4 py-3.5 outline-none focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary-light)] transition-all placeholder:text-[var(--color-muted-light)]"
+                  />
+                </div>
               </div>
 
-              <button 
-                type="submit" 
-                disabled={loading} 
-                className="w-full text-sm font-bold rounded-xl transition-all border-none cursor-pointer"
-                style={{ 
-                  padding: '14px 24px',
-                  background: loading ? 'var(--color-bg-alt)' : 'var(--color-primary)',
-                  color: loading ? 'var(--color-muted)' : 'var(--color-btn-text)',
-                  opacity: loading ? 0.7 : 1
-                }}
+              <button
+                type="submit"
+                disabled={loading || sent}
+                className="w-full inline-flex items-center justify-center gap-2 bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] text-white rounded-xl text-sm font-bold transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed py-3.5 shadow-md hover:shadow-lg hover:-translate-y-0.5"
               >
-                {loading ? 'Sending...' : 'Send Reset Link'}
+                {loading ? (
+                  <>
+                    <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    Sending...
+                  </>
+                ) : sent ? (
+                  <>
+                    <CheckCircle2 size={16} /> Sent Successfully
+                  </>
+                ) : (
+                  <>Send Reset Link <ArrowRight size={16} /></>
+                )}
               </button>
             </form>
 
-            <Link
-              to="/login"
-              className="block text-center text-sm font-semibold transition-colors"
-              style={{ 
-                color: 'var(--color-primary-dark)',
-                marginTop: '24px',
-                padding: '8px'
-              }}
-            >
-              Back to Login
-            </Link>
+            <div className="mt-6 pt-6 border-t border-[var(--color-border)] text-center">
+              <p className="text-sm text-[var(--color-muted)]">
+                Remember your password?{' '}
+                <Link
+                  to="/login"
+                  className="text-[var(--color-primary)] font-semibold hover:text-[var(--color-primary-dark)] transition-colors"
+                >
+                  Back to Login
+                </Link>
+              </p>
+            </div>
           </div>
         </div>
       </div>

@@ -1,0 +1,69 @@
+@import "tailwindcss";
+
+/* ============================================
+   THEME 1: ROYAL GOLD & ONYX
+   Exact match for Transfinity Logo
+   Rich Gold + Deep Black
+   ============================================ */
+:root {
+  --color-primary:        #C9A227;
+  --color-primary-light:  #F2E8C6;
+  --color-primary-dark:   #A8841F;
+
+  --color-secondary:      #0D0D0D;
+  --color-secondary-light:#1A1A1A;
+
+  --color-bg:             #F8F6F0;
+  --color-bg-alt:         #EFEBE0;
+  --color-surface:        #FFFFFF;
+  --color-surface-dark:   #0D0D0D;
+
+  --color-text:           #0F0F0F;
+  --color-text-inverse:   #FFFFFF;
+  --color-muted:          #7C7C7C;
+  --color-muted-light:    #C4BDB0;
+
+  --color-border:         #E0D8C8;
+  --color-border-light:   #D0C8B8;
+
+  --color-success:        #059669;
+  --color-success-bg:     #D1FAE5;
+  --color-danger:         #DC2626;
+  --color-danger-bg:      #FEE2E2;
+  --color-warning:        #D97706;
+  --color-warning-bg:     #FEF3C7;
+  --color-info:           #2563EB;
+  --color-info-bg:        #DBEAFE;
+
+  --color-btn:            #0D0D0D;
+  --color-btn-hover:      #1A1A1A;
+  --color-btn-text:       #FFFFFF;
+  --color-btn-outline:    #E0D8C8;
+
+  --color-scroll-track:   #EFEBE0;
+  --color-scroll-thumb:   #C4BDB0;
+  --color-scroll-hover:   #7C7C7C;
+
+  --shadow-sm:            0 1px 3px rgba(13,13,13,0.06);
+  --shadow-md:            0 4px 12px rgba(13,13,13,0.08);
+  --shadow-lg:            0 8px 24px rgba(13,13,13,0.12);
+  --shadow-gold:          0 4px 20px rgba(201,162,39,0.15);
+}
+
+@layer components {
+  .page-container {
+    width: 100%;
+    max-width: 1280px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 16px;
+  }
+
+  @media (min-width: 640px) {
+    .page-container { padding: 24px; }
+  }
+
+  @media (min-width: 1024px) {
+    .page-container { padding: 32px 24px; }
+  }
+}

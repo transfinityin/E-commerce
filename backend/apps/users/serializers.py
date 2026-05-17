@@ -2,6 +2,7 @@ from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password
 from .models import Address,NotificationSettings
+from django.contrib.auth import get_user_model
 
 User = get_user_model()
 
@@ -42,7 +43,12 @@ class ChangePasswordSerializer(serializers.Serializer):
         if not self.context['request'].user.check_password(value):
             raise serializers.ValidationError('Old password incorrect.')
         return value
-
+class UserMiniSerializer(serializers.ModelSerializer):
+    """Minimal user info for nested displays"""
+    class Meta:
+        model = User
+        fields = ('id', 'name', 'email', 'phone', 'avatar')
+        read_only_fields = ('id',)
 class AddressSerializer(serializers.ModelSerializer):
     class Meta:
         model  = Address

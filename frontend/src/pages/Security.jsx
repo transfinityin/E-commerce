@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'react-hot-toast'
-import { ArrowLeft, Key, Shield, Smartphone, Eye, EyeOff } from 'lucide-react'
+import { ArrowLeft, Key, Shield, Smartphone, Eye, EyeOff, Lock } from 'lucide-react'
 import api from '../services/api'
 
 export default function Security({ onBack }) {
@@ -24,130 +24,99 @@ export default function Security({ onBack }) {
     }
   }
 
+  const passwordFields = [
+    { name: 'old_password', label: 'Current Password', placeholder: 'Enter current password', show: showOld, setShow: setShowOld, icon: Lock },
+    { name: 'new_password', label: 'New Password', placeholder: 'Enter new password', show: showNew, setShow: setShowNew, icon: Key },
+    { name: 'new_password2', label: 'Confirm New Password', placeholder: 'Confirm new password', show: showConfirm, setShow: setShowConfirm, icon: Shield },
+  ]
+
   return (
-    <div className="rounded-2xl shadow-sm" style={{ 
-      background: 'var(--color-surface)', 
-      border: '1px solid var(--color-border)', 
-      padding: '32px' 
-    }}>
+    <div className="bg-[var(--color-surface)] rounded-2xl border border-[var(--color-border)] shadow-sm p-6 lg:p-8">
       {/* Back Button */}
-      <button onClick={onBack} className="flex items-center text-sm font-medium border-none cursor-pointer" style={{ 
-        color: 'var(--color-muted)', 
-        marginBottom: '24px', 
-        gap: '8px', 
-        background: 'transparent' 
-      }}>
+      <button
+        onClick={onBack}
+        className="flex items-center text-sm font-medium text-[var(--color-muted)] hover:text-[var(--color-text)] transition-colors border-none cursor-pointer mb-6 gap-2 bg-transparent"
+      >
         <ArrowLeft size={18} /> Back to Profile
       </button>
 
-      <h2 className="text-2xl font-bold" style={{ color: 'var(--color-primary)', marginBottom: '8px' }}>
-        Security
-      </h2>
-      <p className="text-sm" style={{ color: 'var(--color-muted)', marginBottom: '32px' }}>
-        Manage your password and account security.
+      <div className="flex items-center gap-3 mb-2">
+        <div className="w-8 h-8 rounded-full bg-[var(--color-primary-light)] flex items-center justify-center">
+          <Shield size={16} className="text-[var(--color-primary)]" />
+        </div>
+        <h2 className="text-2xl font-bold text-[var(--color-text)]">
+          Security
+        </h2>
+      </div>
+      <p className="text-sm text-[var(--color-muted)] mb-8">
+        Manage your password and account security settings.
       </p>
 
       {/* Change Password */}
-      <div className="rounded-xl" style={{ 
-        background: 'var(--color-bg-alt)', 
-        border: '1px solid var(--color-border)', 
-        padding: '24px',
-        marginBottom: '24px'
-      }}>
-        <div className="flex items-center gap-3" style={{ marginBottom: '20px' }}>
-          <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ background: 'var(--color-primary-light)', color: 'var(--color-primary)' }}>
+      <div className="rounded-xl bg-[var(--color-bg-alt)] border border-[var(--color-border)] p-5 lg:p-6 mb-5">
+        <div className="flex items-center gap-3 mb-5">
+          <div className="w-10 h-10 rounded-lg bg-[var(--color-primary-light)] flex items-center justify-center text-[var(--color-primary)]">
             <Key size={20} />
           </div>
           <div>
-            <h3 className="text-sm font-bold" style={{ color: 'var(--color-text)' }}>Change Password</h3>
-            <p className="text-xs" style={{ color: 'var(--color-muted)' }}>Update your password regularly</p>
+            <h3 className="text-sm font-bold text-[var(--color-text)]">Change Password</h3>
+            <p className="text-xs text-[var(--color-muted)]">Update your password regularly for better security</p>
           </div>
         </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          {/* Old Password */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-            <label className="text-sm font-semibold" style={{ color: 'var(--color-text)' }}>Current Password</label>
-            <div className="relative">
-              <input
-                type={showOld ? 'text' : 'password'}
-                {...register('old_password', { required: true })}
-                className="w-full rounded-xl text-sm outline-none"
-                style={{ padding: '12px 16px', paddingRight: '40px', background: 'var(--color-surface)', border: '1px solid var(--color-border)', color: 'var(--color-text)' }}
-                placeholder="Enter current password"
-              />
-              <button type="button" onClick={() => setShowOld(!showOld)} className="absolute right-3 top-1/2 -translate-y-1/2 border-none cursor-pointer" style={{ background: 'transparent', color: 'var(--color-muted)' }}>
-                {showOld ? <EyeOff size={16} /> : <Eye size={16} />}
-              </button>
-            </div>
-          </div>
-
-          {/* New Password */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-            <label className="text-sm font-semibold" style={{ color: 'var(--color-text)' }}>New Password</label>
-            <div className="relative">
-              <input
-                type={showNew ? 'text' : 'password'}
-                {...register('new_password', { required: true })}
-                className="w-full rounded-xl text-sm outline-none"
-                style={{ padding: '12px 16px', paddingRight: '40px', background: 'var(--color-surface)', border: '1px solid var(--color-border)', color: 'var(--color-text)' }}
-                placeholder="Enter new password"
-              />
-              <button type="button" onClick={() => setShowNew(!showNew)} className="absolute right-3 top-1/2 -translate-y-1/2 border-none cursor-pointer" style={{ background: 'transparent', color: 'var(--color-muted)' }}>
-                {showNew ? <EyeOff size={16} /> : <Eye size={16} />}
-              </button>
-            </div>
-          </div>
-
-          {/* Confirm Password */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-            <label className="text-sm font-semibold" style={{ color: 'var(--color-text)' }}>Confirm New Password</label>
-            <div className="relative">
-              <input
-                type={showConfirm ? 'text' : 'password'}
-                {...register('new_password2', { required: true })}
-                className="w-full rounded-xl text-sm outline-none"
-                style={{ padding: '12px 16px', paddingRight: '40px', background: 'var(--color-surface)', border: '1px solid var(--color-border)', color: 'var(--color-text)' }}
-                placeholder="Confirm new password"
-              />
-              <button type="button" onClick={() => setShowConfirm(!showConfirm)} className="absolute right-3 top-1/2 -translate-y-1/2 border-none cursor-pointer" style={{ background: 'transparent', color: 'var(--color-muted)' }}>
-                {showConfirm ? <EyeOff size={16} /> : <Eye size={16} />}
-              </button>
-            </div>
-          </div>
+        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+          {passwordFields.map((f) => {
+            const Icon = f.icon
+            return (
+              <div key={f.name} className="flex flex-col gap-2">
+                <label className="text-sm font-semibold text-[var(--color-text)]">{f.label}</label>
+                <div className="relative">
+                  <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--color-muted)] pointer-events-none">
+                    <Icon size={16} />
+                  </span>
+                  <input
+                    type={f.show ? 'text' : 'password'}
+                    {...register(f.name, { required: true })}
+                    className="w-full rounded-xl text-sm bg-[var(--color-surface)] border border-[var(--color-border)] text-[var(--color-text)] pl-11 pr-11 py-3 outline-none focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary-light)] transition-all placeholder:text-[var(--color-muted-light)]"
+                    placeholder={f.placeholder}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => f.setShow(!f.show)}
+                    className="absolute right-3.5 top-1/2 -translate-y-1/2 bg-transparent border-none cursor-pointer text-[var(--color-muted)] flex items-center transition-colors duration-300 hover:text-[var(--color-text)]"
+                  >
+                    {f.show ? <EyeOff size={16} /> : <Eye size={16} />}
+                  </button>
+                </div>
+              </div>
+            )
+          })}
 
           <button
             type="submit"
             disabled={isSubmitting}
-            className="text-sm font-semibold rounded-xl border-none cursor-pointer"
-            style={{ 
-              padding: '12px 24px', 
-              background: 'var(--color-primary)', 
-              color: 'var(--color-text-inverse)',
-              opacity: isSubmitting ? 0.5 : 1,
-              alignSelf: 'flex-start'
-            }}
+            className="inline-flex items-center gap-2 bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] text-white text-sm font-semibold rounded-xl px-6 py-3 transition-all duration-300 disabled:opacity-50 self-start shadow-md hover:shadow-lg hover:-translate-y-0.5 mt-1"
           >
-            {isSubmitting ? 'Updating...' : 'Update Password'}
+            {isSubmitting ? (
+              <><span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Updating...</>
+            ) : (
+              'Update Password'
+            )}
           </button>
         </form>
       </div>
 
       {/* 2FA Placeholder */}
-      <div className="rounded-xl" style={{ 
-        background: 'var(--color-bg-alt)', 
-        border: '1px solid var(--color-border)', 
-        padding: '24px' 
-      }}>
+      <div className="rounded-xl bg-[var(--color-bg-alt)] border border-[var(--color-border)] p-5 lg:p-6">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ background: 'var(--color-info-bg)', color: 'var(--color-info)' }}>
+          <div className="w-10 h-10 rounded-lg bg-[var(--color-info-bg)] flex items-center justify-center text-[var(--color-info)]">
             <Smartphone size={20} />
           </div>
           <div className="flex-1">
-            <h3 className="text-sm font-bold" style={{ color: 'var(--color-text)' }}>Two-Factor Authentication</h3>
-            <p className="text-xs" style={{ color: 'var(--color-muted)' }}>Add extra security to your account</p>
+            <h3 className="text-sm font-bold text-[var(--color-text)]">Two-Factor Authentication</h3>
+            <p className="text-xs text-[var(--color-muted)]">Add extra security to your account</p>
           </div>
-          <span className="text-xs font-bold px-2 py-1 rounded" style={{ background: 'var(--color-muted-light)', color: 'var(--color-muted)' }}>
+          <span className="text-xs font-bold px-3 py-1.5 rounded-full bg-[var(--color-muted-light)] text-[var(--color-muted)]">
             Coming Soon
           </span>
         </div>

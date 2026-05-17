@@ -61,20 +61,19 @@ export default function AdminProducts() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <div className="page-box">
+    <div className="min-h-screen bg-[var(--color-bg)]">
+      <div className="page-container">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between" style={{ marginBottom: '32px', gap: '16px' }}>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8 gap-4">
           <div>
-            <p className="text-xs font-bold tracking-widest uppercase text-amber-600" style={{ marginBottom: '8px' }}>
+            <p className="text-xs font-bold tracking-[0.2em] uppercase text-[var(--color-primary)] mb-2">
               Inventory
             </p>
-            <h1 className="text-3xl font-bold text-slate-900">Products</h1>
+            <h1 className="text-3xl font-bold text-[var(--color-text)] tracking-tight">Products</h1>
           </div>
           <button
             onClick={() => { setShowForm(true); setEditing(null) }}
-            className="flex items-center bg-slate-900 text-white rounded-xl text-sm font-semibold hover:bg-slate-800 transition-all border-none cursor-pointer"
-            style={{ padding: '12px 20px', gap: '8px' }}
+            className="flex items-center gap-2 bg-[var(--color-btn)] text-[var(--color-btn-text)] rounded-xl text-sm font-semibold hover:bg-[var(--color-btn-hover)] transition-all duration-200 px-5 py-3"
           >
             <Plus size={16} /> Add Product
           </button>
@@ -82,128 +81,118 @@ export default function AdminProducts() {
 
         {/* Form */}
         {showForm && (
-          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm" style={{ marginBottom: '32px', padding: '24px' }}>
-            <div className="flex items-center justify-between" style={{ marginBottom: '20px' }}>
-              <h2 className="text-lg font-bold text-slate-900">{editing ? 'Edit' : 'New'} Product</h2>
+          <div className="bg-[var(--color-surface)] rounded-2xl border border-[var(--color-border)] shadow-[var(--shadow-md)] mb-8 p-6">
+            <div className="flex items-center justify-between mb-5">
+              <h2 className="text-lg font-bold text-[var(--color-text)]">{editing ? 'Edit' : 'New'} Product</h2>
               <button
                 onClick={() => setShowForm(false)}
-                className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center hover:bg-slate-200 transition-colors border-none cursor-pointer"
+                className="w-8 h-8 rounded-lg bg-[var(--color-bg-alt)] flex items-center justify-center hover:bg-[var(--color-border-light)] transition-colors cursor-pointer"
               >
-                <X size={18} className="text-slate-500" />
+                <X size={18} className="text-[var(--color-muted)]" />
               </button>
             </div>
             <form onSubmit={handleSubmit}>
-              <div className="grid grid-cols-1 md:grid-cols-2" style={{ gap: '16px', marginBottom: '16px' }}>
-                <div className="md:col-span-2" style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  <label className="text-sm font-semibold text-slate-700">Product Name</label>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div className="md:col-span-2 flex flex-col gap-1.5">
+                  <label className="text-sm font-semibold text-[var(--color-text)]">Product Name</label>
                   <input
                     value={form.name} required
                     onChange={e => setForm(p => ({ ...p, name: e.target.value, slug: autoSlug(e.target.value) }))}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 transition-all"
-                    style={{ padding: '12px 16px' }}
+                    className="w-full bg-[var(--color-bg-alt)] border border-[var(--color-border)] rounded-xl text-sm text-[var(--color-text)] outline-none focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/20 transition-all px-4 py-3"
                     placeholder="e.g. Classic Linen Shirt"
                   />
                 </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  <label className="text-sm font-semibold text-slate-700">Slug</label>
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-sm font-semibold text-[var(--color-text)]">Slug</label>
                   <input
                     value={form.slug}
                     onChange={e => setForm(p => ({ ...p, slug: e.target.value }))}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 transition-all"
-                    style={{ padding: '12px 16px' }}
+                    className="w-full bg-[var(--color-bg-alt)] border border-[var(--color-border)] rounded-xl text-sm text-[var(--color-text)] outline-none focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/20 transition-all px-4 py-3"
                   />
                 </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  <label className="text-sm font-semibold text-slate-700">Category</label>
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-sm font-semibold text-[var(--color-text)]">Category</label>
                   <select
                     value={form.category}
                     onChange={e => setForm(p => ({ ...p, category: e.target.value }))}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 transition-all"
-                    style={{ padding: '12px 16px' }}
+                    className="w-full bg-[var(--color-bg-alt)] border border-[var(--color-border)] rounded-xl text-sm text-[var(--color-text)] outline-none focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/20 transition-all px-4 py-3"
                   >
                     <option value="">Select category</option>
                     {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                   </select>
                 </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  <label className="text-sm font-semibold text-slate-700">Price (₹)</label>
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-sm font-semibold text-[var(--color-text)]">Price (₹)</label>
                   <input
                     type="number" value={form.price} required
                     onChange={e => setForm(p => ({ ...p, price: e.target.value }))}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 transition-all"
-                    style={{ padding: '12px 16px' }}
+                    className="w-full bg-[var(--color-bg-alt)] border border-[var(--color-border)] rounded-xl text-sm text-[var(--color-text)] outline-none focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/20 transition-all px-4 py-3"
                     placeholder="0.00"
                   />
                 </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  <label className="text-sm font-semibold text-slate-700">Sale Price (₹)</label>
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-sm font-semibold text-[var(--color-text)]">Sale Price (₹)</label>
                   <input
                     type="number" value={form.sale_price}
                     onChange={e => setForm(p => ({ ...p, sale_price: e.target.value }))}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 transition-all"
-                    style={{ padding: '12px 16px' }}
+                    className="w-full bg-[var(--color-bg-alt)] border border-[var(--color-border)] rounded-xl text-sm text-[var(--color-text)] outline-none focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/20 transition-all px-4 py-3"
                     placeholder="Optional"
                   />
                 </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  <label className="text-sm font-semibold text-slate-700">Stock</label>
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-sm font-semibold text-[var(--color-text)]">Stock</label>
                   <input
                     type="number" value={form.stock} required
                     onChange={e => setForm(p => ({ ...p, stock: e.target.value }))}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 transition-all"
-                    style={{ padding: '12px 16px' }}
+                    className="w-full bg-[var(--color-bg-alt)] border border-[var(--color-border)] rounded-xl text-sm text-[var(--color-text)] outline-none focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/20 transition-all px-4 py-3"
                   />
                 </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  <label className="text-sm font-semibold text-slate-700">SKU</label>
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-sm font-semibold text-[var(--color-text)]">SKU</label>
                   <input
                     value={form.sku}
                     onChange={e => setForm(p => ({ ...p, sku: e.target.value }))}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 transition-all"
-                    style={{ padding: '12px 16px' }}
+                    className="w-full bg-[var(--color-bg-alt)] border border-[var(--color-border)] rounded-xl text-sm text-[var(--color-text)] outline-none focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/20 transition-all px-4 py-3"
                     placeholder="Optional"
                   />
                 </div>
-                <div className="md:col-span-2" style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  <label className="text-sm font-semibold text-slate-700">Description</label>
+                <div className="md:col-span-2 flex flex-col gap-1.5">
+                  <label className="text-sm font-semibold text-[var(--color-text)]">Description</label>
                   <textarea
                     value={form.description} rows={3} required
                     onChange={e => setForm(p => ({ ...p, description: e.target.value }))}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 transition-all resize-none"
-                    style={{ padding: '12px 16px' }}
+                    className="w-full bg-[var(--color-bg-alt)] border border-[var(--color-border)] rounded-xl text-sm text-[var(--color-text)] outline-none focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/20 transition-all resize-none px-4 py-3"
                   />
                 </div>
-                <div className="md:col-span-2 flex items-center" style={{ gap: '24px' }}>
-                  <label className="flex items-center cursor-pointer text-sm text-slate-700" style={{ gap: '10px' }}>
+                <div className="md:col-span-2 flex items-center gap-6">
+                  <label className="flex items-center gap-2.5 cursor-pointer text-sm text-[var(--color-text)]">
                     <input
                       type="checkbox" checked={form.is_active}
                       onChange={e => setForm(p => ({ ...p, is_active: e.target.checked }))}
-                      className="accent-amber-600 w-4 h-4"
+                      className="accent-[var(--color-primary)] w-4 h-4"
                     />
                     <span>Active</span>
                   </label>
-                  <label className="flex items-center cursor-pointer text-sm text-slate-700" style={{ gap: '10px' }}>
+                  <label className="flex items-center gap-2.5 cursor-pointer text-sm text-[var(--color-text)]">
                     <input
                       type="checkbox" checked={form.is_featured}
                       onChange={e => setForm(p => ({ ...p, is_featured: e.target.checked }))}
-                      className="accent-amber-600 w-4 h-4"
+                      className="accent-[var(--color-primary)] w-4 h-4"
                     />
                     <span>Featured</span>
                   </label>
                 </div>
-                <div className="md:col-span-2 flex" style={{ gap: '12px' }}>
+                <div className="md:col-span-2 flex gap-3">
                   <button
                     type="submit"
-                    className="flex-1 flex items-center justify-center bg-slate-900 text-white rounded-xl text-sm font-semibold hover:bg-slate-800 transition-all border-none cursor-pointer"
-                    style={{ padding: '12px 24px' }}
+                    className="flex-1 flex items-center justify-center bg-[var(--color-btn)] text-[var(--color-btn-text)] rounded-xl text-sm font-semibold hover:bg-[var(--color-btn-hover)] transition-all duration-200 px-6 py-3"
                   >
                     {editing ? 'Update' : 'Create'} Product
                   </button>
                   <button
                     type="button"
                     onClick={() => setShowForm(false)}
-                    className="flex-1 flex items-center justify-center bg-white text-slate-700 border border-slate-200 rounded-xl text-sm font-semibold hover:bg-slate-50 transition-all cursor-pointer"
-                    style={{ padding: '12px 24px' }}
+                    className="flex-1 flex items-center justify-center bg-[var(--color-surface)] text-[var(--color-text)] border border-[var(--color-border)] rounded-xl text-sm font-semibold hover:bg-[var(--color-bg-alt)] transition-all duration-200 px-6 py-3"
                   >
                     Cancel
                   </button>
@@ -215,22 +204,21 @@ export default function AdminProducts() {
 
         {/* Table */}
         {loading ? (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          <div className="flex flex-col gap-3">
             {[1, 2, 3].map(i => (
-              <div key={i} className="w-full h-16 rounded-xl bg-slate-200 animate-pulse" />
+              <div key={i} className="w-full h-16 rounded-xl bg-[var(--color-bg-alt)] animate-pulse" />
             ))}
           </div>
         ) : (
-          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+          <div className="bg-[var(--color-surface)] rounded-2xl border border-[var(--color-border)] shadow-[var(--shadow-sm)] overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b border-slate-100 bg-slate-50/50">
+                  <tr className="border-b border-[var(--color-border)] bg-[var(--color-bg-alt)]/50">
                     {['Product', 'Category', 'Price', 'Stock', 'Status', ''].map((h, i) => (
                       <th
                         key={i}
-                        className="text-left text-xs font-bold uppercase tracking-wider text-slate-500"
-                        style={{ padding: '16px 20px' }}
+                        className="text-left text-xs font-bold uppercase tracking-wider text-[var(--color-muted)] px-5 py-4"
                       >
                         {h}
                       </th>
@@ -239,40 +227,40 @@ export default function AdminProducts() {
                 </thead>
                 <tbody>
                   {products.map(p => (
-                    <tr key={p.id} className="border-b border-slate-100 last:border-0 hover:bg-slate-50/50 transition-colors">
-                      <td style={{ padding: '16px 20px' }}>
-                        <div className="flex items-center" style={{ gap: '12px' }}>
-                          <div className="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center overflow-hidden shrink-0">
+                    <tr key={p.id} className="border-b border-[var(--color-border)] last:border-0 hover:bg-[var(--color-bg-alt)]/50 transition-colors duration-200">
+                      <td className="px-5 py-4">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-lg bg-[var(--color-bg-alt)] flex items-center justify-center overflow-hidden shrink-0 border border-[var(--color-border-light)]">
                             {p.primary_image?.image
                               ? <img src={p.primary_image.image} alt={p.name} className="w-full h-full object-cover" />
-                              : <span className="text-slate-400 text-lg">□</span>}
+                              : <span className="text-[var(--color-muted-light)] text-lg">□</span>}
                           </div>
-                          <span className="font-semibold text-slate-900 truncate">{p.name}</span>
+                          <span className="font-semibold text-[var(--color-text)] truncate">{p.name}</span>
                         </div>
                       </td>
-                      <td className="text-slate-500" style={{ padding: '16px 20px' }}>{p.category?.name || '—'}</td>
-                      <td className="font-mono font-semibold text-slate-900" style={{ padding: '16px 20px' }}>₹{p.effective_price}</td>
-                      <td style={{ padding: '16px 20px' }}>
-                        <span className={`text-xs font-bold ${p.stock > 0 ? 'text-emerald-600' : 'text-red-500'}`}>
+                      <td className="text-[var(--color-muted)] px-5 py-4">{p.category?.name || '—'}</td>
+                      <td className="font-mono font-semibold text-[var(--color-text)] px-5 py-4">₹{p.effective_price}</td>
+                      <td className="px-5 py-4">
+                        <span className={`text-xs font-bold ${p.stock > 0 ? 'text-[var(--color-success)]' : 'text-[var(--color-danger)]'}`}>
                           {p.stock}
                         </span>
                       </td>
-                      <td style={{ padding: '16px 20px' }}>
-                        <span className={`inline-block text-xs font-bold rounded-full ${p.is_active ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' : 'bg-slate-100 text-slate-500 border border-slate-200'}`} style={{ padding: '4px 12px' }}>
+                      <td className="px-5 py-4">
+                        <span className={`inline-block text-xs font-bold rounded-full px-3 py-1 border ${p.is_active ? 'bg-[var(--color-success-bg)] text-[var(--color-success)] border-[var(--color-success)]/20' : 'bg-[var(--color-bg-alt)] text-[var(--color-muted)] border-[var(--color-border-light)]'}`}>
                           {p.is_active ? 'Active' : 'Inactive'}
                         </span>
                       </td>
-                      <td style={{ padding: '16px 20px' }}>
-                        <div className="flex items-center" style={{ gap: '8px' }}>
+                      <td className="px-5 py-4">
+                        <div className="flex items-center gap-2">
                           <button
                             onClick={() => openEdit(p)}
-                            className="w-8 h-8 rounded-lg bg-slate-100 text-slate-600 flex items-center justify-center hover:bg-slate-200 hover:text-slate-900 transition-all border-none cursor-pointer"
+                            className="w-8 h-8 rounded-lg bg-[var(--color-bg-alt)] text-[var(--color-muted)] flex items-center justify-center hover:bg-[var(--color-border-light)] hover:text-[var(--color-text)] transition-all duration-200 cursor-pointer"
                           >
                             <Pencil size={14} />
                           </button>
                           <button
                             onClick={() => handleDelete(p.id)}
-                            className="w-8 h-8 rounded-lg bg-red-50 text-red-500 flex items-center justify-center hover:bg-red-100 hover:text-red-600 transition-all border-none cursor-pointer"
+                            className="w-8 h-8 rounded-lg bg-[var(--color-danger-bg)] text-[var(--color-danger)] flex items-center justify-center hover:bg-[var(--color-danger)]/10 hover:text-[var(--color-danger)] transition-all duration-200 cursor-pointer"
                           >
                             <Trash2 size={14} />
                           </button>

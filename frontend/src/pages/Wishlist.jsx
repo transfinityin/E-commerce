@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { Heart, Trash2, ShoppingBag } from 'lucide-react'
+import { Heart, Trash2, ShoppingBag, ArrowRight, Sparkles } from 'lucide-react'
 import { toast } from 'react-hot-toast'
 import useWishlistStore from '../store/wishlistStore'
 import useCartStore from '../store/cartStore'
@@ -27,24 +27,23 @@ export default function Wishlist() {
 
   if (items.length === 0) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-        <div className="flex flex-col items-center text-center bg-white rounded-2xl border border-slate-200 shadow-sm" style={{ padding: '64px 32px', maxWidth: '420px', width: '100%', margin: '16px' }}>
-          <div className="text-slate-200" style={{ marginBottom: '24px' }}>
-            <Heart size={64} />
+      <div className="min-h-screen bg-[var(--color-bg)] flex items-center justify-center px-4">
+        <div className="flex flex-col items-center text-center bg-[var(--color-surface)] rounded-2xl border border-[var(--color-border)] shadow-sm py-16 px-8 max-w-md w-full">
+          <div className="w-16 h-16 rounded-full bg-[var(--color-primary-light)] flex items-center justify-center mb-5">
+            <Heart size={32} className="text-[var(--color-primary)]" />
           </div>
-          <p className="text-xs font-bold tracking-widest uppercase text-amber-600" style={{ marginBottom: '12px' }}>
+          <p className="text-[11px] font-bold tracking-[0.2em] uppercase text-[var(--color-primary)] mb-2">
             Wishlist
           </p>
-          <h1 className="text-2xl font-bold text-[#C8A96E]" style={{ marginBottom: '8px' }}>
+          <h1 className="text-2xl font-bold text-[var(--color-text)] mb-2">
             Your wishlist is empty
           </h1>
-          <p className="text-sm text-[#fae6c0]" style={{ marginBottom: '24px' }}>
-            Save your favorite products here and come back anytime.
+          <p className="text-sm text-[var(--color-muted)] mb-8 max-w-xs">
+            Save your favorite products here and come back anytime. Your perfect picks are waiting.
           </p>
           <Link
             to="/products"
-            className="inline-flex items-center bg-[#C8A96E] text-white rounded-xl text-sm font-semibold hover:bg-[#C8A96E] transition-all"
-            style={{ padding: '12px 28px', gap: '8px' }}
+            className="inline-flex items-center gap-2 bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] text-white rounded-xl text-sm font-semibold transition-all duration-300 px-7 py-3 shadow-md hover:shadow-lg hover:-translate-y-0.5"
           >
             <ShoppingBag size={16} />
             Explore Products
@@ -55,48 +54,51 @@ export default function Wishlist() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <div className="max-w-7xl mx-auto" style={{ padding: '32px 16px' }}>
+    <div className="min-h-screen bg-[var(--color-bg)]">
+      <div className="page-container py-8 lg:py-10">
 
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between" style={{ marginBottom: '32px', gap: '16px' }}>
+        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-8">
           <div>
-            <p className="text-xs font-bold tracking-widest uppercase text-amber-600" style={{ marginBottom: '8px' }}>
+            <p className="text-[11px] font-bold tracking-[0.2em] uppercase text-[var(--color-primary)] mb-2">
               Saved Favorites
             </p>
-            <h1 className="text-2xl font-bold text-[#C8A96E]" style={{ marginBottom: '8px' }}>
+            <h1 className="text-2xl lg:text-3xl font-bold text-[var(--color-text)] mb-2">
               My Wishlist
             </h1>
-            <p className="text-sm text-[#fae6c0]">
+            <p className="text-sm text-[var(--color-muted)]">
               {items.length} premium item{items.length > 1 ? 's' : ''} saved for later.
             </p>
           </div>
 
           <Link
             to="/products"
-            className="inline-flex items-center bg-white text-slate-700 border border-slate-200 rounded-xl text-sm font-semibold hover:border-[#C8A96E] hover:text-[#C8A96E] transition-all"
-            style={{ padding: '10px 20px', gap: '8px' }}
+            className="inline-flex items-center gap-2 bg-[var(--color-surface)] text-[var(--color-text)] border border-[var(--color-border)] rounded-xl text-sm font-semibold hover:border-[var(--color-primary)] hover:text-[var(--color-primary)] transition-all duration-200 px-5 py-2.5"
           >
-            Continue Shopping
+            Continue Shopping <ArrowRight size={14} />
           </Link>
         </div>
 
         {/* Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" style={{ gap: '20px' }}>
-          {items.map(item => (
-            <div key={item.id} className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden group relative">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+          {items.map((item, index) => (
+            <div
+              key={item.id}
+              className="bg-[var(--color-surface)] rounded-2xl border border-[var(--color-border)] shadow-sm overflow-hidden group relative hover:shadow-md hover:border-[var(--color-primary)]/20 transition-all duration-300 animate-fadeUp"
+              style={{ animationDelay: `${index * 0.05}s` }}
+            >
 
               {/* Remove Button */}
               <button
                 onClick={() => handleRemove(item.product.id)}
-                className="absolute z-10 flex items-center justify-center rounded-full bg-white/90 text-slate-400 hover:text-red-500 hover:bg-white shadow-md transition-all border-none cursor-pointer"
-                style={{ top: '12px', right: '12px', width: '32px', height: '32px' }}
+                className="absolute z-10 top-3 right-3 w-8 h-8 flex items-center justify-center rounded-full bg-[var(--color-surface)]/90 text-[var(--color-muted)] hover:text-[var(--color-danger)] hover:bg-[var(--color-danger-bg)] shadow-sm transition-all duration-200 border-none cursor-pointer"
+                title="Remove from wishlist"
               >
                 <Trash2 size={14} />
               </button>
 
               {/* Image */}
-              <Link to={`/products/${item.product.slug}`} className="block overflow-hidden bg-slate-100" style={{ aspectRatio: '3/4' }}>
+              <Link to={`/products/${item.product.slug}`} className="block overflow-hidden bg-[var(--color-bg-alt)]" style={{ aspectRatio: '3/4' }}>
                 {item.product.primary_image?.image ? (
                   <img
                     src={item.product.primary_image.image}
@@ -104,30 +106,28 @@ export default function Wishlist() {
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center text-4xl bg-slate-100 text-slate-300">
+                  <div className="w-full h-full flex items-center justify-center text-4xl bg-[var(--color-bg-alt)] text-[var(--color-muted-light)]">
                     📦
                   </div>
                 )}
               </Link>
 
               {/* Content */}
-              <div style={{ padding: '16px' }}>
+              <div className="p-4">
                 <Link
                   to={`/products/${item.product.slug}`}
-                  className="block text-sm font-semibold text-[#C8A96E] hover:text-amber-600 transition-colors line-clamp-2"
-                  style={{ marginBottom: '6px', minHeight: '40px' }}
+                  className="block text-sm font-semibold text-[var(--color-text)] hover:text-[var(--color-primary)] transition-colors line-clamp-2 mb-1.5 min-h-[40px]"
                 >
                   {item.product.name}
                 </Link>
 
-                <p className="text-base font-bold text-[#C8A96E]" style={{ marginBottom: '12px' }}>
-                  ₹{item.product.effective_price}
+                <p className="text-base font-bold text-[var(--color-text)] mb-3">
+                  ₹{Number(item.product.effective_price).toLocaleString('en-IN')}
                 </p>
 
                 <button
                   onClick={() => handleAddToCart(item.product.id)}
-                  className="w-full flex items-center justify-center bg-[#C8A96E] text-white rounded-xl text-xs font-bold uppercase tracking-wider hover:bg-[#C8A96E] transition-all border-none cursor-pointer"
-                  style={{ padding: '12px 0', gap: '8px' }}
+                  className="w-full flex items-center justify-center gap-2 bg-[var(--color-secondary)] hover:bg-[var(--color-secondary-light)] text-[var(--color-text-inverse)] rounded-xl text-xs font-bold uppercase tracking-wider transition-all duration-200 py-3 border-none cursor-pointer hover:shadow-md"
                 >
                   <ShoppingBag size={14} />
                   Add to Cart
@@ -137,6 +137,17 @@ export default function Wishlist() {
           ))}
         </div>
       </div>
+
+      <style>{`
+        @keyframes fadeUp {
+          from { opacity: 0; transform: translateY(12px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fadeUp {
+          animation: fadeUp 0.4s ease forwards;
+          opacity: 0;
+        }
+      `}</style>
     </div>
   )
 }

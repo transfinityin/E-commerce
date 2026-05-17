@@ -1,0 +1,69 @@
+@import "tailwindcss";
+
+/* ============================================
+   THEME 2: OCEAN PRESTIGE
+   Deep Teal + Navy Blue
+   Luxury Alternative
+   ============================================ */
+:root {
+  --color-primary:        #0D7377;
+  --color-primary-light:  #E0F2F1;
+  --color-primary-dark:   #095C5F;
+
+  --color-secondary:      #0A1628;
+  --color-secondary-light:#142238;
+
+  --color-bg:             #F0F4F8;
+  --color-bg-alt:         #E2E8F0;
+  --color-surface:        #FFFFFF;
+  --color-surface-dark:   #0A1628;
+
+  --color-text:           #0F172A;
+  --color-text-inverse:   #FFFFFF;
+  --color-muted:          #64748B;
+  --color-muted-light:    #94A3B8;
+
+  --color-border:         #CBD5E1;
+  --color-border-light:   #E2E8F0;
+
+  --color-success:        #059669;
+  --color-success-bg:     #D1FAE5;
+  --color-danger:         #DC2626;
+  --color-danger-bg:      #FEE2E2;
+  --color-warning:        #D97706;
+  --color-warning-bg:     #FEF3C7;
+  --color-info:           #2563EB;
+  --color-info-bg:        #DBEAFE;
+
+  --color-btn:            #0A1628;
+  --color-btn-hover:      #142238;
+  --color-btn-text:       #FFFFFF;
+  --color-btn-outline:    #CBD5E1;
+
+  --color-scroll-track:   #E2E8F0;
+  --color-scroll-thumb:   #94A3B8;
+  --color-scroll-hover:   #64748B;
+
+  --shadow-sm:            0 1px 3px rgba(10,22,40,0.06);
+  --shadow-md:            0 4px 12px rgba(10,22,40,0.08);
+  --shadow-lg:            0 8px 24px rgba(10,22,40,0.12);
+  --shadow-gold:          0 4px 20px rgba(13,115,119,0.15);
+}
+
+@layer components {
+  .page-container {
+    width: 100%;
+    max-width: 1280px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 16px;
+  }
+
+  @media (min-width: 640px) {
+    .page-container { padding: 24px; }
+  }
+
+  @media (min-width: 1024px) {
+    .page-container { padding: 32px 24px; }
+  }
+}

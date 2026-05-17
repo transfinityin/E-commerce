@@ -1,3 +1,4 @@
+# apps/reviews/views.py
 from rest_framework import generics, permissions, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -57,3 +58,22 @@ class AdminReviewListView(generics.ListAPIView):
     serializer_class   = ReviewSerializer
     permission_classes = [IsAdmin]
     queryset           = Review.objects.all().select_related('user', 'product')
+
+
+# 👇 ADD THIS NEW VIEW — Admin Reply
+class AdminReplyView(APIView):
+    permission_classes = [IsAdmin]
+
+    def patch(self, request, pk):
+        try:
+            review = Review.objects.get(pk=pk)
+        except Review.DoesNotExist:
+            return Response({'error': 'Review not found.'}, status=404)
+
+        admin_reply = request.data.get('admin_reply')
+        if admin_reply is None:
+            return Response({'error': 'admin_reply field required.'}, status=400)
+
+        review.admin_reply = admin_reply
+        review.save(update_fields=['admin_reply'])
+        return Response(ReviewSerializer(review).data)

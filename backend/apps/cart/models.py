@@ -32,11 +32,14 @@ class CartItem(models.Model):
     id       = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     cart     = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name='items')
     product  = models.ForeignKey(Product, on_delete=models.CASCADE)
+    size     = models.CharField(max_length=10, blank=True, null=True)  # 👈 ADD THIS
+
     quantity = models.PositiveIntegerField(default=1)
+    
  
     class Meta:
         db_table = 'cart_items'
-        unique_together = ('cart', 'product')
+        unique_together = ('cart', 'product','size')
  
     def __str__(self):
         return f'{self.quantity}x {self.product.name}'

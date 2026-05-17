@@ -1,0 +1,135 @@
+@import "tailwindcss";
+
+/* ============================================
+   THEME 1: GOLD LUXE (Matches Transfinity Logo)
+   Rich Gold + Deep Black - Premium Feel
+   ============================================ */
+:root {
+  /* Primary Brand Color - Rich Champagne Gold */
+  --color-primary:        #D4AF37;
+  --color-primary-light:  #F5E6C8;
+  --color-primary-dark:   #B8941F;
+
+  /* Secondary / Dark - Deep Obsidian */
+  --color-secondary:      #0A0A0A;
+  --color-secondary-light:#1C1C1C;
+
+  /* Backgrounds - Warm Ivory */
+  --color-bg:             #FDFCF8;
+  --color-bg-alt:         #F7F4ED;
+  --color-surface:        #FFFFFF;
+  --color-surface-dark:   #0A0A0A;
+
+  /* Text - Rich Black */
+  --color-text:           #0F0F0F;
+  --color-text-inverse:   #FFFFFF;
+  --color-muted:          #7A7A7A;
+  --color-muted-light:    #C8C2B5;
+
+  /* Borders - Soft Gold Tint */
+  --color-border:         #E8E0D0;
+  --color-border-light:   #D5CDB8;
+
+  /* Status / Accents */
+  --color-success:        #059669;
+  --color-success-bg:     #D1FAE5;
+  --color-danger:         #DC2626;
+  --color-danger-bg:      #FEE2E2;
+  --color-warning:        #D97706;
+  --color-warning-bg:     #FEF3C7;
+  --color-info:           #2563EB;
+  --color-info-bg:        #DBEAFE;
+
+  /* Buttons */
+  --color-btn:            #0A0A0A;
+  --color-btn-hover:      #1C1C1C;
+  --color-btn-text:       #FFFFFF;
+  --color-btn-outline:    #E8E0D0;
+
+  /* Scrollbar */
+  --color-scroll-track:   #F7F4ED;
+  --color-scroll-thumb:   #C8C2B5;
+  --color-scroll-hover:   #7A7A7A;
+
+  /* Shadows - Warm Tint */
+  --shadow-sm:            0 1px 3px rgba(10,10,10,0.06);
+  --shadow-md:            0 4px 12px rgba(10,10,10,0.08);
+  --shadow-lg:            0 8px 24px rgba(10,10,10,0.12);
+  --shadow-gold:          0 4px 20px rgba(212,175,55,0.15);
+}
+
+/* ============================================
+   THEME 2: MIDNIGHT GOLD (Darker Alternative)
+   Sophisticated Dark Mode Feel
+   ============================================ */
+[data-theme="midnight"] {
+  /* Primary Brand Color - Bright Gold */
+  --color-primary:        #E5C158;
+  --color-primary-light:  #2A2520;
+  --color-primary-dark:   #C9A43C;
+
+  /* Secondary / Dark - Pure Black */
+  --color-secondary:      #000000;
+  --color-secondary-light:#141414;
+
+  /* Backgrounds - Dark Charcoal */
+  --color-bg:             #0F0F0F;
+  --color-bg-alt:         #1A1A1A;
+  --color-surface:        #161616;
+  --color-surface-dark:   #000000;
+
+  /* Text - Pure White */
+  --color-text:           #FFFFFF;
+  --color-text-inverse:   #000000;
+  --color-muted:          #8A8A8A;
+  --color-muted-light:    #3A3A3A;
+
+  /* Borders - Dark Gold */
+  --color-border:         #2A2520;
+  --color-border-light:   #3A3530;
+
+  /* Status / Accents - Brighter for Dark */
+  --color-success:        #34D399;
+  --color-success-bg:     #064E3B;
+  --color-danger:         #F87171;
+  --color-danger-bg:      #450A0A;
+  --color-warning:        #FBBF24;
+  --color-warning-bg:     #451A03;
+  --color-info:           #60A5FA;
+  --color-info-bg:        #1E3A5F;
+
+  /* Buttons */
+  --color-btn:            #E5C158;
+  --color-btn-hover:      #F0D47A;
+  --color-btn-text:       #000000;
+  --color-btn-outline:    #2A2520;
+
+  /* Scrollbar */
+  --color-scroll-track:   #1A1A1A;
+  --color-scroll-thumb:   #3A3A3A;
+  --color-scroll-hover:   #8A8A8A;
+
+  /* Shadows - Gold Glow */
+  --shadow-sm:            0 1px 3px rgba(0,0,0,0.3);
+  --shadow-md:            0 4px 12px rgba(0,0,0,0.4);
+  --shadow-lg:            0 8px 24px rgba(0,0,0,0.5);
+  --shadow-gold:          0 4px 20px rgba(229,193,88,0.2);
+}
+
+@layer components {
+  .page-container {
+    width: 100%;
+    max-width: 1280px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 16px;
+  }
+
+  @media (min-width: 640px) {
+    .page-container { padding: 24px; }
+  }
+
+  @media (min-width: 1024px) {
+    .page-container { padding: 32px 24px; }
+  }
+}

@@ -20,8 +20,8 @@ const useCartStore = create(
         }
       },
 
-      addToCart: async (product_id, quantity = 1) => {
-        const { data } = await api.post('/cart/add/', { product_id, quantity })
+      addToCart: async (product_id, quantity = 1, size = null) => {
+        const { data } = await api.post('/cart/add/', { product_id, quantity, size })
         set({ cart: data.cart })
         return data
       },
