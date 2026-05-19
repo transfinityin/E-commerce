@@ -224,6 +224,9 @@ SIMPLE_JWT = {
 # ── CORS ─────────────────────────────────────────────────────
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:5173',
+    "https://transfinity.shop",
+    "https://www.transfinity.shop",
+    "https://e-commercetransfinity-git-main-transfinityin-1144s-projects.vercel.app/"
     'http://localhost:3000',
     os.getenv('FRONTEND_URL', 'http://localhost:5173').rstrip('/'),
 ]
