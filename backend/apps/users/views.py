@@ -199,7 +199,9 @@ class GoogleAuthView(APIView):
             idinfo = id_token.verify_oauth2_token(
                 credential,
                 google_requests.Request(),
-                settings.SOCIALACCOUNT_PROVIDERS['google']['APP']['client_id'],
+                settings.GOOGLE_CLIENT_ID
+
+                # settings.SOCIALACCOUNT_PROVIDERS['google']['APP']['client_id'],
             )
 
             email = idinfo.get('email')
