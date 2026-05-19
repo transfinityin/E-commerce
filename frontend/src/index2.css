@@ -1,60 +1,57 @@
+
+
 @import "tailwindcss";
 
 /* ============================================
-   THEME VARIABLES - CHANGE COLORS HERE ONLY
+   THEME 4: EMERALD ELITE
+   Emerald Green + Charcoal
+   Modern Luxury
    ============================================ */
 :root {
-  /* Primary Brand Color (Gold/Amber) */
-  --color-primary:        #C8A96E;
-  --color-primary-light:  #F2E8D5;
-  --color-primary-dark:   #A68B52;
+  --color-primary:        #059669;
+  --color-primary-light:  #D1FAE5;
+  --color-primary-dark:   #047857;
 
-  /* Secondary / Dark */
-  --color-secondary:      #0D0D0D;
-  --color-secondary-light:#1E1E1E;
+  --color-secondary:      #18181B;
+  --color-secondary-light:#27272A;
 
-  /* Backgrounds */
-  --color-bg:             #FAFAF8;
-  --color-bg-alt:         #F5F2EE;
+  --color-bg:             #FAFAFA;
+  --color-bg-alt:         #F4F4F5;
   --color-surface:        #FFFFFF;
-  --color-surface-dark:   #0D0D0D;
+  --color-surface-dark:   #18181B;
 
-  /* Text */
-  --color-text:           #0D0D0D;
+  --color-text:           #18181B;
   --color-text-inverse:   #FFFFFF;
-  --color-muted:          #8A8A8A;
-  --color-muted-light:    #D0CAC0;
+  --color-muted:          #71717A;
+  --color-muted-light:    #A1A1AA;
 
-  /* Borders */
-  --color-border:         #E2E8F0;
-  --color-border-light:   #D0CAC0;
+  --color-border:         #E4E4E7;
+  --color-border-light:   #D4D4D8;
 
-  /* Status / Accents */
-  --color-success:        #22C55E;
-  --color-success-bg:     #DCFCE7;
-  --color-danger:         #EF4444;
+  --color-success:        #059669;
+  --color-success-bg:     #D1FAE5;
+  --color-danger:         #DC2626;
   --color-danger-bg:      #FEE2E2;
-  --color-warning:        #EAB308;
-  --color-warning-bg:     #FEF9C3;
-  --color-info:           #3B82F6;
+  --color-warning:        #D97706;
+  --color-warning-bg:     #FEF3C7;
+  --color-info:           #2563EB;
   --color-info-bg:        #DBEAFE;
 
-  /* Buttons */
-  --color-btn:            #0D0D0D;
-  --color-btn-hover:      #1E1E1E;
+  --color-btn:            #18181B;
+  --color-btn-hover:      #27272A;
   --color-btn-text:       #FFFFFF;
-  --color-btn-outline:    #E2E8F0;
+  --color-btn-outline:    #E4E4E7;
 
-  /* Scrollbar */
-  --color-scroll-track:   #F5F2EE;
-  --color-scroll-thumb:   #D0CAC0;
-  --color-scroll-hover:   #8A8A8A;
+  --color-scroll-track:   #F4F4F5;
+  --color-scroll-thumb:   #A1A1AA;
+  --color-scroll-hover:   #71717A;
 
-  /* Shadows */
-  --shadow-sm:            0 1px 3px rgba(13,13,13,0.06);
-  --shadow-md:            0 4px 12px rgba(13,13,13,0.08);
-  --shadow-lg:            0 8px 24px rgba(13,13,13,0.12);
+  --shadow-sm:            0 1px 3px rgba(24,24,27,0.06);
+  --shadow-md:            0 4px 12px rgba(24,24,27,0.08);
+  --shadow-lg:            0 8px 24px rgba(24,24,27,0.12);
+  --shadow-gold:          0 4px 20px rgba(5,150,105,0.15);
 }
+
 @layer components {
   .page-container {
     width: 100%;
@@ -63,11 +60,11 @@
     margin-right: auto;
     padding: 16px;
   }
-  
+
   @media (min-width: 640px) {
     .page-container { padding: 24px; }
   }
-  
+
   @media (min-width: 1024px) {
     .page-container { padding: 32px 24px; }
   }

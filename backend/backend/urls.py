@@ -33,6 +33,7 @@ urlpatterns = [
     path('api/notifications/', include('apps.notifications.urls')),
     path('api/auth/social/google/', GoogleLogin.as_view(), name='google_login'),
     path('accounts/', include('allauth.urls')),  # OAuth redirects
+    path('api/hunt/', include('apps.treasurehunt.urls')),
  
 ]
 if settings.DEBUG:

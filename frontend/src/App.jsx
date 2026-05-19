@@ -39,7 +39,9 @@ import AdminUsers     from './pages/admin/Users'
 import QROffers from './pages/admin/QROffers'
 import TreasureHunt from './pages/TreasureHunt'
 import QRScanner from './pages/QRScanner'
-
+import MyMaps from './pages/MyMaps'
+import HuntLocations from './pages/admin/HuntLocations'
+import HuntQRCodes from './pages/admin/HuntQRCodes'
 export default function App() {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated)
   const fetchCart       = useCartStore((s) => s.fetchCart)
@@ -89,12 +91,19 @@ export default function App() {
         <Route path="/admin/users"        element={<AdminUsers />} />
         <Route path="/admin/hero-banners" element={<AdminHeroBanners />} />
         <Route path="/admin/qr-offers"    element={<QROffers />} />
+        <Route path="/admin/hunt/locations" element={<HuntLocations />} />
+        <Route path="/admin/hunt/qr-codes" element={<HuntQRCodes />} />
       </Route>
 
       <Route path="/scan"               element={<QRScanner />} />
       <Route path="/scan/:qrCodeId"     element={<QRScanner />} />
       <Route path="/treasure-hunt"      element={<TreasureHunt />} />
       <Route path="*"                   element={<NotFound />} />
+
+      <Route path="hunt" element={<TreasureHunt />} />
+      <Route path="hunt/dashboard" element={<TreasureHunt />} />
+      <Route path="hunt/map" element={<MyMaps />} />
+      <Route path="scan" element={<QRScanner />} />
     </Routes>
   )
 }

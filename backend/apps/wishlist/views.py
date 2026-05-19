@@ -11,8 +11,13 @@ class WishlistView(generics.ListAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        return Wishlist.objects.filter(user=self.request.user).select_related('product')
-
+        return (
+        
+         Wishlist.objects
+            .filter(user=self.request.user)
+            .select_related('product')
+            .order_by('-created_at')   # or 'id', 'product__name', etc.)
+        )
 
 class WishlistToggleView(APIView):
     permission_classes = [permissions.IsAuthenticated]

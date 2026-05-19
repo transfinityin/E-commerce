@@ -78,7 +78,8 @@ LOCAL_APPS = [
     'apps.coupons',
     'apps.support',
     'apps.notifications',
-    'apps.core'
+    'apps.core',
+    'apps.treasurehunt'
 ] 
 # Option 2: If you use JWT only, add this line:
 TOKEN_MODEL = None  # 🔥 ADD THIS
@@ -132,15 +133,25 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 # }
 
 # Database
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': os.getenv('DB_NAME', 'ecommerce_db'),
+#         'USER': os.getenv('DB_USER', 'postgres'),
+#         'PASSWORD': os.getenv('DB_PASSWORD', 'postgres'),
+#         'HOST': os.getenv('DB_HOST', 'localhost'),
+#         'PORT': os.getenv('DB_PORT', '5432'),
+#     }
+# }
+
+
+# Database - Supports both Render URL and local development
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('DB_NAME', 'ecommerce_db'),
-        'USER': os.getenv('DB_USER', 'postgres'),
-        'PASSWORD': os.getenv('DB_PASSWORD', 'postgres'),
-        'HOST': os.getenv('DB_HOST', 'localhost'),
-        'PORT': os.getenv('DB_PORT', '5432'),
-    }
+    'default': dj_database_url.config(
+        default=f"postgres://{os.getenv('DB_USER', 'postgres')}:{os.getenv('DB_PASSWORD', 'postgres')}@{os.getenv('DB_HOST', 'localhost')}:{os.getenv('DB_PORT', '5432')}/{os.getenv('DB_NAME', 'ecommerce_db')}",
+        conn_max_age=600,
+        ssl_require=not DEBUG  # Render external ku SSL required
+    )
 }
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
@@ -268,8 +279,32 @@ ACCOUNT_EMAIL_REQUIRED    = True
 ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
 
+ACCOUNT_LOGIN_METHODS = {'email'}
+ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*', 'password2*']
 
 if not DEBUG:
     DATABASES['default'] = dj_database_url.config(conn_max_age=600)
     STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
     MIDDLEWARE.insert(1, 'whitenoise.middleware.WhiteNoiseMiddleware')
+
+
+
+# Production DB — Render PostgreSQL
+if os.getenv('DATABASE_URL'):
+    DATABASES['default'] = dj_database_url.config(
+        default=os.getenv('DATABASE_URL'),
+        conn_max_age=600,
+        ssl_require=True,
+    )
+
+# Whitenoise — static files
+MIDDLEWARE.insert(1, 'whitenoise.middleware.WhiteNoiseMiddleware')
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+# Production CORS
+if not DEBUG:
+    CORS_ALLOWED_ORIGINS = [
+        os.getenv('FRONTEND_URL', 'https://transfinity.vercel.app'),
+    ]
+    CORS_ALLOW_CREDENTIALS = True

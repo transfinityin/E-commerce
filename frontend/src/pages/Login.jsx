@@ -103,11 +103,7 @@ export default function Login() {
 
           <SocialAuth mode="login" />
 
-          <div className="flex items-center gap-4 my-6">
-            <div className="flex-1 h-px bg-[var(--color-border-light)]" />
-            <span className="text-xs text-[var(--color-muted)] font-medium whitespace-nowrap">or Sign in with</span>
-            <div className="flex-1 h-px bg-[var(--color-border-light)]" />
-          </div>
+       
 
           <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5">
 

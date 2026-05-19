@@ -1,154 +1,298 @@
-import { useEffect, useState } from 'react'
-import api from '../services/api'
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useHuntStore } from '../store/useHuntStore';
+import { huntService } from '../services/huntApi';
+import { toast } from 'react-hot-toast';
 
-export default function MyMaps() {
-  const [maps, setMaps] = useState([])
-  const [progress, setProgress] = useState(null)
-  
+const MyMaps = () => {
+  const navigate = useNavigate();
+  const [userLocation, setUserLocation] = useState(null);
+  const [selectedLocation, setSelectedLocation] = useState(null);
+  const [distances, setDistances] = useState({});
+
+  const {
+    progress,
+    locations,
+    setLocations,
+    setLoading,
+    isHuntActive
+  } = useHuntStore();
+
   useEffect(() => {
-    api.get('/treasure/my-maps/').then(r => {
-      setMaps(r.data.maps)
-      setProgress(r.data.progress)
-    })
-  }, [])
-  
- return (
-  <div className="min-h-screen bg-[#FAFAF8]" style={{ padding: '40px 16px' }}>
-    <div className="mx-auto" style={{ maxWidth: '1280px' }}>
-      <div style={{ marginBottom: '32px' }}>
-        <p className="text-xs uppercase font-bold text-[#C8A96E]" style={{ letterSpacing: '5px', marginBottom: '12px' }}>
-          Treasure Collection
-        </p>
-        <h1 className="text-4xl md:text-5xl font-bold text-[#0D0D0D]">
-          My Treasure Maps
-        </h1>
-        <p className="text-[#8A8A8A]" style={{ marginTop: '8px' }}>
-          Collect all 12 maps to win the grand prize of ₹1,00,000.
-        </p>
+    if (!navigator.geolocation) {
+      toast.error('Geolocation not supported');
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setUserLocation({
+          lat: position.coords.latitude,
+          long: position.coords.longitude,
+          accuracy: position.coords.accuracy
+        });
+      },
+      (error) => {
+        toast.error('Unable to get location');
+        console.error('Geolocation error:', error);
+      },
+      { enableHighAccuracy: true, timeout: 10000 }
+    );
+  }, []);
+
+  useEffect(() => {
+    const fetchLocations = async () => {
+      if (!isHuntActive() || !userLocation) return;
+      setLoading(true);
+      try {
+        const data = await huntService.getDashboard();
+        setLocations(data.locations);
+        const distMap = {};
+        data.locations.forEach(loc => {
+          if (loc.geo_lat && loc.geo_long && userLocation) {
+            distMap[loc.id] = calculateDistance(
+              userLocation.lat, userLocation.long,
+              loc.geo_lat, loc.geo_long
+            );
+          }
+        });
+        setDistances(distMap);
+      } catch (error) {
+        console.error('Map fetch error:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchLocations();
+  }, [userLocation]);
+
+  const calculateDistance = (lat1, lon1, lat2, lon2) => {
+    const R = 6371e3;
+    const φ1 = lat1 * Math.PI / 180;
+    const φ2 = lat2 * Math.PI / 180;
+    const Δφ = (lat2 - lat1) * Math.PI / 180;
+    const Δλ = (lon2 - lon1) * Math.PI / 180;
+    const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
+              Math.cos(φ1) * Math.cos(φ2) *
+              Math.sin(Δλ/2) * Math.sin(Δλ/2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    return Math.round(R * c);
+  };
+
+  if (!isHuntActive()) {
+    return (
+      <div className="min-h-screen bg-[var(--color-bg)] text-[var(--color-text)] flex items-center justify-center">
+        <div className="bg-[var(--color-surface)] rounded-2xl p-8 border border-[var(--color-border)] shadow-lg text-center max-w-md">
+          <span className="text-4xl mb-4 block">🏴‍☠️</span>
+          <p className="text-[var(--color-muted)] mb-4">Start the hunt first!</p>
+          <button
+            onClick={() => navigate('/hunt')}
+            className="bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] text-white px-6 py-3 rounded-xl font-bold shadow-[var(--shadow-gold)]"
+          >
+            Go to Hunt
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-[var(--color-bg)] text-[var(--color-text)]">
+      {/* Header */}
+      <div className="bg-[var(--color-surface)] border-b border-[var(--color-border)] shadow-sm">
+        <div className="page-container py-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-xl font-bold text-[var(--color-primary)] flex items-center gap-2">
+                <span>🗺️</span> Hunt Map
+              </h1>
+              <p className="text-[var(--color-muted)] text-xs">Find your next location</p>
+            </div>
+            <button
+              onClick={() => navigate('/hunt')}
+              className="text-[var(--color-muted)] hover:text-[var(--color-text)] transition-colors"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+        </div>
       </div>
 
-      <div className="grid lg:grid-cols-[380px_1fr]" style={{ gap: '32px', alignItems: 'start' }}>
-        {/* Progress Panel */}
-        <div className="bg-[#0D0D0D] text-white rounded-[28px] sticky shadow-xl" style={{ padding: '28px', top: '112px' }}>
-          <div className="rounded-2xl bg-[#C8A96E] flex items-center justify-center text-2xl" style={{ width: '56px', height: '56px', marginBottom: '24px' }}>
-            🗺️
-          </div>
-
-          <h2 className="text-3xl font-bold" style={{ marginBottom: '8px' }}>
-            Hunt Progress
-          </h2>
-
-          <p className="text-white/60 text-sm" style={{ marginBottom: '24px' }}>
-            Complete your collection and unlock rewards.
-          </p>
-
-          <div className="flex justify-between items-end" style={{ marginBottom: '12px' }}>
-            <span className="text-white/70 text-sm">Collected</span>
-            <span className="text-2xl font-bold">
-              {progress?.collected || 0}/12
-            </span>
-          </div>
-
-          <div className="h-3 bg-white/10 rounded-full overflow-hidden" style={{ marginBottom: '12px' }}>
-            <div
-              className="h-full bg-gradient-to-r from-[#C8A96E] to-yellow-400 rounded-full transition-all duration-700"
-              style={{ width: `${progress?.percentage || 0}%` }}
-            />
-          </div>
-
-          <p className="text-[#C8A96E] font-bold" style={{ marginBottom: '32px' }}>
-            {progress?.percentage || 0}% Completed
-          </p>
-
-          <div className="text-sm" style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            <div className="bg-white/10 rounded-2xl" style={{ padding: '16px' }}>
-              🎁 Collect 3 maps to claim ₹300
-            </div>
-            <div className="bg-white/10 rounded-2xl" style={{ padding: '16px' }}>
-              🏆 Collect 12 maps to claim ₹1,00,000
+      <div className="page-container py-6">
+        {/* User Location Badge */}
+        {userLocation && (
+          <div className="bg-[var(--color-info-bg)] border border-[var(--color-info-bg)] rounded-xl p-3 mb-4 flex items-center gap-3">
+            <span className="text-xl">📍</span>
+            <div>
+              <p className="text-sm text-[var(--color-info)] font-medium">Your Location</p>
+              <p className="text-xs text-[var(--color-muted)]">
+                Lat: {userLocation.lat.toFixed(4)}, Long: {userLocation.long.toFixed(4)}
+                <span className="ml-2 text-[var(--color-muted-light)]">(±{Math.round(userLocation.accuracy)}m)</span>
+              </p>
             </div>
           </div>
+        )}
 
-          {progress?.can_claim_full && (
-            <button className="w-full bg-[#C8A96E] text-black font-bold" style={{ marginTop: '24px', padding: '16px 0', borderRadius: '9999px' }}>
-              Claim ₹1,00,000
-            </button>
-          )}
-        </div>
+        {/* Location Cards */}
+        <div className="space-y-4">
+          {locations.map((location) => {
+            const distance = distances[location.id];
+            const isUnlocked = location.level <= (progress?.current_level || 0);
+            const isNext = location.level === (progress?.current_level || 0) + 1;
+            const isWithinRange = distance !== undefined && distance <= (location.geo_radius_meters || 100);
 
-        {/* Maps Grid */}
-        <div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4" style={{ gap: '20px' }}>
-            {Array.from({ length: 12 }, (_, i) => {
-              const mapNum = i + 1
-              const mapType = `map_${mapNum}`
-              const userMap = maps.find(m => m.type === mapType)
-
-              return (
-                <div
-                  key={mapType}
-                  className={`group relative aspect-[3/4] rounded-[26px] overflow-hidden border transition-all duration-300 hover:-translate-y-1 hover:shadow-xl ${
-                    userMap
-                      ? 'bg-white border-[#C8A96E] shadow-md'
-                      : 'bg-[#F5F2EE] border-dashed border-[#D0CAC0]'
-                  }`}
-                >
-                  {userMap ? (
-                    <>
-                      <img
-                        src={userMap.image}
-                        alt={userMap.name}
-                        className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
-                      />
-
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-
-                      <div className="absolute top-3 left-3 w-9 h-9 rounded-full bg-[#C8A96E] text-black flex items-center justify-center text-sm font-bold">
-                        {mapNum}
+            return (
+              <div
+                key={location.id}
+                onClick={() => setSelectedLocation(selectedLocation === location.id ? null : location.id)}
+                className={`bg-[var(--color-surface)] rounded-2xl border p-5 cursor-pointer transition-all shadow-sm hover:shadow-md ${
+                  isUnlocked
+                    ? 'border-[var(--color-success)] bg-[var(--color-success-bg)]/30'
+                    : isNext
+                    ? 'border-[var(--color-primary)] border-2'
+                    : 'border-[var(--color-border)] opacity-60'
+                }`}
+              >
+                <div className="flex items-start justify-between">
+                  <div className="flex items-start gap-3">
+                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 ${
+                      isUnlocked ? 'bg-[var(--color-success)] text-white' : 
+                      isNext ? 'bg-[var(--color-primary)] text-white' : 
+                      'bg-[var(--color-bg-alt)] text-[var(--color-muted)]'
+                    }`}>
+                      <span className="text-xl">
+                        {isUnlocked ? '✅' : isNext ? '🎯' : '🔒'}
+                      </span>
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <h3 className="font-bold text-[var(--color-text)]">
+                          Level {location.level}: {location.name}
+                        </h3>
+                        {isNext && (
+                          <span className="bg-[var(--color-warning)] text-white text-xs font-bold px-2 py-0.5 rounded-full">
+                            NEXT
+                          </span>
+                        )}
                       </div>
-
-                      <div className="absolute bottom-0 left-0 right-0 text-white" style={{ padding: '16px' }}>
-                        <p className="font-bold text-sm line-clamp-1">
-                          {userMap.name}
-                        </p>
-
-                        <p className="text-xs text-white/75" style={{ marginTop: '4px' }}>
-                          {userMap.status === 'rewarded'
-                            ? '✓ Reward Claimed'
-                            : userMap.is_valid_now
-                              ? '🔥 Ready to Claim'
-                              : '⏳ Waiting Period'}
-                        </p>
-                      </div>
-
-                      {userMap.is_valid_now && userMap.status === 'claimed' && (
-                        <button className="absolute top-3 right-3 bg-[#C8A96E] text-black text-xs font-bold rounded-full shadow-lg" style={{ padding: '6px 12px' }}>
-                          Claim ₹300
-                        </button>
-                      )}
-                    </>
-                  ) : (
-                    <div className="h-full flex flex-col items-center justify-center text-center" style={{ padding: '16px' }}>
-                      <div className="w-14 h-14 rounded-full bg-white border border-[#E8E4DE] flex items-center justify-center text-2xl" style={{ marginBottom: '16px' }}>
-                        🔒
-                      </div>
-
-                      <p className="font-bold text-[#3A3A3A]">
-                        Map {mapNum}
+                      <p className="text-[var(--color-muted)] text-sm mt-0.5">
+                        {isUnlocked ? 'Completed' : isNext ? 'Go here now!' : 'Locked'}
                       </p>
+                    </div>
+                  </div>
 
-                      <p className="text-xs text-[#8A8A8A]" style={{ marginTop: '4px' }}>
-                        Locked
-                      </p>
+                  {distance !== undefined && (
+                    <div className={`text-right px-3 py-1 rounded-lg ${
+                      isWithinRange 
+                        ? 'bg-[var(--color-success)] text-white' 
+                        : 'bg-[var(--color-bg-alt)] text-[var(--color-muted)]'
+                    }`}>
+                      <p className="font-bold text-sm">{distance}m</p>
+                      <p className="text-xs opacity-80">away</p>
                     </div>
                   )}
                 </div>
-              )
-            })}
-          </div>
+
+                {/* Expanded Details */}
+                {selectedLocation === location.id && (
+                  <div className="mt-4 pt-4 border-t border-[var(--color-border-light)]">
+                    {isNext && (
+                      <>
+                        <div className="bg-[var(--color-bg-alt)] rounded-xl p-4 mb-3 border border-[var(--color-border-light)]">
+                          <p className="text-[var(--color-primary)] font-bold text-sm mb-2 flex items-center gap-1">
+                            <span>🗝️</span> Clue
+                          </p>
+                          <p className="text-[var(--color-text)] text-sm font-medium">{location.clue_text_english}</p>
+                          <p className="text-[var(--color-muted)] text-xs mt-2">{location.clue_text_tamil}</p>
+                        </div>
+
+                        {location.hint_image_url && (
+                          <img 
+                            src={location.hint_image_url}
+                            alt="Location hint"
+                            className="w-full h-48 object-cover rounded-xl mb-3 border border-[var(--color-border)]"
+                          />
+                        )}
+
+                        <div className="flex items-center gap-2 text-sm text-[var(--color-muted)] mb-3 bg-[var(--color-bg-alt)] rounded-lg p-3">
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                          </svg>
+                          <span>Coords: {location.geo_lat}, {location.geo_long}</span>
+                        </div>
+
+                        {isWithinRange ? (
+                          <div className="bg-[var(--color-success-bg)] border border-[var(--color-success)]/20 rounded-xl p-4 text-center">
+                            <p className="text-[var(--color-success)] font-bold mb-2 flex items-center justify-center gap-1">
+                              <span>✨</span> You are here!
+                            </p>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                navigate('/scan');
+                              }}
+                              className="bg-[var(--color-success)] hover:bg-[var(--color-primary-dark)] text-white px-6 py-2.5 rounded-xl font-bold text-sm shadow-sm transition-all"
+                            >
+                              Scan Location QR
+                            </button>
+                          </div>
+                        ) : (
+                          <div className="bg-[var(--color-danger-bg)] border border-[var(--color-danger)]/20 rounded-xl p-4">
+                            <p className="text-[var(--color-danger)] text-sm flex items-center gap-1">
+                              <span>⚠️</span>
+                              You are {distance}m away. Get within {location.geo_radius_meters || 100}m to scan.
+                            </p>
+                          </div>
+                        )}
+                      </>
+                    )}
+
+                    {isUnlocked && (
+                      <div className="bg-[var(--color-success-bg)] rounded-xl p-3 text-center border border-[var(--color-success)]/10">
+                        <p className="text-[var(--color-success)] text-sm font-medium">✅ Level completed! Reward claimed.</p>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
+
+        {/* Map Embed */}
+        {userLocation && locations.length > 0 && (
+          <div className="mt-6">
+            <h3 className="font-bold text-[var(--color-text)] mb-3">Live Map</h3>
+            <div className="bg-[var(--color-surface)] rounded-2xl overflow-hidden border border-[var(--color-border)] shadow-sm aspect-video">
+              <iframe
+                width="100%"
+                height="100%"
+                frameBorder="0"
+                scrolling="no"
+                marginHeight="0"
+                marginWidth="0"
+                src={`https://www.openstreetmap.org/export/embed.html?bbox=${
+                  Math.min(...locations.map(l => l.geo_long)) - 0.01
+                }%2C${
+                  Math.min(...locations.map(l => l.geo_lat)) - 0.01
+                }%2C${
+                  Math.max(...locations.map(l => l.geo_long)) + 0.01
+                }%2C${
+                  Math.max(...locations.map(l => l.geo_lat)) + 0.01
+                }&layer=mapnik&marker=${userLocation.lat}%2C${userLocation.long}`}
+                className="grayscale-[30%]"
+              />
+            </div>
+            <p className="text-[var(--color-muted)] text-xs mt-2 text-center">
+              💡 Tip: Use Google Maps on your phone for turn-by-turn navigation
+            </p>
+          </div>
+        )}
       </div>
     </div>
-  </div>
-)
-}
+  );
+};
+
+export default MyMaps;

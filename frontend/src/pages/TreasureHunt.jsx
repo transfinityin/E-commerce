@@ -1,317 +1,325 @@
-import { useEffect, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import { toast } from 'react-hot-toast'
-import api from '../services/api'
-import useAuthStore from '../store/authStore'
-import { 
-  Map, 
-  Lock, 
-  Unlock, 
-  Trophy, 
-  Clock, 
-  Coins, 
-  ArrowRight, 
-  Sparkles,
-  Gift,
-  Target
-} from 'lucide-react'
+import { useEffect, useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { useHuntStore } from '../store/useHuntStore';
+import { huntService } from '../services/huntApi';
+import { toast } from 'react-hot-toast';
+import HuntRewardModal from '../components/HuntRewardModal';
 
-export default function TreasureHunt() {
-  const [activeMaps, setActiveMaps] = useState([])
-  const [myMaps, setMyMaps] = useState([])
-  const [progress, setProgress] = useState(null)
-  const [loading, setLoading] = useState(true)
-  const [claiming, setClaiming] = useState(null)
-  const { isAuthenticated } = useAuthStore()
-  const navigate = useNavigate()
+const TreasureHunt = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [showRewardModal, setShowRewardModal] = useState(false);
+  const [currentReward, setCurrentReward] = useState(null);
+
+  const {
+    progress,
+    locations,
+    isLoading,
+    setProgress,
+    setLocations,
+    setLoading,
+    isHuntActive,
+    isCompleted
+  } = useHuntStore();
 
   useEffect(() => {
-    fetchActiveMaps()
-    if (isAuthenticated) {
-      fetchMyMaps()
+    if (location.state?.showReward && location.state?.reward) {
+      setCurrentReward(location.state.reward);
+      setShowRewardModal(true);
+      window.history.replaceState({}, document.title);
     }
-  }, [isAuthenticated])
+  }, [location]);
 
-  const fetchActiveMaps = async () => {
-    try {
-      const { data } = await api.get('/treasure/active-maps/')
-      setActiveMaps(data.active_maps || [])
-    } catch (err) {
-      console.error(err)
-    }
-  }
+  useEffect(() => {
+    const fetchDashboard = async () => {
+      if (!isHuntActive()) return;
+      setLoading(true);
+      try {
+        const data = await huntService.getDashboard();
+        setProgress(data.progress);
+        setLocations(data.locations);
+      } catch (error) {
+        console.error('Dashboard fetch error:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchDashboard();
+  }, []);
 
-  const fetchMyMaps = async () => {
-    try {
-      const { data } = await api.get('/treasure/my-maps/')
-      setMyMaps(data.maps || [])
-      setProgress(data.progress || null)
-    } catch (err) {
-      console.error(err)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const claimReward = async (mapId) => {
-    if (!isAuthenticated) {
-      toast.error('Please login to claim rewards')
-      navigate('/login')
-      return
-    }
-
-    setClaiming(mapId)
-    try {
-      const { data } = await api.post('/treasure/claim-reward/', { map_id: mapId })
-      toast.success(data.message)
-      fetchMyMaps()
-    } catch (err) {
-      toast.error(err.response?.data?.error || 'Failed to claim reward')
-    } finally {
-      setClaiming(null)
-    }
-  }
-
-  const hasMap = (mapType) => {
-    return myMaps.some(m => m.type === mapType)
-  }
-
-  const getMapStatus = (mapType) => {
-    const map = myMaps.find(m => m.type === mapType)
-    if (!map) return 'locked'
-    return map.status
-  }
-
-  if (loading && isAuthenticated) {
-    return (
-      <div className="min-h-screen bg-[#FAFAF8] flex items-center justify-center">
-        <div className="w-8 h-8 border-4 border-[#C8A96E] border-t-transparent rounded-full animate-spin" />
-      </div>
-    )
-  }
+  if (!isHuntActive() && !isCompleted()) return <HuntStarter />;
+  if (isCompleted()) return <HuntCompleted />;
 
   return (
-    <div className="min-h-screen bg-[#FAFAF8]">
-      {/* Hero Section */}
-      <section className="bg-gradient-to-br from-amber-500 via-yellow-500 to-amber-600 text-white" style={{ padding: '48px 24px' }}>
-        <div className="mx-auto text-center" style={{ maxWidth: '896px', padding: '0 16px' }}>
-          <div className="inline-flex items-center bg-white/20 backdrop-blur rounded-full" style={{ padding: '8px 16px', gap: '8px', marginBottom: '24px' }}>
-            <Trophy size={16} />
-            <span className="text-sm font-bold">Treasure Hunt Event</span>
+    <div className="min-h-screen bg-[var(--color-bg)] text-[var(--color-text)] pb-20">
+      {/* Header */}
+      <div className="bg-[var(--color-surface)] border-b border-[var(--color-border)] shadow-sm">
+        <div className="page-container">
+          <div className="flex items-center justify-between py-6">
+            <div>
+              <h1 className="text-2xl font-bold text-[var(--color-primary)] flex items-center gap-2">
+                <span className="text-3xl">🏴‍☠️</span> Treasure Hunt
+              </h1>
+              <p className="text-[var(--color-muted)] text-sm mt-1">
+                Level {progress?.current_level || 1} of 5
+              </p>
+            </div>
+            <div className="text-right">
+              <div className="text-3xl font-bold text-[var(--color-primary)]">
+                {progress?.current_level || 0}<span className="text-lg text-[var(--color-muted)]">/5</span>
+              </div>
+              <div className="text-xs text-[var(--color-muted)]">Chests Opened</div>
+            </div>
           </div>
-          
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold" style={{ marginBottom: '16px' }}>
-            🏴‍☠️ Collect 12 Maps, Win ₹1,00,000!
-          </h1>
-          
-          <p className="text-base sm:text-lg text-white/90 mx-auto" style={{ maxWidth: '672px', marginBottom: '24px' }}>
-            Buy any T-Shirt to get a mystery map. Collect all 12 maps within their valid dates to unlock the grand prize!
-          </p>
 
           {/* Progress Bar */}
-          {progress && (
-            <div className="bg-white/10 backdrop-blur rounded-2xl mx-auto" style={{ padding: '24px', maxWidth: '512px' }}>
-              <div className="flex justify-between text-sm font-bold" style={{ marginBottom: '8px' }}>
-                <span>Your Progress</span>
-                <span>{progress.collected} / 12 Maps</span>
-              </div>
-              <div className="w-full h-4 bg-white/20 rounded-full overflow-hidden">
-                <div 
-                  className="h-full bg-white rounded-full transition-all duration-1000"
-                  style={{ width: `${progress.percentage}%` }}
-                />
-              </div>
-              <div className="flex justify-between text-xs text-white/80" style={{ marginTop: '12px' }}>
-                <span>Collect 3 maps = ₹300</span>
-                <span>All 12 maps = ₹1,00,000</span>
-              </div>
-              {progress.can_claim_full && (
-                <button className="w-full bg-white text-amber-600 rounded-xl font-bold hover:shadow-lg transition-all" style={{ marginTop: '16px', padding: '12px 0' }}>
-                  🎉 Claim ₹1,00,000 Grand Prize!
-                </button>
-              )}
+          <div className="mb-2">
+            <div className="flex justify-between text-xs text-[var(--color-muted)] mb-1">
+              <span>Progress</span>
+              <span>{Math.round(((progress?.current_level || 0) / 5) * 100)}%</span>
             </div>
-          )}
-
-          {!isAuthenticated && (
-            <Link to="/login" 
-                  className="inline-flex items-center gap-2 bg-white text-amber-600 rounded-2xl font-bold hover:shadow-xl transition-all"
-                  style={{ padding: '12px 24px', marginTop: '24px' }}>
-              Login to Track Progress
-              <ArrowRight size={18} />
-            </Link>
-          )}
-        </div>
-      </section>
-
-      {/* How It Works */}
-      <section className="mx-auto" style={{ maxWidth: '896px', padding: '48px 16px' }}>
-        <h2 className="text-2xl font-bold text-center" style={{ marginBottom: '32px' }}>How It Works</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-3" style={{ gap: '24px' }}>
-          {[
-            { icon: Target, title: 'Buy T-Shirt', desc: 'Purchase any T-shirt from our store' },
-            { icon: Gift, title: 'Get Map', desc: 'Receive a random mystery map' },
-            { icon: Coins, title: 'Claim Prize', desc: 'Collect 3+ maps for rewards' },
-          ].map((step, idx) => (
-            <div key={idx} className="bg-white rounded-2xl text-center border border-[#E8E4DE] hover:shadow-md transition-all" style={{ padding: '24px' }}>
-              <div className="inline-flex bg-[#F2E8D5] rounded-xl" style={{ padding: '12px', marginBottom: '16px' }}>
-                <step.icon size={24} className="text-[#C8A96E]" />
-              </div>
-              <h3 className="font-bold" style={{ marginBottom: '8px' }}>{step.title}</h3>
-              <p className="text-sm text-[#8A8A8A]">{step.desc}</p>
+            <div className="bg-[var(--color-bg-alt)] rounded-full h-3 overflow-hidden">
+              <div 
+                className="bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-primary-light)] h-full transition-all duration-1000 rounded-full"
+                style={{ width: `${((progress?.current_level || 0) / 5) * 100}%` }}
+              />
             </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Active Maps */}
-      <section className="mx-auto" style={{ maxWidth: '1152px', padding: '48px 16px' }}>
-        <div className="flex items-center justify-between" style={{ marginBottom: '32px' }}>
-          <div>
-            <h2 className="text-2xl font-bold">Active Maps</h2>
-            <p className="text-sm text-[#8A8A8A]" style={{ marginTop: '4px' }}>
-              {activeMaps.length} maps currently available
-            </p>
           </div>
-          <Link to="/products?category=t-shirt" 
-                className="inline-flex items-center gap-2 bg-[#0D0D0D] text-white rounded-xl font-bold text-sm hover:shadow-md transition-all"
-                style={{ padding: '8px 16px' }}>
-            Buy T-Shirt
-            <ArrowRight size={16} />
-          </Link>
         </div>
+      </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4" style={{ gap: '16px' }}>
-          {Array.from({ length: 12 }, (_, i) => {
-            const mapNum = i + 1
-            const mapType = `map_${mapNum}`
-            const activeMap = activeMaps.find(m => m.type === mapType)
-            const userMap = myMaps.find(m => m.type === mapType)
-            const isReleased = !!activeMap
-            const isCollected = !!userMap
-            const canClaim = userMap?.is_valid_now && userMap?.status === 'claimed'
+      <div className="page-container py-8">
+        {/* Level Chests */}
+        <div className="grid grid-cols-5 gap-3 mb-8">
+          {[1, 2, 3, 4, 5].map((level) => {
+            const isUnlocked = level <= (progress?.current_level || 0);
+            const isNext = level === (progress?.current_level || 0) + 1;
+            const isLocked = level > (progress?.current_level || 0) + 1;
 
             return (
-              <div key={mapType} 
-                   className={`relative aspect-[3/4] rounded-2xl border-2 overflow-hidden transition-all hover:scale-[1.02]
-                     ${isCollected 
-                       ? 'border-[#C8A96E] bg-gradient-to-b from-amber-50 to-yellow-50' 
-                       : isReleased 
-                         ? 'border-dashed border-amber-300 bg-amber-50/50' 
-                         : 'border-dashed border-[#E8E4DE] bg-[#F5F2EE]/50'
-                     }`}>
-                
-                <div className="absolute inset-0 flex flex-col items-center justify-center" style={{ padding: '16px' }}>
-                  {isCollected ? (
-                    <>
-                      <div className="text-4xl" style={{ marginBottom: '8px' }}>🗺️</div>
-                      <h3 className="font-bold text-sm text-center" style={{ marginBottom: '4px' }}>
-                        {activeMap?.name || `Map ${mapNum}`}
-                      </h3>
-                      <div className="flex items-center text-xs text-[#C8A96E]" style={{ gap: '4px', marginBottom: '8px' }}>
-                        <Unlock size={12} />
-                        <span>Collected</span>
-                      </div>
-                      
-                      {userMap?.status === 'rewarded' ? (
-                        <span className="bg-[#D6F0E4] text-[#1A6B43] text-xs font-bold rounded-full" style={{ padding: '4px 8px' }}>
-                          ✓ Rewarded
-                        </span>
-                      ) : canClaim ? (
-                        <button 
-                          onClick={() => claimReward(userMap.id)}
-                          disabled={claiming === userMap.id}
-                          className="bg-[#C8A96E] text-white text-xs font-bold rounded-full hover:bg-[#A8873E] transition-all disabled:opacity-50"
-                          style={{ padding: '6px 12px' }}>
-                          {claiming === userMap.id ? 'Claiming...' : 'Claim ₹300'}
-                        </button>
-                      ) : (
-                        <div className="flex items-center text-xs text-[#8A8A8A]" style={{ gap: '4px' }}>
-                          <Clock size={12} />
-                          <span>Wait...</span>
-                        </div>
-                      )}
-                    </>
-                  ) : isReleased ? (
-                    <>
-                      <div className="text-4xl opacity-50" style={{ marginBottom: '8px' }}>🗺️</div>
-                      <h3 className="font-bold text-sm text-center text-[#8A8A8A]">
-                        {activeMap?.name || `Map ${mapNum}`}
-                      </h3>
-                      <p className="text-xs text-[#8A8A8A] text-center" style={{ marginTop: '8px' }}>
-                        Buy T-Shirt to unlock
-                      </p>
-                      <div className="flex items-center text-xs text-[#C8A96E]" style={{ marginTop: '8px', gap: '4px' }}>
-                        <Lock size={12} />
-                        <span>Locked</span>
-                      </div>
-                    </>
-                  ) : (
-                    <>
-                      <div className="text-4xl opacity-30" style={{ marginBottom: '8px' }}>🔒</div>
-                      <h3 className="font-bold text-sm text-center text-[#8A8A8A]">
-                        Map {mapNum}
-                      </h3>
-                      <p className="text-xs text-[#8A8A8A] text-center" style={{ marginTop: '8px' }}>
-                        Coming Soon
-                      </p>
-                    </>
-                  )}
-                </div>
-
-                <div className={`absolute top-2 left-2 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold
-                  ${isCollected ? 'bg-[#C8A96E] text-white' : 'bg-[#F5F2EE] text-[#8A8A8A]'}`}>
-                  {mapNum}
-                </div>
-
-                {userMap && (
-                  <div className="absolute bottom-2 left-2 right-2 text-center">
-                    <p className="text-[10px] text-[#8A8A8A]">
-                      Valid: {new Date(userMap.valid_from).toLocaleDateString()} - {new Date(userMap.valid_until).toLocaleDateString()}
-                    </p>
+              <div 
+                key={level}
+                className={`relative aspect-square rounded-2xl flex flex-col items-center justify-center transition-all duration-300 shadow-sm ${
+                  isUnlocked 
+                    ? 'bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-primary-dark)] text-white shadow-[var(--shadow-gold)]' 
+                    : isNext
+                    ? 'bg-[var(--color-surface)] border-2 border-dashed border-[var(--color-primary)] animate-pulse'
+                    : 'bg-[var(--color-bg-alt)] border border-[var(--color-border)] opacity-50'
+                }`}
+              >
+                <span className="text-2xl mb-1">
+                  {isUnlocked ? '💎' : isNext ? '🔐' : '🔒'}
+                </span>
+                <span className={`text-xs font-bold ${
+                  isUnlocked ? 'text-white' : 'text-[var(--color-muted)]'
+                }`}>
+                  L{level}
+                </span>
+                {isUnlocked && (
+                  <div className="absolute -top-2 -right-2 w-6 h-6 bg-[var(--color-success)] rounded-full flex items-center justify-center shadow-md">
+                    <svg className="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                    </svg>
                   </div>
                 )}
               </div>
-            )
+            );
           })}
         </div>
-      </section>
 
-      {/* Rules Section */}
-      <section className="mx-auto" style={{ maxWidth: '896px', padding: '48px 16px 80px' }}>
-        <div className="bg-white rounded-2xl border border-[#E8E4DE]" style={{ padding: '24px 32px' }}>
-          <h2 className="text-xl font-bold flex items-center" style={{ gap: '8px', marginBottom: '16px' }}>
-            <Sparkles size={20} className="text-amber-500" />
-            Treasure Hunt Rules
-          </h2>
-          <ul className="text-sm text-[#8A8A8A]" style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            <li className="flex items-start" style={{ gap: '8px' }}>
-              <span className="text-amber-500 font-bold">1.</span>
-              Buy any T-shirt to receive a random mystery map
-            </li>
-            <li className="flex items-start" style={{ gap: '8px' }}>
-              <span className="text-amber-500 font-bold">2.</span>
-              Each map is valid for 5 months from release date
-            </li>
-            <li className="flex items-start" style={{ gap: '8px' }}>
-              <span className="text-amber-500 font-bold">3.</span>
-              Collect 3+ different maps to claim ₹300 instant reward
-            </li>
-            <li className="flex items-start" style={{ gap: '8px' }}>
-              <span className="text-amber-500 font-bold">4.</span>
-              Collect all 12 maps to win the grand prize of ₹1,00,000
-            </li>
-            <li className="flex items-start" style={{ gap: '8px' }}>
-              <span className="text-amber-500 font-bold">5.</span>
-              Rewards must be claimed within the map's valid date range
-            </li>
-            <li className="flex items-start" style={{ gap: '8px' }}>
-              <span className="text-amber-500 font-bold">6.</span>
-              Each customer can collect each map only once
-            </li>
-          </ul>
-        </div>
-      </section>
+        {/* Current Clue Card */}
+        {progress?.next_location && (
+          <div className="bg-[var(--color-surface)] rounded-2xl p-6 border border-[var(--color-border)] shadow-md mb-6">
+            <div className="flex items-start gap-4">
+              <div className="w-14 h-14 bg-[var(--color-primary-light)] rounded-xl flex items-center justify-center flex-shrink-0">
+                <span className="text-3xl">🗺️</span>
+              </div>
+              <div className="flex-1">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="bg-[var(--color-primary)] text-white text-xs font-bold px-2.5 py-1 rounded-full">
+                    LEVEL {progress.next_location.level}
+                  </span>
+                  <h2 className="text-lg font-bold text-[var(--color-text)]">
+                    {progress.next_location.name}
+                  </h2>
+                </div>
+
+                <div className="bg-[var(--color-bg-alt)] rounded-xl p-4 mb-4 border border-[var(--color-border-light)]">
+                  <p className="text-[var(--color-muted)] text-xs uppercase tracking-wider mb-2 font-semibold">
+                    🗝️ Your Clue
+                  </p>
+                  <p className="text-[var(--color-text)] text-base font-medium italic">
+                    "{progress.next_location.clue_english}"
+                  </p>
+                  <p className="text-[var(--color-muted)] text-sm mt-2 border-t border-[var(--color-border-light)] pt-2">
+                    {progress.next_location.clue_tamil}
+                  </p>
+                </div>
+
+                {progress.next_location.hint_image && (
+                  <img 
+                    src={progress.next_location.hint_image} 
+                    alt="Location hint"
+                    className="w-full h-56 object-cover rounded-xl mb-4 border border-[var(--color-border)]"
+                  />
+                )}
+
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => navigate('/hunt/map')}
+                    className="flex-1 bg-[var(--color-secondary)] hover:bg-[var(--color-secondary-light)] text-[var(--color-btn-text)] py-3 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 transition-all shadow-md hover:shadow-lg"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0121 18.382V7.618a1 1 0 01-.447-.894L15 7m0 13V7" />
+                    </svg>
+                    View Map
+                  </button>
+                  <button
+                    onClick={() => navigate('/scan')}
+                    className="flex-1 bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] text-white py-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-all shadow-[var(--shadow-gold)] hover:shadow-lg"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
+                    </svg>
+                    Scan QR
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Rewards History */}
+        {progress?.rewards_claimed?.length > 0 && (
+          <div className="bg-[var(--color-surface)] rounded-2xl p-6 border border-[var(--color-border)] shadow-sm">
+            <h3 className="font-bold text-[var(--color-text)] mb-4 flex items-center gap-2 text-lg">
+              <span className="text-xl">🎁</span> Rewards Claimed
+            </h3>
+            <div className="space-y-3">
+              {progress.rewards_claimed.map((reward, idx) => (
+                <div 
+                  key={idx}
+                  className="bg-[var(--color-bg-alt)] rounded-xl p-4 flex items-center justify-between border border-[var(--color-border-light)]"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-[var(--color-primary-light)] rounded-lg flex items-center justify-center">
+                      <span className="text-lg">🏆</span>
+                    </div>
+                    <div>
+                      <span className="text-[var(--color-primary)] font-bold">Level {reward.level}</span>
+                      <p className="text-[var(--color-muted)] text-xs">
+                        Claimed {new Date(reward.claimed_at).toLocaleDateString()}
+                      </p>
+                    </div>
+                  </div>
+                  {reward.coupon_code && (
+                    <div className="bg-[var(--color-primary)] text-white px-4 py-2 rounded-full text-sm font-mono font-bold shadow-sm">
+                      {reward.coupon_code}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+
+      <HuntRewardModal 
+        isOpen={showRewardModal}
+        onClose={() => setShowRewardModal(false)}
+        reward={currentReward}
+      />
     </div>
-  )
-}
+  );
+};
+
+const HuntStarter = () => {
+  const navigate = useNavigate();
+
+  return (
+    <div className="min-h-screen bg-[var(--color-bg)] text-[var(--color-text)] flex items-center justify-center p-4">
+      <div className="max-w-lg w-full">
+        <div className="bg-[var(--color-surface)] rounded-3xl p-8 border border-[var(--color-border)] shadow-lg text-center">
+          <div className="w-20 h-20 bg-[var(--color-primary-light)] rounded-2xl flex items-center justify-center mx-auto mb-6">
+            <span className="text-4xl">🏴‍☠️</span>
+          </div>
+
+          <h1 className="text-3xl font-bold text-[var(--color-text)] mb-2">Treasure Hunt</h1>
+          <p className="text-[var(--color-muted)] mb-8">
+            Scan the QR code inside your T-shirt box to start your adventure!
+          </p>
+
+          <div className="space-y-4 mb-8">
+            {[
+              { step: 1, text: 'Scan T-shirt QR to activate', icon: '🎽' },
+              { step: 2, text: 'Follow clues to 5 locations', icon: '🗺️' },
+              { step: 3, text: 'Scan location QR at each spot', icon: '📍' },
+              { step: 4, text: 'Win exclusive coupons & rewards!', icon: '🎁' },
+            ].map((item) => (
+              <div key={item.step} className="flex items-center gap-4 bg-[var(--color-bg-alt)] rounded-xl p-4 border border-[var(--color-border-light)]">
+                <div className="w-10 h-10 bg-[var(--color-primary)] rounded-full flex items-center justify-center text-white font-bold flex-shrink-0">
+                  {item.step}
+                </div>
+                <p className="text-[var(--color-text)] text-sm font-medium text-left">{item.text}</p>
+                <span className="text-xl ml-auto">{item.icon}</span>
+              </div>
+            ))}
+          </div>
+
+          <button
+            onClick={() => navigate('/scan')}
+            className="w-full bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] text-white py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-2 transition-all shadow-[var(--shadow-gold)] hover:shadow-lg"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
+            </svg>
+            Scan QR to Start
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const HuntCompleted = () => {
+  const navigate = useNavigate();
+
+  return (
+    <div className="min-h-screen bg-[var(--color-bg)] text-[var(--color-text)] flex items-center justify-center p-4">
+      <div className="max-w-lg w-full">
+        <div className="bg-[var(--color-surface)] rounded-3xl p-8 border border-[var(--color-border)] shadow-lg text-center">
+          <div className="w-20 h-20 bg-[var(--color-primary-light)] rounded-2xl flex items-center justify-center mx-auto mb-6">
+            <span className="text-4xl">👑</span>
+          </div>
+
+          <h1 className="text-3xl font-bold text-[var(--color-primary)] mb-2">Hunt Complete!</h1>
+          <p className="text-[var(--color-muted)] mb-6">
+            Congratulations! You are a certified Treasure Hunter!
+          </p>
+
+          <div className="bg-gradient-to-br from-[var(--color-primary-light)] to-[var(--color-primary)]/10 rounded-2xl p-6 border border-[var(--color-primary)]/20 mb-6">
+            <div className="text-5xl font-bold text-[var(--color-primary)] mb-2">5/5</div>
+            <p className="text-[var(--color-muted)]">All chests unlocked!</p>
+          </div>
+
+          <div className="flex gap-3">
+            <button
+              onClick={() => navigate('/hunt/leaderboard')}
+              className="flex-1 bg-[var(--color-bg-alt)] hover:bg-[var(--color-border-light)] text-[var(--color-text)] py-3 rounded-xl font-semibold border border-[var(--color-border)] transition-all"
+            >
+              View Leaderboard
+            </button>
+            <button
+              onClick={() => navigate('/products')}
+              className="flex-1 bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] text-white py-3 rounded-xl font-bold transition-all shadow-[var(--shadow-gold)]"
+            >
+              Shop More
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default TreasureHunt;

@@ -84,19 +84,7 @@ export default function SocialAuth({ mode }) {
       <div id="google-btn" className="w-full" />
 
       {/* Fallback button if Google script fails */}
-      <button
-        onClick={() => {
-          if (window.google) {
-            window.google.accounts.id.prompt()
-          } else {
-            toast.error('Google sign-in not available. Please try again.')
-          }
-        }}
-        className="w-full flex items-center justify-center gap-2 bg-[var(--color-surface)] hover:bg-[var(--color-bg-alt)] text-[var(--color-text)] border border-[var(--color-border)] hover:border-[var(--color-primary)] rounded-xl text-sm font-semibold transition-all duration-200 py-3"
-      >
-        <ChromeIcon size={18} className="text-[var(--color-primary)]" />
-        {mode === 'login' ? 'Sign in with Google' : 'Sign up with Google'}
-      </button>
+      
     </div>
   )
 }

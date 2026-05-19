@@ -5,6 +5,7 @@ import {
   BarChart3, Activity, Star, Clock, Image as ImageIcon, QrCode
 } from 'lucide-react'
 import api from '../../services/api'
+import HuntAdminSection from '../../components/HuntAdminSection'
 
 const METRIC_CARDS = [
   { key: 'orders',   label: 'Total Orders',   icon: ShoppingBag, color: 'var(--color-primary)',      bg: 'var(--color-primary-light)' },
@@ -250,6 +251,9 @@ useEffect(() => {
             )}
           </div>
         </div>
+
+        <HuntAdminSection />
+
 
         {/* Recent Orders */}
         <div className="bg-[var(--color-surface)] rounded-2xl border border-[var(--color-border)] shadow-sm p-6">
