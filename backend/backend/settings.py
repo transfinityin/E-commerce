@@ -37,7 +37,7 @@ DJANGO_APPS  = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.postgres',
-    'django.contrib.sites', 
+   
     # django-allauth - EXACT order
     'allauth',
     'allauth.account',
