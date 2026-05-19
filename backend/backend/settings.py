@@ -241,8 +241,6 @@ EMAIL_HOST_USER  = os.getenv('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'noreply@yourstore.com')
 
-client_id= os.getenv('GOOGLE_CLIENT_ID'),
-secret=    os.getenv('GOOGLE_CLIENT_SECRET'),
 
 # ── Google OAuth Settings ────────────────────────────────────
 SOCIALACCOUNT_PROVIDERS = {
