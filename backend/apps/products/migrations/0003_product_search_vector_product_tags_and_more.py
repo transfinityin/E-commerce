@@ -9,6 +9,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
+        ('products', '0001_enable_pg_trgm'),  # ✅ Added this
         ('products', '0002_product_available_sizes'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
