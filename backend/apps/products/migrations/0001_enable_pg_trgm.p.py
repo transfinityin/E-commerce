@@ -1,8 +1,11 @@
 from django.db import migrations
 
+
 class Migration(migrations.Migration):
 
-    dependencies = []  # or whatever the prior migration is
+    dependencies = [
+        ('products', '0001_initial'),  # உங்க actual first migration name போடுங்க
+    ]
 
     operations = [
         migrations.RunSQL(
