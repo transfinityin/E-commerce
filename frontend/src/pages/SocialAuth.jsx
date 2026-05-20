@@ -10,21 +10,36 @@ export default function SocialAuth({ mode }) {
   const btnRef = useRef(null)
 
   const handleGoogleResponse = useCallback(async (response) => {
+    console.log('🔥 Google credential received:', response.credential?.slice(0, 20) + '...')
+
     try {
-      const { data } = await useAuthStore.getState().googleLogin(response.credential)
+      // Call store method
+      const result = await useAuthStore.getState().googleLogin(response.credential)
+      
+      console.log('🔥 Store result:', result)
+      
+      // If result is undefined/null, something went wrong
+      if (!result) {
+        throw new Error('Store returned empty response')
+      }
 
       toast.success(
-        data.message || `Google ${mode === 'login' ? 'sign in' : 'sign up'} successful!`
+        result.message || `Google ${mode === 'login' ? 'sign in' : 'sign up'} successful!`
       )
+      
       navigate('/')
 
     } catch (err) {
-      toast.error(err.response?.data?.error || 'Google authentication failed')
+      // 🔥 EXACT ERROR console la print aagum
+      console.error('🔥 GOOGLE AUTH ERROR:', err)
+      console.error('🔥 Error response:', err.response)
+      console.error('🔥 Error message:', err.message)
+      
+      toast.error(err.response?.data?.error || err.message || 'Google authentication failed')
     }
   }, [mode, navigate])
 
   useEffect(() => {
-    // Load Google script once
     if (!document.getElementById('google-gis-script')) {
       const script = document.createElement('script')
       script.id = 'google-gis-script'
@@ -44,7 +59,6 @@ export default function SocialAuth({ mode }) {
         cancel_on_tap_outside: true,
       })
 
-      // Clear old button before re-rendering (fixes mode switch)
       btnRef.current.innerHTML = ''
 
       window.google.accounts.id.renderButton(btnRef.current, {

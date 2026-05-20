@@ -31,14 +31,37 @@ const useAuthStore = create(
       },
 
       /** NEW: Google One Tap / Sign-In */
-      googleLogin: async (credential) => {
-        const { data } = await api.post('/auth/google/', { credential })
-        localStorage.setItem('access_token',  data.access)
-        localStorage.setItem('refresh_token', data.refresh)
-        set({ user: data.user, access_token: data.access,
-              refresh_token: data.refresh, isAuthenticated: true })
-        return data
-      },
+     googleLogin: async (credential) => {
+  try {
+    const response = await api.post('/auth/google/', { credential })
+    
+    // 🔥 DEBUG: console la print pannu
+    console.log('🔥 API raw response:', response)
+
+    // Handle both cases: axios default OR unwrapped by interceptor
+    const payload = response.data || response
+    
+    if (!payload || !payload.access) {
+      throw new Error('Invalid response from server: ' + JSON.stringify(payload))
+    }
+
+    localStorage.setItem('access_token', payload.access)
+    localStorage.setItem('refresh_token', payload.refresh)
+
+    set({
+      user: payload.user,
+      access_token: payload.access,
+      refresh_token: payload.refresh,
+      isAuthenticated: true,
+    })
+
+    return payload
+
+  } catch (err) {
+    console.error('🔥 googleLogin store error:', err)
+    throw err  // Re-throw so SocialAuth catch block handles it
+  }
+},
 
       socialLogin: async (accessToken, provider) => {
         const { data } = await api.post(`/auth/social/${provider}/`, {

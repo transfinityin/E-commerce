@@ -24,6 +24,7 @@ class UserSerializer(serializers.ModelSerializer):
     rank_display = serializers.CharField(source='get_rank_display', read_only=True)
     next_rank = serializers.SerializerMethodField()
     is_founder = serializers.SerializerMethodField()
+
     class Meta:
         model = User
         fields = (
@@ -34,17 +35,20 @@ class UserSerializer(serializers.ModelSerializer):
         )
         read_only_fields = (
             'id', 'email', 'role', 'is_active', 'date_joined',
-            'rank', 'xp', 'unlocked_arcs'  # Auto-managed
+            'rank', 'xp', 'unlocked_arcs'
         )
-    
+
     def get_next_rank(self, obj):
         order = ['wanderer', 'founder', 'ascendant', 'phantom', 'eclipse', 'eternal']
-        idx = order.index(obj.rank)
-        return order[idx + 1] if idx < len(order) - 1 else None
-    
-    def get_is_founder(self, obj):
-        return obj.rank in ['founder', 'ascendant', 'phantom', 'eclipse', 'eternal']
+        current = obj.rank or 'wanderer'  # ✅ None handle pannum
+        try:
+            idx = order.index(current)
+            return order[idx + 1] if idx < len(order) - 1 else None
+        except ValueError:
+            return 'founder'
 
+    def get_is_founder(self, obj):
+        return (obj.rank or 'wanderer') in ['founder', 'ascendant', 'phantom', 'eclipse', 'eternal']
 class UserUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model  = User

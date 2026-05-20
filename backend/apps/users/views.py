@@ -1,4 +1,5 @@
 from django.shortcuts import render
+import logging
 
 # Create your views here.
 from django.contrib.auth import get_user_model
@@ -184,47 +185,111 @@ from google.oauth2 import id_token
 from google.auth.transport import requests as google_requests
 from django.conf import settings
 
+# class GoogleAuthView(APIView):
+#     """
+#     Frontend la Google login panna varum credential
+#     itha verify panni JWT token return pannuvom
+#     """
+#     permission_classes = [permissions.AllowAny]
+
+#     def post(self, request):
+#         credential = request.data.get('credential')  # Google ID token
+
+#         if not credential:
+#             return Response({'error': 'Google credential required.'}, status=400)
+
+#         try:
+#             # Google token verify panum
+#             idinfo = id_token.verify_oauth2_token(
+#                 credential,
+#                 google_requests.Request(),
+#                 settings.GOOGLE_CLIENT_ID
+
+#                 # settings.SOCIALACCOUNT_PROVIDERS['google']['APP']['client_id'],
+#             )
+
+#             email = idinfo.get('email')
+#             name  = idinfo.get('name', '')
+#             # picture = idinfo.get('picture', '')  # profile photo
+
+#             if not email:
+#                 return Response({'error': 'Email not found in Google account.'}, status=400)
+
+#             # User already exists → login. Illa → create
+#             user, created = User.objects.get_or_create(
+#                 email=email,
+#                 defaults={
+#                     'name':      name,
+#                     'is_active': True,
+#                     'role':      'user',
+#                 }
+#             )
+
+#             # New user na unusable password set panum
+#             if created:
+#                 user.set_unusable_password()
+#                 user.save()
+
+#             if not user.is_active:
+#                 return Response({'error': 'Account deactivated.'}, status=403)
+
+#             return Response({
+#                 'message': f'{"Account created" if created else "Welcome back"}, {user.name.split()[0]}!',
+#                 **get_tokens(user),
+#             })
+
+#         except ValueError as e:
+#             return Response({'error': f'Invalid Google token: {str(e)}'}, status=400)
+#         except Exception as e:
+#             return Response({'error': 'Google authentication failed.'}, status=500)
+
+
+logger = logging.getLogger(__name__)
+User = get_user_model()
+
+
+def get_tokens(user):
+    refresh = RefreshToken.for_user(user)
+    return {
+        'refresh': str(refresh),
+        'access': str(refresh.access_token),
+        'user': UserSerializer(user).data,
+    }
+
+
 class GoogleAuthView(APIView):
-    """
-    Frontend la Google login panna varum credential
-    itha verify panni JWT token return pannuvom
-    """
     permission_classes = [permissions.AllowAny]
 
     def post(self, request):
-        credential = request.data.get('credential')  # Google ID token
+        credential = request.data.get('credential')
 
         if not credential:
             return Response({'error': 'Google credential required.'}, status=400)
 
         try:
-            # Google token verify panum
             idinfo = id_token.verify_oauth2_token(
                 credential,
                 google_requests.Request(),
-                settings.GOOGLE_CLIENT_ID
-
-                # settings.SOCIALACCOUNT_PROVIDERS['google']['APP']['client_id'],
+                settings.GOOGLE_CLIENT_ID,
+                clock_skew_in_seconds=10
             )
 
             email = idinfo.get('email')
-            name  = idinfo.get('name', '')
-            # picture = idinfo.get('picture', '')  # profile photo
+            name = idinfo.get('name') or email.split('@')[0]
 
             if not email:
-                return Response({'error': 'Email not found in Google account.'}, status=400)
+                return Response({'error': 'Email not found.'}, status=400)
 
-            # User already exists → login. Illa → create
             user, created = User.objects.get_or_create(
                 email=email,
                 defaults={
-                    'name':      name,
+                    'name': name,
                     'is_active': True,
-                    'role':      'user',
+                    'role': 'user',
+                    'rank': 'wanderer',  # ✅ Default rank set pannum
                 }
             )
 
-            # New user na unusable password set panum
             if created:
                 user.set_unusable_password()
                 user.save()
@@ -232,18 +297,22 @@ class GoogleAuthView(APIView):
             if not user.is_active:
                 return Response({'error': 'Account deactivated.'}, status=403)
 
+            # ✅ Safe name handling
+            display_name = user.name or email.split('@')[0]
+            first_name = display_name.split()[0] if display_name else 'User'
+
             return Response({
-                'message': f'{"Account created" if created else "Welcome back"}, {user.name.split()[0]}!',
+                'message': f'{"Account created" if created else "Welcome back"}, {first_name}!',
                 **get_tokens(user),
             })
 
         except ValueError as e:
-            return Response({'error': f'Invalid Google token: {str(e)}'}, status=400)
+            logger.error(f"Token error: {e}")
+            return Response({'error': f'Invalid token: {str(e)}'}, status=400)
+
         except Exception as e:
-            return Response({'error': 'Google authentication failed.'}, status=500)
-
-
-# users/views.py — Already exists ✅
+            logger.exception("Google auth error")
+            return Response({'error': str(e)}, status=500)
 class ChangePasswordView(APIView):
     permission_classes = [permissions.IsAuthenticated]
     def post(self, request):
