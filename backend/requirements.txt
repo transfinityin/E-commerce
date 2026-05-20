@@ -47,3 +47,4 @@ tzdata==2026.2
 urllib3==2.6.3
 gunicorn==21.2.0
 whitenoise==6.7.0
+google-auth>=2.22.0

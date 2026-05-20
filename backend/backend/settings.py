@@ -228,8 +228,12 @@ CORS_ALLOWED_ORIGINS = [
     'https://www.transfinity.shop',
     'https://e-commercetransfinity.vercel.app',
     'https://e-commercetransfinity-git-main-transfinityin-1144s-projects.vercel.app',
+    
 ]
-
+CORS_ALLOW_ALL_ORIGINS = True  # Debug only
+REST_AUTH = {
+    'PASSWORD_RESET_SERIALIZER': 'apps.users.serializers.CustomPasswordResetSerializer',
+}
 CORS_ALLOW_CREDENTIALS = True
  
 # ── Email ────────────────────────────────────────────────────

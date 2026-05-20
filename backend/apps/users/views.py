@@ -260,6 +260,13 @@ def get_tokens(user):
 class GoogleAuthView(APIView):
     permission_classes = [permissions.AllowAny]
 
+    def get(self, request):
+        return Response({
+            'message': 'Google Auth endpoint. Send POST with credential.',
+            'method': 'POST',
+            'body': {'credential': 'google_id_token'}
+        })
+    
     def post(self, request):
         credential = request.data.get('credential')
 

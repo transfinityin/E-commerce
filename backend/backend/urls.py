@@ -17,6 +17,7 @@ class GoogleLogin(SocialLoginView):
 urlpatterns = [
     
     path('admin/', admin.site.urls),
+    path('auth/', include('apps.users.urls')),  # This gives /auth/forgot-password/
      # Auth
     path('api/auth/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/auth/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),

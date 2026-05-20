@@ -3,9 +3,15 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password
 from .models import Address,NotificationSettings
 from django.contrib.auth import get_user_model
+from dj_rest_auth.serializers import PasswordResetSerializer
 
 User = get_user_model()
-
+class CustomPasswordResetSerializer(PasswordResetSerializer):
+    def get_email_options(self):
+        return {
+            'email_template_name': 'password_reset_email.html',
+            'subject_template_name': 'password_reset_subject.txt',
+        }
 class RegisterSerializer(serializers.ModelSerializer):
     password  = serializers.CharField(write_only=True, validators=[validate_password])
     password2 = serializers.CharField(write_only=True)
