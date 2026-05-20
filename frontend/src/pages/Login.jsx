@@ -101,7 +101,7 @@ export default function Login() {
             </Link>
           </p>
 
-          <SocialAuth mode="login" />
+          <SocialAuth className="pb-10" mode="login" />
 
        
 

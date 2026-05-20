@@ -40,9 +40,9 @@ export default function Register() {
   }
 
   const fields = [
-    { name: 'name',      label: 'Full Name',        type: 'text',     placeholder: 'John Doe', icon: User },
+    { name: 'name',      label: 'Full Name',        type: 'text',     placeholder: 'Your full name', icon: User },
     { name: 'email',     label: 'Email Address',    type: 'email',    placeholder: 'you@example.com', icon: Mail },
-    { name: 'phone',     label: 'Phone Number',     type: 'tel',      placeholder: '9876543210', icon: Phone },
+    { name: 'phone',     label: 'Phone Number',     type: 'tel',      placeholder: 'Your phone number', icon: Phone },
     { name: 'password',  label: 'Password',         type: 'password', placeholder: 'Minimum 8 characters', icon: Lock, showToggle: true, showState: showPass, setShow: setShowPass },
     { name: 'password2', label: 'Confirm Password', type: 'password', placeholder: 'Re-enter password', icon: Lock, showToggle: true, showState: showConfirm, setShow: setShowConfirm },
   ]
