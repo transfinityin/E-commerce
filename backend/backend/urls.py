@@ -17,12 +17,12 @@ class GoogleLogin(SocialLoginView):
 urlpatterns = [
     
     path('admin/', admin.site.urls),
-    path('auth/', include('apps.users.urls')),  # This gives /auth/forgot-password/
+    path('api/auth/', include('apps.users.urls')),  # This gives /auth/forgot-password/
      # Auth
     path('api/auth/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/auth/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     # App APIs
-    path('api/auth/',          include('apps.users.urls')),
+    # path('api/auth/',          include('apps.users.urls')),
     path('api/products/',      include('apps.products.urls')),
     path('api/cart/',          include('apps.cart.urls')),
     path('api/wishlist/',      include('apps.wishlist.urls')),
@@ -33,7 +33,7 @@ urlpatterns = [
     path('api/support/',       include('apps.support.urls')),
     
     path('api/notifications/', include('apps.notifications.urls')),
-    path('api/auth/social/google/', GoogleLogin.as_view(), name='google_login'),
+    # path('api/auth/social/google/', GoogleLogin.as_view(), name='google_login'),
     path('accounts/', include('allauth.urls')),  # OAuth redirects
     path('api/hunt/', include('apps.treasurehunt.urls')),
     path('api/core/', include('apps.core.urls')),
