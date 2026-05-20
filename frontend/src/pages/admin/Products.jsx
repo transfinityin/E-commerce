@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { toast } from 'react-hot-toast'
-import { Plus, Pencil, Trash2, X } from 'lucide-react'
+import { Plus, Pencil, Trash2, X, Upload, Star, Trash } from 'lucide-react'
 import api from '../../services/api'
 
 export default function AdminProducts() {
@@ -13,6 +13,9 @@ export default function AdminProducts() {
     name: '', slug: '', description: '', category: '',
     price: '', sale_price: '', stock: '', sku: '', is_active: true, is_featured: false
   })
+  // ─── Image upload state ───
+  const [productImages, setProductImages] = useState([])
+  const [uploadingImages, setUploadingImages] = useState(false)
 
   const load = () => {
     Promise.all([
@@ -26,38 +29,128 @@ export default function AdminProducts() {
 
   useEffect(() => { load() }, [])
 
+  // ─── Image handlers ───
+  const handleImageUpload = (files) => {
+    const validFiles = Array.from(files).filter(file => {
+      const isValidType = ['image/jpeg', 'image/png', 'image/webp', 'image/jpg'].includes(file.type)
+      const isValidSize = file.size <= 5 * 1024 * 1024
+      if (!isValidType) toast.error(`${file.name}: Only JPG, PNG, WEBP`)
+      if (!isValidSize) toast.error(`${file.name}: Max 5MB`)
+      return isValidType && isValidSize
+    })
+
+    const newImages = validFiles.map((file, idx) => ({
+      file,
+      preview: URL.createObjectURL(file),
+      isPrimary: productImages.length === 0 && idx === 0,
+      isNew: true
+    }))
+
+    setProductImages(prev => [...prev, ...newImages])
+  }
+
+  const removeImage = (index) => {
+    setProductImages(prev => {
+      const updated = prev.filter((_, i) => i !== index)
+      if (updated.length > 0 && !updated.some(img => img.isPrimary)) {
+        updated[0] = { ...updated[0], isPrimary: true }
+      }
+      return [...updated]
+    })
+  }
+
+  const setPrimaryImage = (index) => {
+    setProductImages(prev => prev.map((img, i) => ({
+      ...img,
+      isPrimary: i === index
+    })))
+  }
+   // ─── Submit: Create/Update product + Upload images ───
   const handleSubmit = async (e) => {
     e.preventDefault()
+
     try {
+      // Step 1: Create / Update product
+      let productId = editing
+      let productRes
+
       if (editing) {
-        await api.patch(`/products/admin/products/${editing}/`, form)
+        productRes = await api.patch(`/products/admin/products/${editing}/`, form)
+        productId = editing
         toast.success('Product updated!')
       } else {
-        await api.post('/products/admin/products/', form)
+        productRes = await api.post('/products/admin/products/', form)
+        productId = productRes.data.id
         toast.success('Product created!')
       }
-      setShowForm(false); setEditing(null); load()
+
+      // Step 2: Upload new images to CORRECT endpoint
+      const newImages = productImages.filter(img => img.isNew && img.file)
+      if (newImages.length > 0) {
+        const data = new FormData()
+        newImages.forEach(img => data.append('images', img.file))
+
+        await api.post(`/products/admin/products/${productId}/images/`, data, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        })
+        toast.success(`${newImages.length} image(s) uploaded!`)
+      }
+
+      // Step 3: Set primary image if changed for existing images
+      const existingImages = productImages.filter(img => !img.isNew && img.id)
+      for (const img of existingImages) {
+        if (img.isPrimary && !img.wasPrimary) {
+          await api.post(`/products/admin/products/${productId}/images/${img.id}/primary/`)
+        }
+      }
+
+      closeForm()
+      load()
     } catch (err) {
-      toast.error(JSON.stringify(err.response?.data || 'Error'))
+      console.error(err)
+      const msg = err.response?.data?.error || err.response?.data?.detail || JSON.stringify(err.response?.data) || 'Error'
+      toast.error(msg)
     }
   }
 
   const handleDelete = async (id) => {
     if (!confirm('Delete this product?')) return
     await api.delete(`/products/admin/products/${id}/`)
-    toast.success('Deleted'); load()
+    toast.success('Deleted')
+    load()
   }
 
   const autoSlug = (name) => name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')
 
-  const openEdit = (p) => {
+   const openEdit = (p) => {
     setEditing(p.id)
     setForm({
       name: p.name, slug: p.slug, description: p.description,
       category: p.category?.id || '', price: p.price, sale_price: p.sale_price || '',
       stock: p.stock, sku: p.sku || '', is_active: p.is_active, is_featured: p.is_featured
     })
+
+    // Load existing images with wasPrimary flag
+    const existingImages = (p.images || []).map(img => ({
+      id: img.id,
+      preview: img.image,
+      isPrimary: img.is_primary,
+      wasPrimary: img.is_primary,  // ← track original state
+      isNew: false,
+      alt_text: img.alt_text
+    }))
+    setProductImages(existingImages)
+
     setShowForm(true)
+  }
+  const closeForm = () => {
+    setShowForm(false)
+    setEditing(null)
+    setProductImages([])
+    setForm({
+      name: '', slug: '', description: '', category: '',
+      price: '', sale_price: '', stock: '', sku: '', is_active: true, is_featured: false
+    })
   }
 
   return (
@@ -72,7 +165,7 @@ export default function AdminProducts() {
             <h1 className="text-3xl font-bold text-[var(--color-text)] tracking-tight">Products</h1>
           </div>
           <button
-            onClick={() => { setShowForm(true); setEditing(null) }}
+            onClick={() => { setShowForm(true); setEditing(null); setProductImages([]) }}
             className="flex items-center gap-2 bg-[var(--color-btn)] text-[var(--color-btn-text)] rounded-xl text-sm font-semibold hover:bg-[var(--color-btn-hover)] transition-all duration-200 px-5 py-3"
           >
             <Plus size={16} /> Add Product
@@ -85,7 +178,7 @@ export default function AdminProducts() {
             <div className="flex items-center justify-between mb-5">
               <h2 className="text-lg font-bold text-[var(--color-text)]">{editing ? 'Edit' : 'New'} Product</h2>
               <button
-                onClick={() => setShowForm(false)}
+                onClick={closeForm}
                 className="w-8 h-8 rounded-lg bg-[var(--color-bg-alt)] flex items-center justify-center hover:bg-[var(--color-border-light)] transition-colors cursor-pointer"
               >
                 <X size={18} className="text-[var(--color-muted)]" />
@@ -164,6 +257,112 @@ export default function AdminProducts() {
                     className="w-full bg-[var(--color-bg-alt)] border border-[var(--color-border)] rounded-xl text-sm text-[var(--color-text)] outline-none focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/20 transition-all resize-none px-4 py-3"
                   />
                 </div>
+
+                {/* ═══════════════════════════════════════════════
+                    PRODUCT IMAGES UPLOAD SECTION
+                    ═══════════════════════════════════════════════ */}
+                <div className="md:col-span-2 flex flex-col gap-1.5">
+                  <label className="text-sm font-semibold text-[var(--color-text)]">Product Images</label>
+
+                  {/* Drop Zone */}
+                  <div
+                    className="border-2 border-dashed border-[var(--color-border)] rounded-xl p-6 text-center
+                               hover:border-[var(--color-primary)] hover:bg-[var(--color-primary)]/5
+                               transition-all duration-200 cursor-pointer group"
+                    onClick={() => document.getElementById('product-image-input').click()}
+                    onDragOver={(e) => {
+                      e.preventDefault()
+                      e.currentTarget.classList.add('border-[var(--color-primary)]', 'bg-[var(--color-primary)]/10')
+                    }}
+                    onDragLeave={(e) => {
+                      e.preventDefault()
+                      e.currentTarget.classList.remove('border-[var(--color-primary)]', 'bg-[var(--color-primary)]/10')
+                    }}
+                    onDrop={(e) => {
+                      e.preventDefault()
+                      e.currentTarget.classList.remove('border-[var(--color-primary)]', 'bg-[var(--color-primary)]/10')
+                      handleImageUpload(e.dataTransfer.files)
+                    }}
+                  >
+                    <input
+                      id="product-image-input"
+                      type="file"
+                      multiple
+                      accept="image/jpeg,image/png,image/webp,image/jpg"
+                      className="hidden"
+                      onChange={(e) => handleImageUpload(e.target.files)}
+                    />
+                    <div className="flex flex-col items-center gap-2">
+                      <div className="w-12 h-12 rounded-full bg-[var(--color-bg-alt)] flex items-center justify-center
+                                      group-hover:bg-[var(--color-primary)]/20 transition-colors">
+                        <Upload size={24} className="text-[var(--color-primary)]" />
+                      </div>
+                      <p className="text-sm text-[var(--color-text)] font-medium">
+                        Drop images here or <span className="text-[var(--color-primary)] underline">click to browse</span>
+                      </p>
+                      <p className="text-xs text-[var(--color-muted)]">JPG, PNG, WEBP — Max 5MB each</p>
+                    </div>
+                  </div>
+
+                  {/* Image Previews Grid */}
+                  {productImages.length > 0 && (
+                    <div className="mt-3 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+                      {productImages.map((img, index) => (
+                        <div key={`${img.id || index}-${index}`} className="relative group rounded-lg overflow-hidden border border-[var(--color-border)] bg-[var(--color-bg-alt)]">
+                          <img
+                            src={img.preview}
+                            alt={form.name || 'Product image'}
+                            className="w-full h-28 object-cover"
+                          />
+
+                          {/* Hover Overlay */}
+                          <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100
+                                          transition-opacity flex items-center justify-center gap-2">
+                            {!img.isPrimary && (
+                              <button
+                                type="button"
+                                onClick={(e) => { e.stopPropagation(); setPrimaryImage(index) }}
+                                className="p-1.5 rounded bg-white/90 hover:bg-white text-[var(--color-text)]
+                                           transition-colors"
+                                title="Set as primary"
+                              >
+                                <Star size={14} className="text-[var(--color-primary)]" />
+                              </button>
+                            )}
+                            <button
+                              type="button"
+                              onClick={(e) => { e.stopPropagation(); removeImage(index) }}
+                              className="p-1.5 rounded bg-red-500/90 hover:bg-red-500 text-white
+                                         transition-colors"
+                              title="Remove image"
+                            >
+                              <Trash size={14} />
+                            </button>
+                          </div>
+
+                          {/* Primary Badge */}
+                          {img.isPrimary && (
+                            <div className="absolute top-1.5 left-1.5 px-2 py-0.5 bg-[var(--color-primary)] text-white text-[10px]
+                                            font-bold rounded-md flex items-center gap-1">
+                              <Star size={10} fill="currentColor" />
+                              PRIMARY
+                            </div>
+                          )}
+
+                          {/* New Badge */}
+                          {img.isNew && (
+                            <div className="absolute top-1.5 right-1.5 px-1.5 py-0.5 bg-[var(--color-success)] text-white text-[10px]
+                                            font-bold rounded-md">
+                              NEW
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                {/* ═══════════════════════════════════════════════ */}
+
                 <div className="md:col-span-2 flex items-center gap-6">
                   <label className="flex items-center gap-2.5 cursor-pointer text-sm text-[var(--color-text)]">
                     <input
@@ -185,13 +384,24 @@ export default function AdminProducts() {
                 <div className="md:col-span-2 flex gap-3">
                   <button
                     type="submit"
-                    className="flex-1 flex items-center justify-center bg-[var(--color-btn)] text-[var(--color-btn-text)] rounded-xl text-sm font-semibold hover:bg-[var(--color-btn-hover)] transition-all duration-200 px-6 py-3"
+                    disabled={uploadingImages}
+                    className="flex-1 flex items-center justify-center bg-[var(--color-btn)] text-[var(--color-btn-text)] rounded-xl text-sm font-semibold hover:bg-[var(--color-btn-hover)] transition-all duration-200 px-6 py-3 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    {editing ? 'Update' : 'Create'} Product
+                    {uploadingImages ? (
+                      <span className="flex items-center gap-2">
+                        <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                        </svg>
+                        Uploading...
+                      </span>
+                    ) : (
+                      <>{editing ? 'Update' : 'Create'} Product</>
+                    )}
                   </button>
                   <button
                     type="button"
-                    onClick={() => setShowForm(false)}
+                    onClick={closeForm}
                     className="flex-1 flex items-center justify-center bg-[var(--color-surface)] text-[var(--color-text)] border border-[var(--color-border)] rounded-xl text-sm font-semibold hover:bg-[var(--color-bg-alt)] transition-all duration-200 px-6 py-3"
                   >
                     Cancel

@@ -71,7 +71,7 @@ class ProductWriteSerializer(serializers.ModelSerializer):
     class Meta:
         model  = Product
         fields = ('name','slug','description','category','price','sale_price',
-                  'stock','sku','weight','is_active','is_featured')
+                  'stock','sku','weight','is_active','is_featured','available_sizes')
     def validate(self, attrs):
         if attrs.get('sale_price') and attrs.get('price'):
             if attrs['sale_price'] >= attrs['price']:
