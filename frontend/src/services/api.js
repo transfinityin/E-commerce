@@ -4,9 +4,10 @@ import axios from 'axios'
 // Production (Render) → uses the live backend
 // Local development → uses localhost
 // const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api';
+// https://transfinity-backend.onrender.com
 const API_URL = import.meta.env.VITE_API_URL || 'https://transfinity-backend.onrender.com/api'
 const api = axios.create({
-  baseURL: API_BASE,
+  baseURL: API_URL,
   headers: { 'Content-Type': 'application/json' },
 })
 
