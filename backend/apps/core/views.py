@@ -8,7 +8,8 @@ from .models import HeroBanner
 from .serializers import HeroBannerSerializer
 import cloudinary
 import cloudinary.uploader
-
+import logging
+logger = logging.getLogger(__name__)
 
 class HeroBannerList(APIView):
     permission_classes = [AllowAny]
@@ -59,6 +60,7 @@ class UploadImageView(APIView):
     parser_classes     = [MultiPartParser, FormParser]
 
     def post(self, request):
+        logger.info(f"Upload request received. FILES: {request.FILES}")
         file = request.FILES.get('image')
         if not file:
             return Response({'error': 'No image provided.'}, status=400)

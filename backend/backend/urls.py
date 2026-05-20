@@ -30,11 +30,12 @@ urlpatterns = [
     path('api/reviews/',       include('apps.reviews.urls')),
     path('api/coupons/',       include('apps.coupons.urls')),
     path('api/support/',       include('apps.support.urls')),
-    path('api/core/', include('apps.core.urls')),
+    
     path('api/notifications/', include('apps.notifications.urls')),
     path('api/auth/social/google/', GoogleLogin.as_view(), name='google_login'),
     path('accounts/', include('allauth.urls')),  # OAuth redirects
     path('api/hunt/', include('apps.treasurehunt.urls')),
+    path('api/core/', include('apps.core.urls')),
  
 ]
 if settings.DEBUG:
