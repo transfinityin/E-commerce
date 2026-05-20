@@ -58,6 +58,7 @@ export default function Navbar() {
 
   const navLinks = [
     { label: 'Shop',      to: '/products' },
+    
   ]
 
   const cartCount = cart?.total_items || 0

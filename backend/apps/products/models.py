@@ -27,6 +27,23 @@ class Category(models.Model):
 
 
 class Product(models.Model):
+    ARC_CHOICES = [
+        ('wanderer', 'Wanderer'), 
+        ('founder', 'Founder Edition'),
+        ('ascendant', 'Ascension Edition'),
+        ('phantom', 'Phantom Arc'),
+        ('eclipse', 'Eclipse Edition'),
+        ('eternal', 'Eternal Edition'),
+    ]
+    arc_type = models.CharField(max_length=20, choices=ARC_CHOICES, default='founder')
+    required_rank = models.CharField(max_length=20, default='wanderer')
+    is_limited_drop = models.BooleanField(default=False)
+    drop_start = models.DateTimeField(null=True, blank=True)
+    drop_end = models.DateTimeField(null=True, blank=True)
+    max_quantity = models.PositiveIntegerField(default=100)
+    lore_content = models.TextField(blank=True)  # Hidden story text
+
+    
     SIZES = ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL']
     id          = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     # owner_id → migration-ready for multi-vendor (currently always admin)
@@ -66,9 +83,21 @@ class Product(models.Model):
                 opclasses=['gin_trgm_ops'],
             ),
         ]
-
+    def is_available_to_user(self, user):
+        rank_order = ['wanderer', 'founder', 'ascendant', 'phantom', 'eclipse', 'eternal']
+        user_idx = rank_order.index(user.rank)
+        required_idx = rank_order.index(self.required_rank)
+        return user_idx >= required_idx
+    
+    def is_drop_active(self):
+        from django.utils import timezone
+        now = timezone.now()
+        if self.drop_start and self.drop_end:
+            return self.drop_start <= now <= self.drop_end
+        return True
     def __str__(self):
-        return self.name
+        return f"{self.name} | {self.arc_type}"
+
 
     @property
     def effective_price(self):

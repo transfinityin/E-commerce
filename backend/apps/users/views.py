@@ -6,6 +6,9 @@ from django.core.mail import send_mail
 from django.conf import settings
 from django.utils.crypto import get_random_string
 from django.core.cache import cache
+from rest_framework.decorators import api_view, permission_classes
+ # 🔥 ADD THIS LINE
+from rest_framework.permissions import IsAuthenticated  # 🔥 ADD THIS
 
 from rest_framework import status, generics, permissions
 from rest_framework.response import Response
@@ -271,3 +274,62 @@ class NotificationSettingsView(APIView):
             serializer.save()
             return Response({'message': 'Settings updated', 'settings': serializer.data})
         return Response(serializer.errors, status=400)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def my_rank(request):
+    """GET /api/users/me/rank/"""
+    user = request.user
+    return Response({
+        'rank': user.rank,
+        'rank_display': user.get_rank_display(),
+        'xp': user.xp,
+        'unlocked_arcs': user.unlocked_arcs,
+        'next_rank': user.unlock_next_rank() if False else None,  # Just preview
+        'can_access': {
+            'founder': user.can_access_arc('founder'),
+            'ascendant': user.can_access_arc('ascendant'),
+            'phantom': user.can_access_arc('phantom'),
+            'eclipse': user.can_access_arc('eclipse'),
+            'eternal': user.can_access_arc('eternal'),
+        }
+    })
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def scan_qr(request):
+    """POST /api/auth/scan-qr/"""
+    code = request.data.get('code')
+    
+    try:
+        from apps.treasurehunt.models import TShirtQRCode  # or your QR model
+        
+        qr = TShirtQRCode.objects.get(secret_hash=code, is_active=True)
+        
+        # Check if already scanned
+        if request.user.qr_scans.filter(id=qr.id).exists():
+            return Response({'error': 'Already scanned'}, status=400)
+        
+        request.user.qr_scans.add(qr)
+        request.user.add_xp(qr.xp_reward or 50)
+        
+        return Response({
+            'success': True,
+            'xp_gained': qr.xp_reward or 50,
+            'total_xp': request.user.xp,
+            'rank': request.user.rank,
+            'message': 'New truth revealed...'
+        })
+        
+    except Exception as e:
+        return Response({'error': 'Invalid code'}, status=404)
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def add_xp(request):
+    """POST /api/auth/add-xp/ (Admin/internal use)"""
+    amount = request.data.get('amount', 0)
+    request.user.add_xp(amount)
+    return Response({
+        'xp': request.user.xp,
+        'rank': request.user.rank
+    })

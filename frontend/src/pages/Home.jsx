@@ -4,7 +4,7 @@ import { ArrowRight, Truck, Shield, RefreshCw, Headphones, ChevronLeft, ChevronR
 import api from '../services/api'
 import ProductCard from '../components/ProductCard'
 import HeroCarousel from '../components/HeroCarousel'
-
+import AscensionMap from '../components/Map/AscensionMap'
 /* ─── Auto-Sliding Hero Banner Carousel ─────────────────── */
 function HeroBannerCarousel({ banners }) {
   const [current, setCurrent] = useState(0)

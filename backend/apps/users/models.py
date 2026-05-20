@@ -48,6 +48,57 @@ class User(AbstractBaseUser, PermissionsMixin):
     USERNAME_FIELD  = 'email'
     REQUIRED_FIELDS = ['name']
 
+
+    RANK_CHOICES = [
+        ('wanderer', 'Wanderer'),
+        ('founder', 'Founder'),
+        ('ascendant', 'Ascendant'),
+        ('phantom', 'Phantom'),
+        ('eclipse', 'Eclipse'),
+        ('eternal', 'Eternal'),
+    ]
+    
+    rank = models.CharField(max_length=20, choices=RANK_CHOICES, default='wanderer')
+    xp = models.PositiveIntegerField(default=0)
+    unlocked_arcs = models.JSONField(default=list)  # ["wanderer", "founder"]
+    
+    # === ADD THESE METHODS ===
+    def get_rank_index(self):
+        order = [r[0] for r in self.RANK_CHOICES]
+        return order.index(self.rank)
+    
+    def can_access_arc(self, arc_name):
+        order = [r[0] for r in self.RANK_CHOICES]
+        if arc_name not in order:
+            return False
+        user_idx = order.index(self.rank)
+        arc_idx = order.index(arc_name)
+        return arc_idx <= user_idx + 1
+
+    def is_arc_unlocked(self, arc_name):
+        order = [r[0] for r in self.RANK_CHOICES]
+        if arc_name not in order:
+            return False
+        user_idx = order.index(self.rank)
+        arc_idx = order.index(arc_name)
+        return user_idx >= arc_idx
+    
+    def unlock_next_rank(self):
+        order = [r[0] for r in self.RANK_CHOICES]
+        idx = order.index(self.rank)
+        if idx < len(order) - 1:
+            self.rank = order[idx + 1]
+            # DON'T use .append() — reassign instead
+            if self.rank not in self.unlocked_arcs:
+                self.unlocked_arcs = self.unlocked_arcs + [self.rank]  # ✅ New list
+            self.save()
+            return self.rank
+        return None
+    
+    def add_xp(self, amount):
+        self.xp += amount
+        self.save()
+        return self.xp
     class Meta:
         db_table = 'users'
         ordering = ['-date_joined']

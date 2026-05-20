@@ -8,6 +8,7 @@ from .views import (
     AdminProductListCreateView, AdminProductDetailView,
     ProductImageUploadView, SetPrimaryImageView,
 )
+from . import views
 
 urlpatterns = [
     path('categories/',                      CategoryListView.as_view()),
@@ -24,4 +25,9 @@ urlpatterns = [
     path('admin/products/<uuid:pk>/',        AdminProductDetailView.as_view()),
     path('admin/products/<uuid:product_id>/images/',                         ProductImageUploadView.as_view()),
     path('admin/products/<uuid:product_id>/images/<uuid:image_id>/primary/', SetPrimaryImageView.as_view()),
+
+    # === NEW: TRANSFINITY ARC SYSTEM ===
+    path('arcs/', views.arc_list, name='arc_list'),
+    path('arcs/<str:arc_name>/lore/', views.arc_lore, name='arc_lore'),
+    path('arcs/<str:arc_name>/products/', views.arc_products, name='arc_products'),
 ]

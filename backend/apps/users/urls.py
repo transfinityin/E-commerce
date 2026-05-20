@@ -1,6 +1,8 @@
 from django.urls import path
 # urlpatterns missing
 from django.urls import path
+
+from . import views
 from .views import (
     RegisterView, LoginView, LogoutView,
     ProfileView, ChangePasswordView,
@@ -25,4 +27,8 @@ urlpatterns = [
     path('admin/users/',           AdminUserListView.as_view()),
     path('admin/users/<uuid:pk>/', AdminUserDetailView.as_view()),
     path('google/',  GoogleAuthView.as_view(), name='google-auth'),
+     # === ADD THESE ===
+    path('me/rank/', views.my_rank, name='my_rank'),
+    path('scan-qr/', views.scan_qr, name='scan_qr'),
+    path('add-xp/', views.add_xp, name='add_xp'),
 ]

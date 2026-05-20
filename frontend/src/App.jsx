@@ -4,7 +4,8 @@ import ProtectedRoute from './components/ProtectedRoute'
 import AdminRoute from './components/AdminRoute'
 import { useEffect } from 'react'
 import AdminHeroBanners from './pages/admin/AdminHeroBanners'
-
+import HomePage from './pages/HomePage'
+import LorePage from './pages/LorePage'
 import useAuthStore from './store/authStore'
 import useCartStore from './store/cartStore'
 import useWishlistStore from './store/wishlistStore'
@@ -42,6 +43,20 @@ import QRScanner from './pages/QRScanner'
 import MyMaps from './pages/MyMaps'
 import HuntLocations from './pages/admin/HuntLocations'
 import HuntQRCodes from './pages/admin/HuntQRCodes'
+
+
+
+
+
+
+import SupportPage from './pages/SupportPage'
+import ContactPage from './pages/ContactPage'
+import ReturnsPage from './pages/ReturnsPage'
+import ShippingPage from './pages/ShippingPage'
+import PrivacyPage from './pages/PrivacyPage'
+import TermsPage from './pages/TermsPage'
+import CookiesPage from './pages/CookiesPage'
+import RefundsPage from './pages/RefundsPage'
 export default function App() {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated)
   const fetchCart       = useCartStore((s) => s.fetchCart)
@@ -66,6 +81,11 @@ export default function App() {
         <Route path="/register"           element={<Register />} />
         <Route path="/forgot-password"    element={<ForgotPassword />} />
 
+
+        <Route path="/homepage" element={<HomePage />} />
+        <Route path="/lore/:arcName" element={<LorePage />} />
+        
+        
         {/* Protected */}
         <Route element={<ProtectedRoute />}>
           <Route path="/cart"             element={<Cart />} />
@@ -94,6 +114,15 @@ export default function App() {
         <Route path="/admin/hunt/locations" element={<HuntLocations />} />
         <Route path="/admin/hunt/qr-codes" element={<HuntQRCodes />} />
       </Route>
+      // Inside your Routes:
+<Route path="/support" element={<SupportPage />} />
+<Route path="/contact" element={<ContactPage />} />
+<Route path="/returns" element={<ReturnsPage />} />
+<Route path="/shipping" element={<ShippingPage />} />
+<Route path="/privacy" element={<PrivacyPage />} />
+<Route path="/terms" element={<TermsPage />} />
+<Route path="/cookies" element={<CookiesPage />} />
+<Route path="/refunds" element={<RefundsPage />} />
 
       <Route path="/scan"               element={<QRScanner />} />
       <Route path="/scan/:qrCodeId"     element={<QRScanner />} />

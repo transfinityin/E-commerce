@@ -21,10 +21,29 @@ class RegisterSerializer(serializers.ModelSerializer):
         return User.objects.create_user(**validated_data)
 
 class UserSerializer(serializers.ModelSerializer):
+    rank_display = serializers.CharField(source='get_rank_display', read_only=True)
+    next_rank = serializers.SerializerMethodField()
+    is_founder = serializers.SerializerMethodField()
     class Meta:
-        model  = User
-        fields = ('id','name','email','phone','avatar','role','is_active','date_joined')
-        read_only_fields = ('id','email','role','is_active','date_joined')
+        model = User
+        fields = (
+            'id', 'name', 'email', 'phone', 'avatar', 'role',
+            'is_active', 'date_joined',
+            'rank', 'rank_display', 'xp', 'unlocked_arcs',
+            'next_rank', 'is_founder'
+        )
+        read_only_fields = (
+            'id', 'email', 'role', 'is_active', 'date_joined',
+            'rank', 'xp', 'unlocked_arcs'  # Auto-managed
+        )
+    
+    def get_next_rank(self, obj):
+        order = ['wanderer', 'founder', 'ascendant', 'phantom', 'eclipse', 'eternal']
+        idx = order.index(obj.rank)
+        return order[idx + 1] if idx < len(order) - 1 else None
+    
+    def get_is_founder(self, obj):
+        return obj.rank in ['founder', 'ascendant', 'phantom', 'eclipse', 'eternal']
 
 class UserUpdateSerializer(serializers.ModelSerializer):
     class Meta:
