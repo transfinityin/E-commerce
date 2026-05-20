@@ -37,28 +37,32 @@ export default function AdminHeroBanners() {
 
   useEffect(() => { fetchBanners() }, [fetchBanners])
 
-  const handleSubmit = async (e) => {
-    e.preventDefault()
-    try {
-      if (editing) {
-        await api.patch(`/core/hero-banners/${editing}/`, form)
-        toast.success('Banner updated!')
-      } else {
-        await api.post('/core/hero-banners/', form)
-        toast.success('Banner created!')
-      }
-      setShowForm(false)
-      setEditing(null)
-      setForm({
-        title: '', subtitle: '', image_url: '',
-        cta_text: 'Shop Now', cta_link: '/products',
-        is_active: true, display_order: 0,
-      })
-      fetchBanners()
-    } catch {
-      toast.error('Failed to save banner')
+ // handleSubmit la — form data prepare panum
+const handleSubmit = async (e) => {
+  e.preventDefault()
+  try {
+    const payload = {
+      title:         form.title,
+      subtitle:      form.subtitle,
+      image_url_direct: form.image_url,  // ← field name match
+      cta_text:      form.cta_text,
+      cta_link:      form.cta_link,
+      is_active:     form.is_active,
+      display_order: form.display_order,
     }
+
+    if (editing) {
+      await api.patch(`/core/hero-banners/${editing}/`, payload)
+      toast.success('Banner updated!')
+    } else {
+      await api.post('/core/hero-banners/', payload)
+      toast.success('Banner created!')
+    }
+    // ... rest same
+  } catch {
+    toast.error('Failed to save banner')
   }
+}
 
   const handleDelete = async (id) => {
     if (!confirm('Delete this banner?')) return
