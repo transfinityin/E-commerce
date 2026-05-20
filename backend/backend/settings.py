@@ -226,6 +226,7 @@ CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',
     'https://transfinity.shop',
     'https://www.transfinity.shop',
+    
     'https://e-commercetransfinity.vercel.app',
     'https://e-commercetransfinity-git-main-transfinityin-1144s-projects.vercel.app',
     
