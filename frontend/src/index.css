@@ -70,3 +70,32 @@
   }
 }
 
+
+
+
+
+/* Slow pulse for the active node */
+@keyframes pulse-slow {
+  0%, 100% { 
+    box-shadow: 0 0 30px rgba(0, 240, 255, 0.4), inset 0 0 20px rgba(0, 240, 255, 0.1);
+    border-color: rgba(0, 240, 255, 0.6);
+  }
+  50% { 
+    box-shadow: 0 0 50px rgba(0, 240, 255, 0.7), inset 0 0 30px rgba(0, 240, 255, 0.2);
+    border-color: rgba(0, 240, 255, 0.9);
+  }
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 3s ease-in-out infinite;
+}
+
+/* Floating animation for the node */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+}
+
+.animate-float {
+  animation: float 4s ease-in-out infinite;
+}

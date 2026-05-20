@@ -8,14 +8,45 @@ import { ArrowRight, Lock, Infinity } from 'lucide-react';
 
 const ARC_THEMES = {
     wanderer: {
-    bg: 'bg-gradient-to-b from-black via-gray-900 to-cyan-950/20',
-    accent: '#00FFFF',
-    accentClass: 'text-cyan-400',
-    borderClass: 'border-cyan-500/30',
-    glow: 'shadow-cyan-500/20',
-    particles: 'cyan',
-    icon: '◉',
-  },
+  // Background: Richer dark with subtle cyan nebula
+  bg: 'bg-gradient-to-b from-black via-[#0a0f1a] to-cyan-950/40',
+  
+  // Core accent: Electric cyan (no more gray!)
+  accent: '#00F0FF',
+  accentClass: 'text-cyan-300',
+  
+  // Secondary: Warm gold for "premium" contrast
+  accentSecondary: '#FFD700',
+  accentSecondaryClass: 'text-amber-400',
+  
+  // Node styling: Glowing ring instead of dull gray
+  nodeActive: `
+    relative 
+    bg-gradient-to-br from-cyan-500/20 to-blue-600/20 
+    border-2 border-cyan-400/60 
+    shadow-[0_0_30px_rgba(0,240,255,0.4),inset_0_0_20px_rgba(0,240,255,0.1)]
+    backdrop-blur-sm
+    animate-pulse-slow
+  `,
+  
+  // Text effects
+  titleClass: 'text-transparent bg-clip-text bg-gradient-to-r from-cyan-200 via-white to-cyan-200 font-bold tracking-widest',
+  subtitleClass: 'text-cyan-400/80 text-sm tracking-wider uppercase',
+  
+  // Card / Container
+  borderClass: 'border border-cyan-500/30 backdrop-blur-md bg-black/40',
+  borderHover: 'hover:border-cyan-400/60 hover:shadow-[0_0_40px_rgba(0,240,255,0.2)] transition-all duration-500',
+  
+  // Glow layers
+  glow: 'shadow-cyan-500/30',
+  glowStrong: 'shadow-[0_0_60px_rgba(0,240,255,0.5),0_0_100px_rgba(0,240,255,0.2)]',
+  
+  // Particles: Brighter cyan stardust
+  particles: 'cyan-bright',
+  
+  // Icon: More mystical
+  icon: '◉',
+},
   founder: {
     bg: 'from-black via-gray-900 to-yellow-900/20',
     accent: '#FFD700',

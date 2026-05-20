@@ -68,7 +68,7 @@ const getArcStatus = (arcId) => {
 <motion.div 
   initial={{ opacity: 0, y: -20 }}
   animate={{ opacity: 1, y: 0 }}
-  className="absolute top-4 left-1/2 -translate-x-1/2 z-10 text-center pointer-events-none"
+  className="absolute left-1/2 -translate-x-1/2 z-10 text-center pointer-events-none"
 >
   <h1 className="text-3xl md:text-5xl font-black tracking-tighter">
     <span className="text-transparent bg-clip-text bg-gradient-to-b from-white to-gray-500">

@@ -1,28 +1,41 @@
-import { useEffect } from 'react'
+import { useEffect, useRef, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-hot-toast'
 import useAuthStore from '../store/authStore'
-import api from '../services/api'
 
 const GOOGLE_CLIENT_ID = '77769131402-5rh4qfjsoeof8k18l5ko2ducdctj3nkj.apps.googleusercontent.com'
 
 export default function SocialAuth({ mode }) {
   const navigate = useNavigate()
-  const { updateUser } = useAuthStore()
+  const btnRef = useRef(null)
+
+  const handleGoogleResponse = useCallback(async (response) => {
+    try {
+      const { data } = await useAuthStore.getState().googleLogin(response.credential)
+
+      toast.success(
+        data.message || `Google ${mode === 'login' ? 'sign in' : 'sign up'} successful!`
+      )
+      navigate('/')
+
+    } catch (err) {
+      toast.error(err.response?.data?.error || 'Google authentication failed')
+    }
+  }, [mode, navigate])
 
   useEffect(() => {
-    // Prevent double initialization in React Strict Mode
-    if (document.getElementById('google-gis-script')) return
+    // Load Google script once
+    if (!document.getElementById('google-gis-script')) {
+      const script = document.createElement('script')
+      script.id = 'google-gis-script'
+      script.src = 'https://accounts.google.com/gsi/client'
+      script.async = true
+      script.defer = true
+      document.head.appendChild(script)
+    }
 
-    const script = document.createElement('script')
-    script.id = 'google-gis-script'
-    script.src = 'https://accounts.google.com/gsi/client'
-    script.async = true
-    script.defer = true
-    document.head.appendChild(script)
-
-    script.onload = () => {
-      if (!window.google) return
+    const initGoogle = () => {
+      if (!window.google?.accounts?.id || !btnRef.current) return
 
       window.google.accounts.id.initialize({
         client_id: GOOGLE_CLIENT_ID,
@@ -31,61 +44,36 @@ export default function SocialAuth({ mode }) {
         cancel_on_tap_outside: true,
       })
 
-      const btnContainer = document.getElementById('google-btn')
-      if (btnContainer) {
-        window.google.accounts.id.renderButton(btnContainer, {
-          theme: 'outline',
-          size: 'large',
-          width: 300,          // ✅ FIXED: pixel value, NOT '100%'
-          text: mode === 'login' ? 'signin_with' : 'signup_with',
-          shape: 'rectangular',
-          logo_alignment: 'left',
-        })
-      }
+      // Clear old button before re-rendering (fixes mode switch)
+      btnRef.current.innerHTML = ''
+
+      window.google.accounts.id.renderButton(btnRef.current, {
+        theme: 'outline',
+        size: 'large',
+        width: btnRef.current.offsetWidth || 300,
+        text: mode === 'login' ? 'signin_with' : 'signup_with',
+        shape: 'rectangular',
+        logo_alignment: 'left',
+      })
     }
 
-    script.onerror = () => {
-      toast.error('Failed to load Google Sign-In')
+    if (window.google?.accounts?.id) {
+      initGoogle()
+    } else {
+      const script = document.getElementById('google-gis-script')
+      const onLoad = () => initGoogle()
+      script?.addEventListener('load', onLoad)
+      return () => script?.removeEventListener('load', onLoad)
     }
 
     return () => {
-      // Only cancel the prompt, don't remove script to avoid re-fetch issues
-      if (window.google?.accounts?.id) {
-        window.google.accounts.id.cancel()
-      }
+      window.google?.accounts?.id?.cancel()
     }
-  }, [mode]) // ✅ Re-render if mode changes
-
-  const handleGoogleResponse = async (response) => {
-    try {
-      const { data } = await api.post('/auth/google/', {
-        credential: response.credential,
-      })
-
-      localStorage.setItem('access_token', data.access)
-      localStorage.setItem('refresh_token', data.refresh)
-
-      updateUser(data.user)
-
-      useAuthStore.setState({
-        user: data.user,
-        access_token: data.access,
-        refresh_token: data.refresh,
-        isAuthenticated: true,
-      })
-
-      toast.success(data.message || 'Signed in with Google!')
-      navigate('/')
-
-    } catch (err) {
-      toast.error(err.response?.data?.error || 'Google sign-in failed')
-    }
-  }
+  }, [mode, handleGoogleResponse])
 
   return (
     <div className="flex flex-col gap-3 w-full">
-      {/* Container div takes full width; button inside is centered by Google */}
-      <div id="google-btn" className="w-full flex justify-center" />
+      <div ref={btnRef} className="w-full flex justify-center min-h-[44px]" />
     </div>
   )
 }
