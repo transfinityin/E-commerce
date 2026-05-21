@@ -8,7 +8,12 @@ export default function SocialAuth({ mode = 'login', className = '' }) {
   const navigate = useNavigate()
   const { googleLogin } = useAuthStore()
   const googleBtnRef = useRef(null)
+// 🔥 DEBUG: Check if env var loaded
+console.log('VITE_GOOGLE_CLIENT_ID:', import.meta.env.VITE_GOOGLE_CLIENT_ID)
 
+if (!import.meta.env.VITE_GOOGLE_CLIENT_ID) {
+  console.error('❌ VITE_GOOGLE_CLIENT_ID is missing! Check Vercel env vars.')
+}
   // ── Google Identity Services Button ─────────────────────────
   useEffect(() => {
     const renderGoogle = () => {
