@@ -229,6 +229,8 @@ CORS_ALLOWED_ORIGINS = [
     
     'https://e-commercetransfinity.vercel.app',
     'https://e-commercetransfinity-git-main-transfinityin-1144s-projects.vercel.app',
+    'https://e-commercetransfinity-mrwe0lxmy-transfinityin-1144s-projects.vercel.app',
+
     
 ]
 CORS_ALLOW_ALL_ORIGINS = True  # Debug only
