@@ -4,92 +4,48 @@ import { FaInstagram, FaTwitter, FaYoutube } from "react-icons/fa"
 
 export default function Footer() {
   return (
-    <footer style={{ background: '#0D0D0D', color: 'rgba(255,255,255,0.5)', fontFamily: 'DM Sans, sans-serif' }}>
+    <footer className="bg-[#0D0D0D] text-white/50 font-[DM_Sans,sans-serif]">
 
       {/* ── BRAND QUOTE SECTION ── */}
-      <div style={{
-        borderTop: '1px solid rgba(255,255,255,0.06)',
-        borderBottom: '1px solid rgba(255,255,255,0.06)',
-        padding: '80px 24px',
-        textAlign: 'center',
-        background: '#0a0a0a',
-        position: 'relative', overflow: 'hidden',
-      }}>
+      <div className="relative overflow-hidden border-t border-b border-white/[0.06] py-12 sm:py-16 lg:py-20 px-4 sm:px-6 text-center bg-[#0a0a0a]">
         {/* Background subtle text */}
-        <div style={{
-          position: 'absolute', inset: 0,
-          display: 'flex', alignItems: 'center',
-          justifyContent: 'center', pointerEvents: 'none',
-          fontSize: '120px', fontWeight: 900,
-          color: 'rgba(255,255,255,0.02)',
-          fontFamily: 'Playfair Display, serif',
-          letterSpacing: '-0.05em', userSelect: 'none',
-        }}>
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none font-[Playfair_Display,serif] text-6xl sm:text-8xl lg:text-[120px] font-black text-white/[0.02] tracking-[-0.05em]">
           INFINITY
         </div>
 
-        <div style={{ position: 'relative', zIndex: 1, maxWidth: '800px', margin: '0 auto' }}>
+        <div className="relative z-10 max-w-[800px] mx-auto">
 
           {/* Tag line */}
-          <p style={{
-            fontSize: '11px', letterSpacing: '0.3em',
-            color: 'rgba(200,169,110,0.8)', textTransform: 'uppercase',
-            marginBottom: '28px', fontWeight: 600,
-          }}>
+          <p className="text-[10px] sm:text-[11px] tracking-[0.3em] text-[#C8A96E]/80 uppercase mb-5 sm:mb-7 font-semibold">
             ✦ BRAND PHILOSOPHY ✦
           </p>
 
           {/* Main quote */}
-          <blockquote style={{
-            fontFamily: 'Playfair Display, serif',
-            fontSize: 'clamp(22px, 4vw, 38px)',
-            fontWeight: 700, color: 'white',
-            lineHeight: 1.3, marginBottom: '24px',
-            fontStyle: 'italic',
-          }}>
-            "Your limits exist only where your<br />
-            <span style={{ color: '#C8A96E' }}>mindset ends.</span>"
+          <blockquote className="font-[Playfair_Display,serif] text-xl sm:text-2xl md:text-3xl lg:text-[38px] font-bold text-white leading-snug sm:leading-tight mb-4 sm:mb-6 italic">
+            "Your limits exist only where your<br className="hidden sm:block" />
+            <span className="text-[#C8A96E]">mindset ends.</span>"
           </blockquote>
 
           {/* Brand tagline */}
-          <p style={{
-            fontSize: '13px', letterSpacing: '0.25em',
-            color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase',
-            marginBottom: '40px', fontWeight: 500,
-          }}>
+          <p className="text-[11px] sm:text-[13px] tracking-[0.25em] text-white/35 uppercase mb-6 sm:mb-10 font-medium">
             Beyond The Limits
           </p>
 
           {/* Divider */}
-          <div style={{
-            width: '60px', height: '1px',
-            background: '#C8A96E', margin: '0 auto 40px',
-          }} />
+          <div className="w-12 sm:w-[60px] h-px bg-[#C8A96E] mx-auto mb-6 sm:mb-10" />
 
           {/* Brand description */}
-          <p style={{
-            fontSize: '15px', lineHeight: 1.9,
-            color: 'rgba(255,255,255,0.4)',
-            maxWidth: '620px', margin: '0 auto 40px',
-            letterSpacing: '0.02em',
-          }}>
-            <strong style={{ color: 'rgba(255,255,255,0.8)', fontWeight: 600 }}>TRANSFINITY</strong> is not just a clothing brand —
+          <p className="text-xs sm:text-sm lg:text-[15px] leading-relaxed sm:leading-[1.9] text-white/40 max-w-[620px] mx-auto mb-6 sm:mb-10 tracking-[0.02em] px-2 sm:px-0">
+            <strong className="text-white/80 font-semibold">TRANSFINITY</strong> is not just a clothing brand —
             it is a movement built for creators, dreamers, leaders, and those who refuse to stay ordinary.
             Every piece is designed with premium quality, bold energy, and timeless aesthetics that represent
-            <span style={{ color: '#C8A96E' }}> limitless ambition.</span>
+            <span className="text-[#C8A96E]"> limitless ambition.</span>
           </p>
 
           {/* Brand tags */}
-          <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
+          <div className="flex gap-2 sm:gap-3 justify-center flex-wrap">
             {['Luxury', 'Culture', 'Identity', 'Infinity'].map(tag => (
-              <span key={tag} style={{
-                padding: '6px 20px',
-                border: '1px solid rgba(200,169,110,0.3)',
-                borderRadius: '99px',
-                fontSize: '11px', fontWeight: 600,
-                letterSpacing: '0.15em', textTransform: 'uppercase',
-                color: 'rgba(200,169,110,0.7)',
-              }}>
+              <span key={tag} className="px-3 sm:px-5 py-1 sm:py-1.5 border border-[#C8A96E]/30 rounded-full text-[10px] sm:text-[11px] font-semibold tracking-[0.15em] uppercase text-[#C8A96E]/70 hover:border-[#C8A96E]/60 hover:text-[#C8A96E] transition-all duration-200 cursor-default">
                 {tag}
               </span>
             ))}
@@ -98,70 +54,41 @@ export default function Footer() {
       </div>
 
       {/* ── MAIN FOOTER LINKS ── */}
-      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '72px 24px 40px' }}>
+      <div className="max-w-[1200px] mx-auto px-4 sm:px-6 py-12 sm:py-16 lg:py-[72px] pb-8 sm:pb-10">
 
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
-          gap: '48px', marginBottom: '64px',
-        }}>
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-8 sm:gap-10 lg:gap-12 mb-12 sm:mb-16">
 
           {/* Brand column */}
-          <div style={{ gridColumn: 'span 1' }}>
-            <Link to="/" style={{
-              fontFamily: 'Playfair Display, serif',
-              fontSize: '28px', fontWeight: 700,
-              color: 'white', textDecoration: 'none',
-              display: 'block', marginBottom: '8px',
-            }}>
-              Trans<span style={{ color: '#C8A96E' }}>Finity</span>
+          <div className="col-span-2 sm:col-span-3 lg:col-span-1">
+            <Link to="/" className="font-[Playfair_Display,serif] text-2xl sm:text-[28px] font-bold text-white no-underline block mb-2">
+              Trans<span className="text-[#C8A96E]">Finity</span>
             </Link>
 
-            <p style={{
-              fontSize: '11px', letterSpacing: '0.15em',
-              color: 'rgba(255,255,255,0.25)', textTransform: 'uppercase',
-              marginBottom: '6px',
-            }}>
+            <p className="text-[10px] sm:text-[11px] tracking-[0.15em] text-white/25 uppercase mb-1.5">
               Beyond The Limits
             </p>
-            <p style={{
-              fontSize: '11px', letterSpacing: '0.1em',
-              color: 'rgba(255,255,255,0.2)', marginBottom: '24px',
-            }}>
+            <p className="text-[10px] sm:text-[11px] tracking-[0.1em] text-white/20 mb-5 sm:mb-6">
               Premium Streetwear Brand
             </p>
 
-            <p style={{ fontSize: '14px', lineHeight: 1.8, marginBottom: '24px', color: 'rgba(255,255,255,0.35)' }}>
+            <p className="text-xs sm:text-sm leading-relaxed mb-5 sm:mb-6 text-white/35">
               Luxury • Culture • Identity • Infinity
             </p>
 
             {/* Social icons */}
-            <div style={{ display: 'flex', gap: '10px' }}>
+            <div className="flex gap-2 sm:gap-2.5">
               {[
-                { icon: <FaInstagram size={16} />, href: '#', label: 'Instagram' },
-                { icon: <FaTwitter   size={16} />, href: '#', label: 'Twitter' },
-                { icon: <FaYoutube   size={16} />, href: '#', label: 'YouTube' },
-                { icon: <Mail        size={16} />, href: '#', label: 'Email' },
+                { icon: <FaInstagram size={15} className="sm:w-4 sm:h-4" />, href: '#', label: 'Instagram' },
+                { icon: <FaTwitter size={15} className="sm:w-4 sm:h-4" />, href: '#', label: 'Twitter' },
+                { icon: <FaYoutube size={15} className="sm:w-4 sm:h-4" />, href: '#', label: 'YouTube' },
+                { icon: <Mail size={15} className="sm:w-4 sm:h-4" />, href: '#', label: 'Email' },
               ].map((s, i) => (
-                <a key={i} href={s.href} aria-label={s.label} style={{
-                  width: '36px', height: '36px',
-                  border: '1px solid rgba(255,255,255,0.1)',
-                  borderRadius: '50%',
-                  display: 'flex', alignItems: 'center',
-                  justifyContent: 'center',
-                  color: 'rgba(255,255,255,0.4)',
-                  textDecoration: 'none', transition: 'all 0.2s',
-                }}
-                onMouseEnter={e => {
-                  e.currentTarget.style.borderColor = '#C8A96E'
-                  e.currentTarget.style.color = '#C8A96E'
-                  e.currentTarget.style.background = 'rgba(200,169,110,0.08)'
-                }}
-                onMouseLeave={e => {
-                  e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)'
-                  e.currentTarget.style.color = 'rgba(255,255,255,0.4)'
-                  e.currentTarget.style.background = 'transparent'
-                }}>
+                <a
+                  key={i}
+                  href={s.href}
+                  aria-label={s.label}
+                  className="w-8 h-8 sm:w-9 sm:h-9 border border-white/10 rounded-full flex items-center justify-center text-white/40 no-underline transition-all duration-200 hover:border-[#C8A96E] hover:text-[#C8A96E] hover:bg-[#C8A96E]/8"
+                >
                   {s.icon}
                 </a>
               ))}
@@ -208,22 +135,16 @@ export default function Footer() {
             },
           ].map(col => (
             <div key={col.title}>
-              <h4 style={{
-                fontSize: '10px', fontWeight: 700,
-                letterSpacing: '0.15em', textTransform: 'uppercase',
-                color: 'rgba(255,255,255,0.25)', marginBottom: '20px',
-              }}>
+              <h4 className="text-[9px] sm:text-[10px] font-bold tracking-[0.15em] uppercase text-white/25 mb-3 sm:mb-5">
                 {col.title}
               </h4>
-              <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <ul className="list-none flex flex-col gap-2 sm:gap-3">
                 {col.links.map(link => (
                   <li key={link.label}>
-                    <Link to={link.to} style={{
-                      fontSize: '13px', color: 'rgba(255,255,255,0.4)',
-                      textDecoration: 'none', transition: 'color 0.2s',
-                    }}
-                    onMouseEnter={e => { e.currentTarget.style.color = 'white' }}
-                    onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255,255,255,0.4)' }}>
+                    <Link
+                      to={link.to}
+                      className="text-xs sm:text-[13px] text-white/40 no-underline transition-colors duration-200 hover:text-white"
+                    >
                       {link.label}
                     </Link>
                   </li>
@@ -234,34 +155,24 @@ export default function Footer() {
         </div>
 
         {/* ── BOTTOM BAR ── */}
-        <div style={{
-          borderTop: '1px solid rgba(255,255,255,0.06)',
-          paddingTop: '32px',
-          display: 'flex', alignItems: 'center',
-          justifyContent: 'space-between',
-          flexWrap: 'wrap', gap: '16px',
-        }}>
-          <div>
-            <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.2)', marginBottom: '4px' }}>
+        <div className="border-t border-white/[0.06] pt-6 sm:pt-8 flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4">
+          <div className="text-center sm:text-left">
+            <p className="text-[11px] sm:text-xs text-white/20 mb-1">
               TRANSFINITY © 2026 — All rights reserved.
             </p>
-            <p style={{
-              fontSize: '11px', color: 'rgba(255,255,255,0.12)',
-              letterSpacing: '0.1em', textTransform: 'uppercase',
-            }}>
+            <p className="text-[10px] sm:text-[11px] text-white/[0.12] tracking-[0.1em] uppercase">
               Beyond The Limits · Premium Streetwear Brand
             </p>
           </div>
 
-          <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+          <div className="flex gap-1.5 sm:gap-2 items-center flex-wrap justify-center">
             {['💳 Visa', '💳 Mastercard', '📱 UPI', '💰 Razorpay'].map(p => (
-              <span key={p} style={{
-                fontSize: '11px', padding: '4px 10px',
-                background: 'rgba(255,255,255,0.04)',
-                border: '1px solid rgba(255,255,255,0.06)',
-                borderRadius: '4px',
-                color: 'rgba(255,255,255,0.2)',
-              }}>{p}</span>
+              <span
+                key={p}
+                className="text-[10px] sm:text-[11px] px-2 sm:px-2.5 py-1 bg-white/[0.04] border border-white/[0.06] rounded text-white/20"
+              >
+                {p}
+              </span>
             ))}
           </div>
         </div>
