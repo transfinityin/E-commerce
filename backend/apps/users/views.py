@@ -486,6 +486,9 @@ class GoogleAuthView(APIView):
 
     def post(self, request):
         credential = request.data.get('credential')
+        print(f"🔥 Received credential: {credential[:30] if credential else 'NONE'}...")
+        print(f"🔥 Using CLIENT_ID: {settings.GOOGLE_CLIENT_ID[:20]}...")
+
         if not credential:
             return Response({'error': 'Google credential required.'}, status=400)
 
@@ -496,6 +499,7 @@ class GoogleAuthView(APIView):
                 settings.GOOGLE_CLIENT_ID,
                 clock_skew_in_seconds=10,
             )
+            print(f"🔥 Token verified! Email: {idinfo.get('email')}")
 
             email = idinfo.get('email')
             name  = idinfo.get('name') or (email.split('@')[0] if email else 'User')
@@ -527,12 +531,13 @@ class GoogleAuthView(APIView):
             })
 
         except ValueError as e:
+            print(f"❌ Token verification ValueError: {e}")
             logger.error(f"Token verification error: {e}")
             return Response({'error': f'Invalid Google token: {str(e)}'}, status=400)
         except Exception as e:
+            print(f"❌ Unexpected error: {e}")
             logger.exception("Google auth unexpected error")
             return Response({'error': str(e)}, status=500)
-
 
 # ── Facebook Auth ─────────────────────────────────────────────
 class FacebookAuthView(APIView):

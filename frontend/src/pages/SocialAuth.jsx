@@ -36,15 +36,22 @@ export default function SocialAuth({ mode = 'login', className = '' }) {
     }
   }, [mode])
 
-  const handleGoogleResponse = async (response) => {
-    try {
-      await googleLogin(response.credential)
-      toast.success(mode === 'login' ? 'Welcome back!' : 'Account created!')
-      navigate('/')
-    } catch (err) {
-      toast.error('Google login failed. Please try again.')
-    }
+const handleGoogleResponse = async (response) => {
+  console.log('🔥 Google credential received:', response.credential?.substring(0, 20) + '...')
+  
+  try {
+    const result = await googleLogin(response.credential)
+    console.log('✅ Login success:', result)
+    toast.success(mode === 'login' ? 'Welcome back!' : 'Account created!')
+    navigate('/')
+  } catch (err) {
+    // 🔥 EXACT ERROR CONSOLE LA KAATUM
+    console.error('❌ Google login error:', err)
+    console.error('❌ Response data:', err.response?.data)
+    console.error('❌ Status:', err.response?.status)
+    toast.error(err.response?.data?.error || 'Google login failed. Please try again.')
   }
+}
 
   // ── Facebook SDK ────────────────────────────────────────────
   useEffect(() => {

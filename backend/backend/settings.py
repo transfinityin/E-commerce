@@ -524,6 +524,8 @@ EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'noreply@yourstore.com')
 
 GOOGLE_CLIENT_ID = os.getenv('GOOGLE_CLIENT_ID', '77769131402-5rh4qfjsoeof8k18l5ko2ducdctj3nkj.apps.googleusercontent.com')
+GOOGLE_CLIENT_SECRET = os.getenv('GOOGLE_CLIENT_SECRET', '')
+
 FRONTEND_URL = os.getenv('FRONTEND_URL', 'https://transfinity.shop')
 # ── Google OAuth Settings ────────────────────────────────────
 SOCIALACCOUNT_PROVIDERS = {
