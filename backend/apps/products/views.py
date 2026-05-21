@@ -1,3 +1,4 @@
+from django.conf import settings  
 from rest_framework import generics, status, permissions, filters
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -8,7 +9,9 @@ import re
 from django.db.models.functions import Greatest
 from django.db.models import Q, Value, FloatField
 from rest_framework.decorators import api_view, permission_classes
-
+import cloudinary
+import cloudinary.uploader
+import logging
 from .models import Category, Product, ProductImage
 from .serializers import (
     CategorySerializer, ProductListSerializer,
@@ -24,6 +27,9 @@ from django.contrib.postgres.search import (
 from rest_framework import generics, permissions
 from .models import Product
 from .serializers import ProductListSerializer
+
+logger = logging.getLogger(__name__)
+
 ARC_DATA = {
     'wanderer': {
         'name': 'Wanderer Edition',
@@ -456,29 +462,109 @@ class AdminProductDetailView(generics.RetrieveUpdateDestroyAPIView):
         return ProductWriteSerializer if self.request.method in ['PUT','PATCH'] else ProductDetailSerializer
 
 
+# class ProductImageUploadView(APIView):
+#     permission_classes = [IsAdmin]
+#     parser_classes     = [MultiPartParser, FormParser]
+
+#     def post(self, request, product_id):
+#         try:
+#             product = Product.objects.get(id=product_id)
+#         except Product.DoesNotExist:
+#             return Response({'error': 'Product not found.'}, status=404)
+#         images = request.FILES.getlist('images')
+#         if not images:
+#             return Response({'error': 'No images provided.'}, status=400)
+#         created = []
+#         for i, image in enumerate(images):
+#             is_primary = (i == 0 and not product.images.exists())
+#             img = ProductImage.objects.create(
+#                 product=product, image=image,
+#                 is_primary=is_primary,
+#                 sort_order=product.images.count() + i,
+#             )
+#             created.append(ProductImageSerializer(img, context={'request': request}).data)
+#         return Response({'message': f'{len(created)} image(s) uploaded.', 'images': created}, status=201)
+
+#     def delete(self, request, product_id):
+#         image_id = request.data.get('image_id')
+#         try:
+#             img = ProductImage.objects.get(id=image_id, product_id=product_id)
+#             img.delete()
+#             return Response({'message': 'Image deleted.'})
+#         except ProductImage.DoesNotExist:
+#             return Response({'error': 'Image not found.'}, status=404)
+
 class ProductImageUploadView(APIView):
     permission_classes = [IsAdmin]
     parser_classes     = [MultiPartParser, FormParser]
-
+ 
     def post(self, request, product_id):
+        cloudinary.config(
+        cloud_name=settings.CLOUDINARY_STORAGE['CLOUD_NAME'],
+        api_key=settings.CLOUDINARY_STORAGE['API_KEY'],
+        api_secret=settings.CLOUDINARY_STORAGE['API_SECRET'],
+    )
         try:
             product = Product.objects.get(id=product_id)
         except Product.DoesNotExist:
             return Response({'error': 'Product not found.'}, status=404)
+ 
         images = request.FILES.getlist('images')
         if not images:
             return Response({'error': 'No images provided.'}, status=400)
+ 
+        # Validate types & sizes upfront
+        allowed_types = ['image/jpeg', 'image/png', 'image/webp', 'image/jpg']
+        for img in images:
+            if img.content_type not in allowed_types:
+                return Response(
+                    {'error': f'{img.name}: Invalid type. Use JPG, PNG, or WEBP.'},
+                    status=400
+                )
+            if img.size > 10 * 1024 * 1024:
+                return Response(
+                    {'error': f'{img.name}: Too large. Max 10MB per image.'},
+                    status=400
+                )
+ 
         created = []
-        for i, image in enumerate(images):
-            is_primary = (i == 0 and not product.images.exists())
-            img = ProductImage.objects.create(
-                product=product, image=image,
-                is_primary=is_primary,
-                sort_order=product.images.count() + i,
-            )
-            created.append(ProductImageSerializer(img, context={'request': request}).data)
-        return Response({'message': f'{len(created)} image(s) uploaded.', 'images': created}, status=201)
-
+        is_first_upload = not product.images.exists()
+ 
+        for i, image_file in enumerate(images):
+            try:
+                # FIX: explicit Cloudinary upload — don't rely on DEFAULT_FILE_STORAGE
+                result = cloudinary.uploader.upload(
+                    image_file,
+                    folder=f'products/{product_id}',
+                    resource_type='image',
+                )
+                cloudinary_url = result['secure_url']
+ 
+                is_primary = (i == 0 and is_first_upload)
+ 
+                img_obj = ProductImage.objects.create(
+                    product=product,
+                    image=cloudinary_url,     # store the URL string
+                    is_primary=is_primary,
+                    sort_order=product.images.count() + i,
+                )
+                created.append(
+                    ProductImageSerializer(img_obj, context={'request': request}).data
+                )
+                logger.info(f"Product image uploaded: {cloudinary_url}")
+ 
+            except Exception as e:
+                logger.error(f"Cloudinary upload error for {image_file.name}: {str(e)}")
+                return Response(
+                    {'error': f'Upload failed for {image_file.name}: {str(e)}'},
+                    status=500
+                )
+ 
+        return Response(
+            {'message': f'{len(created)} image(s) uploaded.', 'images': created},
+            status=201
+        )
+ 
     def delete(self, request, product_id):
         image_id = request.data.get('image_id')
         try:
@@ -487,10 +573,25 @@ class ProductImageUploadView(APIView):
             return Response({'message': 'Image deleted.'})
         except ProductImage.DoesNotExist:
             return Response({'error': 'Image not found.'}, status=404)
+ 
+ 
+# class SetPrimaryImageView(APIView):
+#     permission_classes = [IsAdmin]
+#     def post(self, request, product_id, image_id):
+#         try:
+#             img = ProductImage.objects.get(id=image_id, product_id=product_id)
+#             ProductImage.objects.filter(product_id=product_id).update(is_primary=False)
+#             img.is_primary = True
+#             img.save()
+#             return Response({'message': 'Primary image updated.'})
+#         except ProductImage.DoesNotExist:
+#             return Response({'error': 'Image not found.'}, status=404)
+
 
 
 class SetPrimaryImageView(APIView):
     permission_classes = [IsAdmin]
+ 
     def post(self, request, product_id, image_id):
         try:
             img = ProductImage.objects.get(id=image_id, product_id=product_id)

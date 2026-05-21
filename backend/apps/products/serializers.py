@@ -19,13 +19,48 @@ class CategorySimpleSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'slug')
 
 
+# class ProductImageSerializer(serializers.ModelSerializer):
+#     image = serializers.SerializerMethodField()
+#     class Meta:
+#         model  = ProductImage
+#         fields = ('id', 'image', 'alt_text', 'is_primary', 'sort_order')
+#         read_only_fields = ('id',)
+#     def get_image(self, obj):
+#         if obj.image:
+#             request = self.context.get('request')
+#             if request:
+#                 return request.build_absolute_uri(obj.image.url)
+#             # Fallback if request not in context
+#             from django.conf import settings
+#             site_url = getattr(settings, 'SITE_URL', 'http://localhost:8000')
+#             return f"{site_url}{obj.image.url}"
+#         return None
+
 class ProductImageSerializer(serializers.ModelSerializer):
+    image = serializers.SerializerMethodField()
+
     class Meta:
         model  = ProductImage
         fields = ('id', 'image', 'alt_text', 'is_primary', 'sort_order')
         read_only_fields = ('id',)
 
-
+    def get_image(self, obj):
+        if not obj.image:
+            return None
+        
+        # FIX: obj.image could be a plain URL string (Cloudinary) 
+        # or an ImageField object — handle both
+        if isinstance(obj.image, str):
+            return obj.image  # already a full URL string, return as-is
+        
+        # ImageField object — build absolute URI
+        try:
+            request = self.context.get('request')
+            if request:
+                return request.build_absolute_uri(obj.image.url)
+            return obj.image.url
+        except Exception:
+            return str(obj.image)
 class ProductListSerializer(serializers.ModelSerializer):
     category         = CategorySimpleSerializer(read_only=True)
     primary_image    = serializers.SerializerMethodField()

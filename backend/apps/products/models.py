@@ -117,7 +117,8 @@ class Product(models.Model):
 class ProductImage(models.Model):
     id         = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     product    = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='images')
-    image      = models.ImageField(upload_to='products/')
+    # image      = models.ImageField(upload_to='products/')
+    image      = models.URLField(max_length=500, blank=True)
     alt_text   = models.CharField(max_length=200, blank=True)
     is_primary = models.BooleanField(default=False)
     sort_order = models.PositiveIntegerField(default=0)
