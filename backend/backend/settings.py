@@ -226,7 +226,7 @@ CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',
     'https://transfinity.shop',
     'https://www.transfinity.shop',
-    
+    os.getenv('FRONTEND_URL', 'https://transfinity.shop'),
     'https://e-commercetransfinity.vercel.app',
     'https://e-commercetransfinity-git-main-transfinityin-1144s-projects.vercel.app',
     'https://e-commercetransfinity-mrwe0lxmy-transfinityin-1144s-projects.vercel.app',
@@ -248,13 +248,12 @@ EMAIL_HOST_USER  = os.getenv('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'noreply@yourstore.com')
 
-GOOGLE_CLIENT_ID = "77769131402-5rh4qfjsoeof8k18l5ko2ducdctj3nkj.apps.googleusercontent.com"
-
+GOOGLE_CLIENT_ID = os.getenv('GOOGLE_CLIENT_ID', '77769131402-5rh4qfjsoeof8k18l5ko2ducdctj3nkj.apps.googleusercontent.com')
 # ── Google OAuth Settings ────────────────────────────────────
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
         'APP': {
-            'client_id': os.getenv('GOOGLE_CLIENT_ID'),
+            'client_id': GOOGLE_CLIENT_ID,
             'secret': os.getenv('GOOGLE_CLIENT_SECRET'),
             'key': ''
         },
@@ -272,6 +271,6 @@ SOCIALACCOUNT_PROVIDERS = {
 RAZORPAY_KEY_ID     = os.getenv('RAZORPAY_KEY_ID')
 RAZORPAY_KEY_SECRET = os.getenv('RAZORPAY_KEY_SECRET')
 SOCIALACCOUNT_AUTO_SIGNUP = True
-
+FRONTEND_URL = os.getenv('FRONTEND_URL', 'https://transfinity.shop')
 ACCOUNT_LOGIN_METHODS = {'email'}
 ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*', 'password2*']
