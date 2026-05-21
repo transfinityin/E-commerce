@@ -48,31 +48,31 @@ export default function Register() {
   ]
 
   return (
-    <div className="grid min-h-[calc(100vh-136px)] lg:grid-cols-2">
+    <div className="grid min-h-[calc(100vh-80px)] sm:min-h-[calc(100vh-100px)] lg:min-h-[calc(100vh-136px)] lg:grid-cols-2">
 
-      {/* LEFT PANEL */}
-      <div className="hidden lg:flex relative flex-col justify-center items-start overflow-hidden bg-[var(--color-secondary)] text-white px-14 py-16">
+      {/* LEFT PANEL - Desktop only */}
+      <div className="hidden lg:flex relative flex-col justify-center items-start overflow-hidden bg-[var(--color-secondary)] text-white px-10 xl:px-14 py-12 xl:py-16">
         {/* Decorative circles */}
-        <div className="absolute w-[480px] h-[480px] -top-[180px] -right-[160px] rounded-full border border-[var(--color-primary)]/10 pointer-events-none" />
-        <div className="absolute w-[560px] h-[560px] -bottom-[220px] -left-[180px] rounded-full border border-[var(--color-primary)]/10 pointer-events-none" />
+        <div className="absolute w-[400px] h-[400px] xl:w-[480px] xl:h-[480px] -top-[180px] -right-[160px] rounded-full border border-[var(--color-primary)]/10 pointer-events-none" />
+        <div className="absolute w-[480px] h-[480px] xl:w-[560px] xl:h-[560px] -bottom-[220px] -left-[180px] rounded-full border border-[var(--color-primary)]/10 pointer-events-none" />
 
         <div className="relative z-10 w-full max-w-md">
 
-          <Link to="/" className="font-[Playfair_Display] text-3xl font-bold text-white no-underline block mb-12">
+          <Link to="/" className="font-[Playfair_Display] text-2xl xl:text-3xl font-bold text-white no-underline block mb-8 xl:mb-12">
             Trans<span className="text-[var(--color-primary)]">Finity</span>
           </Link>
 
-          <h3 className="font-[Playfair_Display] text-5xl md:text-6xl font-bold text-white leading-tight mb-5">
+          <h3 className="font-[Playfair_Display] text-3xl xl:text-5xl 2xl:text-6xl font-bold text-white leading-tight mb-4 xl:mb-5">
             Join <br />
             <span className="italic text-[var(--color-primary)]">us.</span>
           </h3>
 
-          <p className="text-base text-white/55 leading-relaxed max-w-sm mb-10">
+          <p className="text-sm xl:text-base text-white/55 leading-relaxed max-w-sm mb-8 xl:mb-10">
             Create your account to unlock premium collections, faster checkout, wishlist access, and exclusive offers.
           </p>
 
           {/* Testimonial Card */}
-          <div className="bg-white/5 border border-white/[0.08] rounded-2xl p-6">
+          <div className="bg-white/5 border border-white/[0.08] rounded-2xl p-5 xl:p-6">
             <p className="text-white/60 text-sm leading-relaxed mb-4">
               "Premium experience from browsing to delivery. Everything feels elegant."
             </p>
@@ -96,49 +96,50 @@ export default function Register() {
       </div>
 
       {/* RIGHT PANEL */}
-      <div className="flex flex-col justify-center items-center bg-[var(--color-bg)] px-6 py-12 lg:px-10">
-        <Link to="/" className="lg:hidden font-[Playfair_Display] text-2xl font-bold text-[var(--color-text)] no-underline block mb-10">
+      <div className="flex flex-col justify-center items-center bg-[var(--color-bg)] px-4 sm:px-6 py-8 sm:py-10 lg:px-8 xl:px-10 min-h-full">
+        {/* Mobile Logo */}
+        <Link to="/" className="lg:hidden font-[Playfair_Display] text-xl sm:text-2xl font-bold text-[var(--color-text)] no-underline block mb-6 sm:mb-8">
           Trans<span className="text-[var(--color-primary)]">Finity</span>
         </Link>
 
-        <div className="w-full max-w-md animate-fadeUp">
+        <div className="w-full max-w-sm sm:max-w-md animate-fadeUp">
 
-          <p className="text-[11px] font-bold tracking-[0.2em] uppercase text-[var(--color-primary)] mb-2">
+          <p className="text-[10px] sm:text-[11px] font-bold tracking-[0.2em] uppercase text-[var(--color-primary)] mb-1.5 sm:mb-2">
             Get Started
           </p>
-          <h1 className="font-[Playfair_Display] text-3xl md:text-4xl font-bold text-[var(--color-text)] mb-2">
+          <h1 className="font-[Playfair_Display] text-2xl sm:text-3xl md:text-4xl font-bold text-[var(--color-text)] mb-1.5 sm:mb-2">
             Create Account
           </h1>
-          <p className="text-sm text-[var(--color-muted)] mb-7">
+          <p className="text-xs sm:text-sm text-[var(--color-muted)] mb-5 sm:mb-6 lg:mb-7">
             Join TransFinity and start your premium shopping experience.
           </p>
 
-          <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+          <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-3 sm:gap-3.5 lg:gap-4">
 
             {fields.map((f) => {
               const Icon = f.icon
               return (
-                <div key={f.name} className="flex flex-col gap-2">
-                  <label className="text-[13px] font-semibold text-[var(--color-text)] tracking-wide">
+                <div key={f.name} className="flex flex-col gap-1 sm:gap-1.5 lg:gap-2">
+                  <label className="text-xs sm:text-[13px] font-semibold text-[var(--color-text)] tracking-wide">
                     {f.label}
                   </label>
                   <div className="relative">
-                    <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--color-muted)] pointer-events-none">
-                      <Icon size={16} />
+                    <span className="absolute left-3 sm:left-3.5 top-1/2 -translate-y-1/2 text-[var(--color-muted)] pointer-events-none">
+                      <Icon size={14} className="sm:w-4 sm:h-4" />
                     </span>
                     <input
                       {...register(f.name)}
                       type={f.showToggle ? (f.showState ? 'text' : 'password') : f.type}
                       placeholder={f.placeholder}
-                      className={`w-full bg-[var(--color-surface)] border-[1.5px] border-[var(--color-border)] rounded-xl text-sm text-[var(--color-text)] transition-all duration-300 focus:border-[var(--color-text)] focus:shadow-[0_0_0_3px_rgba(13,13,13,0.06)] outline-none pl-11 pr-4 h-12 placeholder:text-[var(--color-muted-light)] ${errors[f.name] ? '!border-[var(--color-danger)]' : ''}`}
+                      className={`w-full bg-[var(--color-surface)] border-[1.5px] border-[var(--color-border)] rounded-xl text-sm text-[var(--color-text)] transition-all duration-300 focus:border-[var(--color-text)] focus:shadow-[0_0_0_3px_rgba(13,13,13,0.06)] outline-none pl-10 sm:pl-11 pr-4 h-11 sm:h-12 placeholder:text-[var(--color-muted-light)] ${errors[f.name] ? '!border-[var(--color-danger)]' : ''}`}
                     />
                     {f.showToggle && (
                       <button
                         type="button"
-                        className="absolute right-3.5 top-1/2 -translate-y-1/2 bg-transparent border-none cursor-pointer text-[var(--color-muted)] flex items-center transition-colors duration-300 hover:text-[var(--color-text)]"
+                        className="absolute right-3 sm:right-3.5 top-1/2 -translate-y-1/2 bg-transparent border-none cursor-pointer text-[var(--color-muted)] flex items-center transition-colors duration-300 hover:text-[var(--color-text)]"
                         onClick={() => f.setShow(!f.showState)}
                       >
-                        {f.showState ? <EyeOff size={16} /> : <Eye size={16} />}
+                        {f.showState ? <EyeOff size={14} className="sm:w-4 sm:h-4" /> : <Eye size={14} className="sm:w-4 sm:h-4" />}
                       </button>
                     )}
                   </div>
@@ -152,26 +153,26 @@ export default function Register() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full bg-[var(--color-btn)] hover:bg-[var(--color-btn-hover)] text-[var(--color-btn-text)] border-none rounded-xl text-[15px] font-semibold cursor-pointer flex items-center justify-center gap-2.5 transition-all duration-300 hover:-translate-y-px hover:shadow-lg active:translate-y-0 disabled:bg-[var(--color-muted)] disabled:cursor-not-allowed h-[50px] mt-2"
+              className="w-full bg-[var(--color-btn)] hover:bg-[var(--color-btn-hover)] text-[var(--color-btn-text)] border-none rounded-xl text-sm sm:text-[15px] font-semibold cursor-pointer flex items-center justify-center gap-2 sm:gap-2.5 transition-all duration-300 hover:-translate-y-px hover:shadow-lg active:translate-y-0 disabled:bg-[var(--color-muted)] disabled:cursor-not-allowed h-12 sm:h-[50px] mt-1 sm:mt-2"
             >
               {isSubmitting ? (
-                <><span className="w-[18px] h-[18px] border-2 border-white/30 border-t-white rounded-full animate-spin" /> Creating Account...</>
+                <><span className="w-4 h-4 sm:w-[18px] sm:h-[18px] border-2 border-white/30 border-t-white rounded-full animate-spin" /> Creating Account...</>
               ) : (
-                <>Create Account <ArrowRight size={18} /></>
+                <>Create Account <ArrowRight size={16} className="sm:w-[18px] sm:h-[18px]" /></>
               )}
             </button>
 
           </form>
 
-          <div className="flex items-center gap-4 my-5">
+          <div className="flex items-center gap-3 sm:gap-4 my-4 sm:my-5">
             <div className="flex-1 h-px bg-[var(--color-border-light)]" />
-            <span className="text-xs text-[var(--color-muted)] font-medium whitespace-nowrap">or Sign up with</span>
+            <span className="text-[11px] sm:text-xs text-[var(--color-muted)] font-medium whitespace-nowrap">or Sign up with</span>
             <div className="flex-1 h-px bg-[var(--color-border-light)]" />
           </div>
 
           <SocialAuth mode="register" />
 
-          <p className="text-center text-sm text-[var(--color-muted)] mt-5">
+          <p className="text-center text-xs sm:text-sm text-[var(--color-muted)] mt-4 sm:mt-5">
             Already have an account?{' '}
             <Link to="/login" className="text-[var(--color-primary)] no-underline font-medium hover:text-[var(--color-primary-dark)] transition-colors">
               Login
