@@ -4,8 +4,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.apps import apps
 from apps.notifications.utils import send_notification_email
-from backend.apps.utils.google_sheets import log_to_sheet
-
+from apps.utils.google_sheets import log_to_sheet
 @receiver(post_save, sender='orders.Order')
 def order_status_notification(sender, instance, created, **kwargs):
     Notification = apps.get_model('notifications', 'Notification')
