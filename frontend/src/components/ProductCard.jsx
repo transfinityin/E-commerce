@@ -25,12 +25,11 @@ export default function ProductCard({ product, index = 0 }) {
 const images = product.images?.length
   ? product.images.map(img => img.image)
   : product.primary_image?.image
-    ? [
-        product.primary_image.image,
-        product.primary_image.image,
-        product.primary_image.image
-      ]
+    ? [product.primary_image.image]
     : []
+
+// ADD THIS ↓↓↓
+console.log('Product:', product.id, 'images:', product.images, 'primary:', product.primary_image)
 const currentImage = images[imgIndex]
 
 useEffect(() => {
@@ -71,12 +70,18 @@ const nextImg = (e) => {
 
   const handleWishlist = async (e) => {
     e.preventDefault()
-    if (!isAuthenticated) { toast.error('Please sign in first'); return }
+    if (!isAuthenticated) { 
+      toast.error('Please sign in first'); 
+      return 
+    }
     setWishlisting(true)
     try {
       await toggle(product.id)
+      // ADD THIS LINE ↓↓↓
+      const nowSaved = isWishlisted(product.id)
+      toast.success(nowSaved ? 'Saved to wishlist!' : 'Removed from wishlist')
     } catch {
-      toast.error('Failed')
+      toast.error('Failed to update wishlist')
     } finally {
       setWishlisting(false)
     }

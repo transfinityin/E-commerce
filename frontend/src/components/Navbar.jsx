@@ -7,6 +7,8 @@ import NotificationBell from './NotificationBell';
 
 export default function Navbar() {
   const [scrolled,     setScrolled]     = useState(false)
+  const [hidden,       setHidden]       = useState(false)      // ADD
+  const lastScrollY = useRef(0)                                // ADD
   const [menuOpen,     setMenuOpen]     = useState(false)
   const [searchOpen,   setSearchOpen]   = useState(false)
   const [searchQuery,  setSearchQuery]  = useState('')
@@ -18,9 +20,20 @@ export default function Navbar() {
   const searchRef = useRef()
   const profileRef = useRef()
 
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 20)
-    window.addEventListener('scroll', onScroll)
+    useEffect(() => {
+    const onScroll = () => {
+      const currentY = window.scrollY
+      setScrolled(currentY > 20)
+
+      // Keezha scroll + 80px cross aana hide, mela scroll aana show
+      if (currentY > lastScrollY.current && currentY > 80) {
+        setHidden(true)
+      } else {
+        setHidden(false)
+      }
+      lastScrollY.current = currentY
+    }
+    window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
@@ -81,11 +94,13 @@ export default function Navbar() {
 
   return (
     <>
-      <nav className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-300 ${
-        scrolled 
-          ? 'bg-[var(--color-bg)]/96 backdrop-blur-xl border-b border-[var(--color-border)] shadow-[var(--shadow-sm)]' 
-          : 'bg-[var(--color-bg)] border-b border-transparent'
-      }`}>
+       <nav className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-300 ${
+  hidden ? '-translate-y-full' : 'translate-y-0'
+} ${
+  scrolled 
+    ? 'bg-[var(--color-bg)] border-b border-[var(--color-border)] shadow-[var(--shadow-sm)]' 
+    : 'bg-[var(--color-bg)] border-b border-transparent'
+}`}>
         {/* Top strip - Responsive */}
         <div className="bg-[var(--color-secondary)] text-[var(--color-text-inverse)] text-center font-medium text-[10px] sm:text-xs tracking-widest py-1.5 sm:py-2 px-2 sm:px-4 truncate">
           <span className="hidden sm:inline">✦ Free shipping on orders above ₹999 &nbsp;|&nbsp; Easy 7-day returns ✦</span>

@@ -65,6 +65,7 @@ class ProductListSerializer(serializers.ModelSerializer):
     category         = CategorySimpleSerializer(read_only=True)
     primary_image    = serializers.SerializerMethodField()
     discount_percent = serializers.ReadOnlyField()
+    images = ProductImageSerializer(many=True, read_only=True)  # ← ADD THIS LINE
     in_stock         = serializers.ReadOnlyField()
     effective_price  = serializers.ReadOnlyField()
     class Meta:
@@ -79,7 +80,7 @@ class ProductListSerializer(serializers.ModelSerializer):
             'rating_avg', 'rating_count',
             'is_active', 'is_featured',
             'available_sizes',   # ← add this
-            'primary_image', 'created_at', 'updated_at',
+            'primary_image', 'images','created_at', 'updated_at',
         )
     def get_primary_image(self, obj):
         img = obj.images.filter(is_primary=True).first() or obj.images.first()

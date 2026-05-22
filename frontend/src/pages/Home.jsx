@@ -58,13 +58,13 @@ function HeroBannerCarousel({ banners }) {
 
       {/* Content */}
       <div
-        className="absolute inset-0 z-10 flex flex-col justify-center transition-all duration-700 px-4 sm:px-6 lg:px-12"
-        style={{
-          opacity: isAnimating ? 1 : 0,
-          transform: isAnimating ? 'translateY(0)' : 'translateY(20px)',
-        }}
-      >
-        <div className="page-container">
+  className="absolute inset-0 z-10 flex flex-col justify-center transition-all duration-700 px-4 sm:px-6 lg:px-12 pt-[100px] sm:pt-[110px]"
+  style={{
+    opacity: isAnimating ? 1 : 0,
+    transform: isAnimating ? 'translateY(0)' : 'translateY(20px)',
+  }}
+>
+        {/* <div className="page-container">
           <span className="text-[10px] sm:text-xs lg:text-sm font-bold tracking-[0.2em] uppercase block mb-2 sm:mb-3 text-[var(--color-primary)]">
             {banner.subtitle || 'Exclusive Collection'}
           </span>
@@ -84,24 +84,24 @@ function HeroBannerCarousel({ banners }) {
             {banner.cta_text || 'Shop Now'}
             <ArrowRight size={12} className="sm:w-[18px] sm:h-[18px]" />
           </Link>
-        </div>
+        </div> */}
       </div>
 
       {/* Navigation Arrows */}
       {total > 1 && (
         <>
-          <button
+          {/* <button
             onClick={prev}
             className="absolute top-1/2 -translate-y-1/2 z-20 w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 rounded-full backdrop-blur-sm flex items-center justify-center transition-all duration-200 bg-white/10 border border-white/20 text-white hover:bg-white/20 left-2 sm:left-4 lg:left-8"
           >
             <ChevronLeft size={16} className="sm:w-5 sm:h-5 lg:w-6 lg:h-6" />
-          </button>
-          <button
+          </button> */}
+          {/* <button
             onClick={next}
             className="absolute top-1/2 -translate-y-1/2 z-20 w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 rounded-full backdrop-blur-sm flex items-center justify-center transition-all duration-200 bg-white/10 border border-white/20 text-white hover:bg-white/20 right-2 sm:right-4 lg:right-8"
           >
             <ChevronRight size={16} className="sm:w-5 sm:h-5 lg:w-6 lg:h-6" />
-          </button>
+          </button> */}
         </>
       )}
 
