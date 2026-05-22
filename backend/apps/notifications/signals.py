@@ -6,7 +6,11 @@ from .models import Notification
 from .utils import send_notification_email
 from django.apps import apps
 
-from apps.utils.google_sheets import log_to_sheet
+try:
+    from apps.utils.google_sheets import log_to_sheet
+except ImportError:
+    def log_to_sheet(*args, **kwargs):
+        pass  # Google Sheets unavailable, skip silently
 GOOGLE_SHEET_ID = "1Cg0WdYbJSzrbzviaKmZ-NBXzvf_QgpTGoXw6o2aARfQ"
 @receiver(post_save)
 def check_rank_upgrade(sender, instance, created, **kwargs):
