@@ -3,7 +3,7 @@
 // // ─── Environment-based API URL ───
 // // Production (Render) → uses the live backend
 // // Local development → uses localhost
-// // const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api';
+// // const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
 // // https://transfinity-backend.onrender.com
 // const API_URL = import.meta.env.VITE_API_URL || 'https://transfinity-backend.onrender.com/api'
 // const api = axios.create({
@@ -47,7 +47,7 @@
 
 import axios from 'axios'
 
-// 🔥 MUST use VITE_API_URL (not VITE_API_BASE_URL)
+// 🔥 MUST use VITE_API_URL (not VITE_API_URL)
 const API_URL = import.meta.env.VITE_API_URL || 'https://transfinity-backend.onrender.com/api'
 
 const api = axios.create({

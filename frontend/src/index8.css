@@ -1,0 +1,102 @@
+
+
+@import "tailwindcss";
+
+/* ============================================
+   THEME 4: EMERALD ELITE
+   Emerald Green + Charcoal
+   Modern Luxury
+   ============================================ */
+:root {
+  --color-primary:        #059669;
+  --color-primary-light:  #D1FAE5;
+  --color-primary-dark:   #047857;
+
+  --color-secondary:      #18181B;
+  --color-secondary-light:#27272A;
+
+  --color-bg:             #FAFAFA;
+  --color-bg-alt:         #F4F4F5;
+  --color-surface:        #FFFFFF;
+  --color-surface-dark:   #18181B;
+
+  --color-text:           #18181B;
+  --color-text-inverse:   #FFFFFF;
+  --color-muted:          #71717A;
+  --color-muted-light:    #A1A1AA;
+
+  --color-border:         #E4E4E7;
+  --color-border-light:   #D4D4D8;
+
+  --color-success:        #059669;
+  --color-success-bg:     #D1FAE5;
+  --color-danger:         #DC2626;
+  --color-danger-bg:      #FEE2E2;
+  --color-warning:        #D97706;
+  --color-warning-bg:     #FEF3C7;
+  --color-info:           #2563EB;
+  --color-info-bg:        #DBEAFE;
+
+  --color-btn:            #18181B;
+  --color-btn-hover:      #27272A;
+  --color-btn-text:       #FFFFFF;
+  --color-btn-outline:    #E4E4E7;
+
+  --color-scroll-track:   #F4F4F5;
+  --color-scroll-thumb:   #A1A1AA;
+  --color-scroll-hover:   #71717A;
+
+  --shadow-sm:            0 1px 3px rgba(24,24,27,0.06);
+  --shadow-md:            0 4px 12px rgba(24,24,27,0.08);
+  --shadow-lg:            0 8px 24px rgba(24,24,27,0.12);
+  --shadow-gold:          0 4px 20px rgba(5,150,105,0.15);
+}
+
+@layer components {
+  .page-container {
+    width: 100%;
+    max-width: 1280px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 16px;
+  }
+
+  @media (min-width: 640px) {
+    .page-container { padding: 24px; }
+  }
+
+  @media (min-width: 1024px) {
+    .page-container { padding: 32px 24px; }
+  }
+}
+
+
+
+
+
+/* Slow pulse for the active node */
+@keyframes pulse-slow {
+  0%, 100% { 
+    box-shadow: 0 0 30px rgba(0, 240, 255, 0.4), inset 0 0 20px rgba(0, 240, 255, 0.1);
+    border-color: rgba(0, 240, 255, 0.6);
+  }
+  50% { 
+    box-shadow: 0 0 50px rgba(0, 240, 255, 0.7), inset 0 0 30px rgba(0, 240, 255, 0.2);
+    border-color: rgba(0, 240, 255, 0.9);
+  }
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 3s ease-in-out infinite;
+}
+
+/* Floating animation for the node */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+}
+
+.animate-float {
+  animation: float 4s ease-in-out infinite;
+}
+

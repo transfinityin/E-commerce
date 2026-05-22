@@ -43,7 +43,6 @@ export default function Cart() {
   const freeShipPct = Math.min((subtotal / 999) * 100, 100)
   const freeShipRemaining = Math.max(999 - subtotal, 0)
 
-  /* ── Group items by product for size display ── */
   const groupedItems = cart?.items?.reduce((acc, item) => {
     const key = item.product.id
     if (!acc[key]) {
@@ -54,11 +53,10 @@ export default function Cart() {
     return acc
   }, {}) || {}
 
-  /* ── Loading ── */
   if (loading) return (
     <div className="min-h-screen bg-[var(--color-bg)]">
-      <div className="page-container py-8 sm:py-12">
-        <div className="h-6 sm:h-8 bg-[var(--color-bg-alt)] rounded-lg animate-pulse w-36 sm:w-48 mb-6 sm:mb-10" />
+      <div className="page-container py-6 sm:py-8 lg:py-12">
+        <div className="h-6 sm:h-8 bg-[var(--color-bg-alt)] rounded-lg animate-pulse w-32 sm:w-48 mb-6 sm:mb-10" />
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_340px] xl:grid-cols-[1fr_380px] gap-4 sm:gap-6">
           <div className="space-y-3 sm:space-y-4">
             {[1, 2, 3].map(i => (
@@ -71,12 +69,11 @@ export default function Cart() {
     </div>
   )
 
-  /* ── Empty ── */
   if (!cart || cart.items?.length === 0) return (
-    <div className="min-h-screen bg-[var(--color-bg)] flex items-center justify-center px-4">
+    <div className="min-h-screen bg-[var(--color-bg)] flex items-center justify-center px-4 py-8">
       <div className="flex flex-col items-center text-center gap-4 sm:gap-5 px-4 sm:px-6 py-10 sm:py-12">
-        <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-[var(--color-primary-light)] flex items-center justify-center mb-1 sm:mb-2">
-          <ShoppingBag size={28} className="sm:w-9 sm:h-9 text-[var(--color-primary)]" strokeWidth={1.5} />
+        <div className="w-14 h-14 sm:w-20 sm:h-20 rounded-full bg-[var(--color-primary-light)] flex items-center justify-center mb-1 sm:mb-2">
+          <ShoppingBag size={24} className="sm:w-9 sm:h-9 text-[var(--color-primary)]" strokeWidth={1.5} />
         </div>
         <div>
           <p className="text-[10px] sm:text-[11px] font-bold tracking-[0.2em] uppercase text-[var(--color-primary)] mb-1.5 sm:mb-2">
@@ -99,13 +96,12 @@ export default function Cart() {
     </div>
   )
 
-  /* ── Main Cart ── */
   return (
     <div className="min-h-screen bg-[var(--color-bg)]">
 
       {/* Page header */}
       <div className="bg-[var(--color-secondary)]">
-        <div className="page-container py-6 sm:py-8">
+        <div className="page-container py-5 sm:py-8">
           <div className="flex flex-wrap items-center justify-between gap-3 sm:gap-4">
             <div>
               <p className="text-[10px] sm:text-[11px] font-bold tracking-[0.2em] uppercase text-[var(--color-primary)] mb-1.5 sm:mb-2">
@@ -120,7 +116,7 @@ export default function Cart() {
             </div>
             <button
               onClick={clearCart}
-              className="text-xs sm:text-sm font-medium rounded-lg transition-all duration-200 bg-[var(--color-danger-bg)] text-[var(--color-danger)] border border-[var(--color-danger)]/20 hover:bg-[var(--color-danger)] hover:text-white px-3 sm:px-5 py-2 sm:py-2.5"
+              className="text-xs sm:text-sm font-medium rounded-lg transition-all duration-200 bg-[var(--color-danger-bg)] text-[var(--color-danger)] border border-[var(--color-danger)]/20 hover:bg-[var(--color-danger)] hover:text-white px-3 sm:px-5 py-2 sm:py-2.5 cursor-pointer"
             >
               Clear Cart
             </button>
@@ -129,10 +125,10 @@ export default function Cart() {
       </div>
 
       {/* Grid */}
-      <div className="page-container py-6 sm:py-8 lg:py-10">
+      <div className="page-container py-5 sm:py-8 lg:py-10">
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_340px] xl:grid-cols-[1fr_380px] items-start gap-4 sm:gap-6 lg:gap-8">
 
-          {/* ── LEFT ── */}
+          {/* LEFT */}
           <div className="flex flex-col gap-3 sm:gap-4">
 
             {/* Free shipping bar */}
@@ -174,7 +170,7 @@ export default function Cart() {
                 style={{ animationDelay: `${index * 0.07}s` }}
               >
                 {/* Image */}
-                <div className="w-full h-40 sm:w-24 sm:h-24 lg:w-28 lg:h-28 flex-shrink-0 rounded-lg sm:rounded-xl overflow-hidden bg-[var(--color-bg-alt)] border border-[var(--color-border)] group">
+                <div className="w-full h-44 sm:w-24 sm:h-24 lg:w-28 lg:h-28 flex-shrink-0 rounded-lg sm:rounded-xl overflow-hidden bg-[var(--color-bg-alt)] border border-[var(--color-border)] group">
                   <img
                     src={group.product.primary_image?.image || group.product.image || ''}
                     alt={group.product.name}
@@ -191,7 +187,6 @@ export default function Cart() {
                     {group.product.name}
                   </Link>
 
-                  {/* Size breakdown */}
                   <div className="flex flex-wrap gap-1.5 sm:gap-2 mt-2 sm:mt-2.5">
                     {group.sizes.map(({ size, qty }) => (
                       <div
@@ -223,36 +218,34 @@ export default function Cart() {
                     <div key={itemId} className="flex items-center gap-2 sm:gap-3 justify-between sm:justify-end">
                       <span className="text-[10px] sm:text-xs font-bold text-[var(--color-muted)] w-5 sm:w-6">{size}</span>
 
-                      {/* Stepper */}
                       <div className="flex items-center bg-[var(--color-bg-alt)] rounded-full border border-[var(--color-border)] p-0.5">
                         <button
                           onClick={() => handleUpdate(itemId, qty - 1)}
                           disabled={updatingItems.has(itemId) || qty <= 1}
-                          className="rounded-full bg-[var(--color-surface)] border border-[var(--color-border)] flex items-center justify-center text-[var(--color-text)] transition-all duration-200 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-[var(--color-secondary)] hover:text-[var(--color-text-inverse)] hover:border-[var(--color-secondary)] w-6 h-6 sm:w-7 sm:h-7"
+                          className="rounded-full bg-[var(--color-surface)] border border-[var(--color-border)] flex items-center justify-center text-[var(--color-text)] transition-all duration-200 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-[var(--color-secondary)] hover:text-[var(--color-text-inverse)] hover:border-[var(--color-secondary)] w-8 h-8 sm:w-7 sm:h-7"
                         >
-                          <Minus size={10} className="sm:w-3 sm:h-3" />
+                          <Minus size={12} className="sm:w-3 sm:h-3" />
                         </button>
 
-                        <span className="text-xs sm:text-sm font-bold text-[var(--color-text)] text-center w-6 sm:w-8">
+                        <span className="text-xs sm:text-sm font-bold text-[var(--color-text)] text-center w-8 sm:w-8">
                           {updatingItems.has(itemId) ? '…' : qty}
                         </span>
 
                         <button
                           onClick={() => handleUpdate(itemId, qty + 1)}
                           disabled={updatingItems.has(itemId)}
-                          className="rounded-full bg-[var(--color-secondary)] border-none flex items-center justify-center text-[var(--color-text-inverse)] transition-all duration-200 cursor-pointer hover:bg-[var(--color-secondary-light)] w-6 h-6 sm:w-7 sm:h-7"
+                          className="rounded-full bg-[var(--color-secondary)] border-none flex items-center justify-center text-[var(--color-text-inverse)] transition-all duration-200 cursor-pointer hover:bg-[var(--color-secondary-light)] w-8 h-8 sm:w-7 sm:h-7"
                         >
-                          <Plus size={10} className="sm:w-3 sm:h-3" />
+                          <Plus size={12} className="sm:w-3 sm:h-3" />
                         </button>
                       </div>
 
-                      {/* Remove */}
                       <button
                         onClick={() => handleRemove(itemId)}
                         disabled={removingItems.has(itemId)}
-                        className="rounded-full bg-[var(--color-bg-alt)] border border-[var(--color-border)] flex items-center justify-center text-[var(--color-muted)] transition-all duration-200 cursor-pointer hover:bg-[var(--color-danger-bg)] hover:border-[var(--color-danger)]/30 hover:text-[var(--color-danger)] w-7 h-7 sm:w-8 sm:h-8"
+                        className="rounded-full bg-[var(--color-bg-alt)] border border-[var(--color-border)] flex items-center justify-center text-[var(--color-muted)] transition-all duration-200 cursor-pointer hover:bg-[var(--color-danger-bg)] hover:border-[var(--color-danger)]/30 hover:text-[var(--color-danger)] w-8 h-8 sm:w-8 sm:h-8"
                       >
-                        <Trash2 size={12} className="sm:w-3.5 sm:h-3.5" />
+                        <Trash2 size={14} className="sm:w-3.5 sm:h-3.5" />
                       </button>
                     </div>
                   ))}
@@ -268,20 +261,18 @@ export default function Cart() {
             </Link>
           </div>
 
-          {/* ── RIGHT: Summary ── */}
+          {/* RIGHT: Summary */}
           <div className="lg:sticky lg:top-24">
             <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-xl sm:rounded-2xl overflow-hidden shadow-lg">
-              {/* Header */}
-              <div className="bg-[var(--color-secondary)] px-5 sm:px-7 py-4 sm:py-6">
-                <h3 className="text-lg sm:text-xl font-bold text-[var(--color-text-inverse)]">Order Summary</h3>
+              <div className="bg-[var(--color-secondary)] px-4 sm:px-7 py-4 sm:py-6">
+                <h3 className="text-base sm:text-xl font-bold text-[var(--color-text-inverse)]">Order Summary</h3>
                 <p className="text-[10px] sm:text-xs text-[var(--color-muted)] mt-1">
                   {cart.total_items} {cart.total_items === 1 ? 'item' : 'items'} selected
                 </p>
               </div>
 
-              <div className="px-5 sm:px-7 py-5 sm:py-6">
+              <div className="px-4 sm:px-7 py-4 sm:py-6">
 
-                {/* Coupon */}
                 <div className="flex items-center bg-[var(--color-bg-alt)] border border-[var(--color-border)] rounded-xl gap-2 px-2.5 sm:px-3 py-1.5 sm:py-2 mb-4 sm:mb-5">
                   <Tag size={12} className="sm:w-3.5 sm:h-3.5 text-[var(--color-muted)] shrink-0" />
                   <input
@@ -296,7 +287,6 @@ export default function Cart() {
                   </button>
                 </div>
 
-                {/* Prices */}
                 <div className="flex flex-col gap-2.5 sm:gap-3.5 mb-3 sm:mb-4">
                   <div className="flex justify-between items-center">
                     <span className="text-xs sm:text-sm text-[var(--color-muted)]">Subtotal</span>
@@ -320,15 +310,13 @@ export default function Cart() {
 
                 <div className="border-t border-[var(--color-border)] my-4 sm:my-5" />
 
-                {/* Total */}
                 <div className="flex justify-between items-center mb-4 sm:mb-6">
                   <span className="text-sm sm:text-base font-bold text-[var(--color-text)]">Total</span>
-                  <span className="text-2xl sm:text-3xl font-bold text-[var(--color-text)]">
+                  <span className="text-xl sm:text-3xl font-bold text-[var(--color-text)]">
                     ₹{Number(finalTotal).toLocaleString('en-IN')}
                   </span>
                 </div>
 
-                {/* Checkout btn */}
                 <button
                   onClick={() => navigate('/checkout')}
                   className="w-full bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] text-white border-none rounded-xl text-sm sm:text-base font-bold cursor-pointer flex items-center justify-center transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 py-3 sm:py-3.5 gap-2 sm:gap-2.5 mb-2 sm:mb-3"
@@ -343,7 +331,6 @@ export default function Cart() {
                   ← Continue Shopping
                 </Link>
 
-                {/* Trust */}
                 <div className="flex flex-col gap-2 sm:gap-2.5">
                   {[
                     { icon: <Shield size={12} className="sm:w-3.5 sm:h-3.5" />, label: 'Secure encrypted checkout' },

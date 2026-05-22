@@ -21,6 +21,15 @@ const STATUS_STEPS = [
   { key: 'delivered',  label: 'Delivered',       icon: CheckCircle2 },
 ]
 
+// Helper for image URL
+const getImageUrl = (imageData) => {
+  if (!imageData) return null
+  const imagePath = typeof imageData === 'object' ? imageData.image : imageData
+  if (!imagePath) return null
+  if (imagePath.startsWith('http')) return imagePath
+  return `http://localhost:8000${imagePath.startsWith('/') ? '' : '/'}${imagePath}`
+}
+
 export default function OrderDetail() {
   const { id } = useParams()
   const navigate = useNavigate()
@@ -37,7 +46,7 @@ export default function OrderDetail() {
 
   if (loading) return (
     <div className="min-h-screen bg-[var(--color-bg)] flex items-center justify-center">
-      <div className="w-8 h-8 border-2 border-[var(--color-primary)] border-t-transparent rounded-full animate-spin" />
+      <div className="w-6 h-6 sm:w-8 sm:h-8 border-2 border-[var(--color-primary)] border-t-transparent rounded-full animate-spin" />
     </div>
   )
 
@@ -49,56 +58,63 @@ export default function OrderDetail() {
   const StatusIcon = cfg.icon
 
   return (
-    <div className="min-h-screen bg-[var(--color-bg)] pb-12">
+    <div className="min-h-screen bg-[var(--color-bg)] pb-8 sm:pb-12">
 
       {/* Header Bar */}
       <div className="sticky top-0 z-10 bg-[var(--color-surface)] border-b border-[var(--color-border)] shadow-sm">
-        <div className="page-container py-4 flex items-center gap-3">
+        <div className="page-container py-3 sm:py-4 flex items-center gap-2 sm:gap-3">
           <button
             onClick={() => navigate('/orders')}
-            className="flex items-center gap-2 text-sm font-semibold text-[var(--color-text)] hover:text-[var(--color-primary)] transition-colors bg-transparent border-none cursor-pointer"
+            className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm font-semibold text-[var(--color-text)] hover:text-[var(--color-primary)] transition-colors bg-transparent border-none cursor-pointer"
           >
-            <ArrowLeft size={18} />
+            <ArrowLeft size={16} className="sm:w-[18px] sm:h-[18px]" />
             My Orders
           </button>
         </div>
       </div>
 
-      <div className="page-container py-6 lg:py-8 space-y-5">
+      <div className="page-container py-4 sm:py-6 lg:py-8 space-y-4 sm:space-y-5">
 
         {/* Order Info Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-3">
           <div>
-            <p className="text-[11px] font-bold tracking-[0.2em] uppercase text-[var(--color-primary)] mb-1">
+            <p className="text-[10px] sm:text-[11px] font-bold tracking-[0.2em] uppercase text-[var(--color-primary)] mb-1">
               Order Details
             </p>
-            <h1 className="text-xl lg:text-2xl font-bold text-[var(--color-text)]">
+            <h1 className="text-lg sm:text-xl lg:text-2xl font-bold text-[var(--color-text)]">
               Order <span className="font-mono text-[var(--color-muted)]">#{order.id?.slice(0, 8).toUpperCase()}</span>
             </h1>
-            <p className="text-xs text-[var(--color-muted)] mt-1">
+            <p className="text-[10px] sm:text-xs text-[var(--color-muted)] mt-0.5 sm:mt-1">
               Placed on {new Date(order.created_at).toLocaleDateString('en-IN', {
                 day: 'numeric', month: 'long', year: 'numeric'
               })}
             </p>
           </div>
-          <span className="inline-flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full font-bold border w-fit bg-[var(--color-bg-alt)] text-[var(--color-text)] border-[var(--color-border)]">
-            <StatusIcon size={12} />
+          <span 
+            className="inline-flex items-center gap-1 sm:gap-1.5 text-[10px] sm:text-xs px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full font-bold border w-fit"
+            style={{
+              backgroundColor: cfg.bg,
+              color: cfg.text,
+              borderColor: cfg.border
+            }}
+          >
+            <StatusIcon size={10} className="sm:w-3 sm:h-3" />
             {cfg.label}
           </span>
         </div>
 
         {/* Progress Tracker */}
         {order.status !== 'cancelled' && order.status !== 'refunded' && (
-          <div className="bg-[var(--color-surface)] rounded-2xl border border-[var(--color-border)] shadow-sm p-5 lg:p-6">
-            <h3 className="text-xs font-bold tracking-wide uppercase text-[var(--color-text)] mb-5">
+          <div className="bg-[var(--color-surface)] rounded-xl sm:rounded-2xl border border-[var(--color-border)] shadow-sm p-4 sm:p-5 lg:p-6">
+            <h3 className="text-[10px] sm:text-xs font-bold tracking-wide uppercase text-[var(--color-text)] mb-4 sm:mb-5">
               Order Progress
             </h3>
             <div className="flex items-start justify-between relative">
               {/* Progress Line Background */}
-              <div className="absolute top-3 left-0 right-0 h-0.5 mx-4 bg-[var(--color-border)]" />
+              <div className="absolute top-2.5 sm:top-3 left-0 right-0 h-0.5 mx-2 sm:mx-4 bg-[var(--color-border)]" />
               {/* Progress Line Fill */}
               <div
-                className="absolute top-3 left-0 h-0.5 mx-4 transition-all duration-500 ease-out bg-[var(--color-primary)]"
+                className="absolute top-2.5 sm:top-3 left-0 h-0.5 mx-2 sm:mx-4 transition-all duration-500 ease-out bg-[var(--color-primary)]"
                 style={{ width: `${(currentStep / (STATUS_STEPS.length - 1)) * 100}%` }}
               />
 
@@ -110,16 +126,16 @@ export default function OrderDetail() {
                 return (
                   <div key={s.key} className="relative flex flex-col items-center z-10 flex-1">
                     <div
-                      className={`w-7 h-7 rounded-full flex items-center justify-center border-2 transition-all duration-300 ${isCurrent ? 'ring-2 ring-offset-2 ring-[var(--color-primary)] ring-offset-[var(--color-surface)]' : ''}`}
+                      className={`w-5 h-5 sm:w-6 sm:h-6 lg:w-7 lg:h-7 rounded-full flex items-center justify-center border-2 transition-all duration-300 ${isCurrent ? 'ring-2 ring-offset-1 sm:ring-offset-2 ring-[var(--color-primary)] ring-offset-[var(--color-surface)]' : ''}`}
                       style={{
                         backgroundColor: isDone ? 'var(--color-primary)' : 'var(--color-surface)',
                         borderColor: isDone ? 'var(--color-primary)' : 'var(--color-border-light)',
                         color: isDone ? 'var(--color-text-inverse)' : 'var(--color-muted-light)',
                       }}
                     >
-                      <StepIcon size={12} strokeWidth={2.5} />
+                      <StepIcon size={10} className="sm:w-3 sm:h-3" strokeWidth={2.5} />
                     </div>
-                    <span className={`text-[10px] font-semibold mt-2 text-center leading-tight ${isDone ? 'text-[var(--color-text)]' : 'text-[var(--color-muted)]'}`}>
+                    <span className={`text-[9px] sm:text-[10px] font-semibold mt-1.5 sm:mt-2 text-center leading-tight ${isDone ? 'text-[var(--color-text)]' : 'text-[var(--color-muted)]'}`}>
                       {s.label}
                     </span>
                   </div>
@@ -130,9 +146,9 @@ export default function OrderDetail() {
         )}
 
         {/* Items Ordered */}
-        <div className="bg-[var(--color-surface)] rounded-2xl border border-[var(--color-border)] shadow-sm overflow-hidden">
-          <div className="px-5 py-4 border-b border-[var(--color-border)]">
-            <h3 className="text-xs font-bold tracking-wide uppercase text-[var(--color-text)]">
+        <div className="bg-[var(--color-surface)] rounded-xl sm:rounded-2xl border border-[var(--color-border)] shadow-sm overflow-hidden">
+          <div className="px-4 sm:px-5 py-3 sm:py-4 border-b border-[var(--color-border)]">
+            <h3 className="text-[10px] sm:text-xs font-bold tracking-wide uppercase text-[var(--color-text)]">
               Items Ordered ({order.items?.length || 0})
             </h3>
           </div>
@@ -140,36 +156,38 @@ export default function OrderDetail() {
             {order.items?.map((item, idx) => (
               <div
                 key={item.id}
-                className={`flex items-center gap-4 px-5 py-4 ${idx < (order.items?.length || 0) - 1 ? 'border-b border-[var(--color-border)]' : ''}`}
+                className={`flex items-center gap-3 sm:gap-4 px-4 sm:px-5 py-3 sm:py-4 ${idx < (order.items?.length || 0) - 1 ? 'border-b border-[var(--color-border)]' : ''}`}
               >
                 {/* Product Image */}
-                <div className="w-16 h-20 rounded-lg flex items-center justify-center overflow-hidden flex-shrink-0 bg-[var(--color-bg-alt)] border border-[var(--color-border)]">
-                  {item.product?.primary_image?.image ? (
+                <div className="w-12 h-14 sm:w-14 sm:h-16 lg:w-16 lg:h-20 rounded-lg flex items-center justify-center overflow-hidden flex-shrink-0 bg-[var(--color-bg-alt)] border border-[var(--color-border)]">
+                  {getImageUrl(item.product?.primary_image) ? (
                     <img
-                      src={item.product.primary_image.image}
+                      src={getImageUrl(item.product?.primary_image)}
                       alt={item.product_name}
                       className="w-full h-full object-cover"
+                      onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex' }}
                     />
-                  ) : (
-                    <Package size={20} className="text-[var(--color-muted)]" />
-                  )}
+                  ) : null}
+                  <div className={`w-full h-full items-center justify-center ${getImageUrl(item.product?.primary_image) ? 'hidden' : 'flex'}`}>
+                    <Package size={16} className="sm:w-5 sm:h-5 text-[var(--color-muted)]" />
+                  </div>
                 </div>
 
                 {/* Product Info */}
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold truncate text-[var(--color-text)]">
+                  <p className="text-xs sm:text-sm font-semibold truncate text-[var(--color-text)]">
                     {item.product_name}
                   </p>
                   {item.size && (
-                    <p className="text-xs mt-0.5 text-[var(--color-muted)]">Size: {item.size}</p>
+                    <p className="text-[10px] sm:text-xs mt-0.5 text-[var(--color-muted)]">Size: {item.size}</p>
                   )}
-                  <p className="text-xs mt-1 text-[var(--color-muted)]">
+                  <p className="text-[10px] sm:text-xs mt-0.5 sm:mt-1 text-[var(--color-muted)]">
                     Qty {item.quantity} × ₹{Number(item.unit_price).toLocaleString('en-IN')}
                   </p>
                 </div>
 
                 {/* Line Total */}
-                <span className="text-sm font-bold whitespace-nowrap text-[var(--color-text)]">
+                <span className="text-xs sm:text-sm font-bold whitespace-nowrap text-[var(--color-text)]">
                   ₹{Number(item.line_total).toLocaleString('en-IN')}
                 </span>
               </div>
@@ -178,66 +196,66 @@ export default function OrderDetail() {
         </div>
 
         {/* Address + Summary Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
 
           {/* Delivery Address */}
-          <div className="bg-[var(--color-surface)] rounded-2xl border border-[var(--color-border)] shadow-sm p-5">
-            <div className="flex items-center gap-2 mb-4">
-              <div className="w-8 h-8 rounded-full bg-[var(--color-primary-light)] flex items-center justify-center">
-                <MapPin size={16} className="text-[var(--color-primary)]" />
+          <div className="bg-[var(--color-surface)] rounded-xl sm:rounded-2xl border border-[var(--color-border)] shadow-sm p-4 sm:p-5">
+            <div className="flex items-center gap-2 sm:gap-2.5 mb-3 sm:mb-4">
+              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[var(--color-primary-light)] flex items-center justify-center">
+                <MapPin size={14} className="sm:w-4 sm:h-4 text-[var(--color-primary)]" />
               </div>
-              <h3 className="text-xs font-bold tracking-wide uppercase text-[var(--color-text)]">
+              <h3 className="text-[10px] sm:text-xs font-bold tracking-wide uppercase text-[var(--color-text)]">
                 Delivery Address
               </h3>
             </div>
-            <div className="space-y-1">
-              <p className="text-sm font-bold text-[var(--color-text)]">{order.address?.full_name}</p>
-              <p className="text-xs leading-relaxed text-[var(--color-muted)]">
+            <div className="space-y-0.5 sm:space-y-1">
+              <p className="text-xs sm:text-sm font-bold text-[var(--color-text)]">{order.address?.full_name}</p>
+              <p className="text-[10px] sm:text-xs leading-relaxed text-[var(--color-muted)]">
                 {order.address?.line1}
                 {order.address?.line2 && `, ${order.address?.line2}`}
               </p>
-              <p className="text-xs text-[var(--color-muted)]">
+              <p className="text-[10px] sm:text-xs text-[var(--color-muted)]">
                 {order.address?.city}, {order.address?.state} — {order.address?.pincode}
               </p>
-              <p className="text-xs text-[var(--color-muted)] mt-2">
+              <p className="text-[10px] sm:text-xs text-[var(--color-muted)] mt-1.5 sm:mt-2">
                 📞 {order.address?.phone}
               </p>
             </div>
           </div>
 
           {/* Price Summary */}
-          <div className="bg-[var(--color-surface)] rounded-2xl border border-[var(--color-border)] shadow-sm p-5">
-            <div className="flex items-center gap-2 mb-4">
-              <div className="w-8 h-8 rounded-full bg-[var(--color-primary-light)] flex items-center justify-center">
-                <CreditCard size={16} className="text-[var(--color-primary)]" />
+          <div className="bg-[var(--color-surface)] rounded-xl sm:rounded-2xl border border-[var(--color-border)] shadow-sm p-4 sm:p-5">
+            <div className="flex items-center gap-2 sm:gap-2.5 mb-3 sm:mb-4">
+              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[var(--color-primary-light)] flex items-center justify-center">
+                <CreditCard size={14} className="sm:w-4 sm:h-4 text-[var(--color-primary)]" />
               </div>
-              <h3 className="text-xs font-bold tracking-wide uppercase text-[var(--color-text)]">
+              <h3 className="text-[10px] sm:text-xs font-bold tracking-wide uppercase text-[var(--color-text)]">
                 Price Summary
               </h3>
             </div>
-            <div className="space-y-2.5">
-              <div className="flex justify-between text-xs">
+            <div className="space-y-2 sm:space-y-2.5">
+              <div className="flex justify-between text-[10px] sm:text-xs">
                 <span className="text-[var(--color-muted)]">Subtotal</span>
                 <span className="font-medium text-[var(--color-text)]">₹{Number(order.subtotal).toLocaleString('en-IN')}</span>
               </div>
               {parseFloat(order.discount) > 0 && (
-                <div className="flex justify-between text-xs">
+                <div className="flex justify-between text-[10px] sm:text-xs">
                   <span className="text-[var(--color-success)]">Discount</span>
                   <span className="font-medium text-[var(--color-success)]">−₹{Number(order.discount).toLocaleString('en-IN')}</span>
                 </div>
               )}
-              <div className="flex justify-between text-xs">
+              <div className="flex justify-between text-[10px] sm:text-xs">
                 <span className="text-[var(--color-muted)]">Delivery</span>
                 <span className={`font-medium ${parseFloat(order.delivery_fee) === 0 ? 'text-[var(--color-success)]' : 'text-[var(--color-text)]'}`}>
                   {parseFloat(order.delivery_fee) === 0 ? 'FREE' : `₹${Number(order.delivery_fee).toLocaleString('en-IN')}`}
                 </span>
               </div>
-              <div className="border-t border-[var(--color-border)] my-2" />
+              <div className="border-t border-[var(--color-border)] my-1.5 sm:my-2" />
               <div className="flex justify-between">
-                <span className="text-sm font-bold text-[var(--color-text)]">Total</span>
-                <span className="text-sm font-bold text-[var(--color-text)]">₹{Number(order.total).toLocaleString('en-IN')}</span>
+                <span className="text-xs sm:text-sm font-bold text-[var(--color-text)]">Total</span>
+                <span className="text-xs sm:text-sm font-bold text-[var(--color-text)]">₹{Number(order.total).toLocaleString('en-IN')}</span>
               </div>
-              <p className="text-[10px] text-right text-[var(--color-muted)]">
+              <p className="text-[9px] sm:text-[10px] text-right text-[var(--color-muted)]">
                 Inclusive of all taxes
               </p>
             </div>
@@ -247,28 +265,28 @@ export default function OrderDetail() {
 
         {/* Payment Method */}
         {order.payment_method && (
-          <div className="bg-[var(--color-surface)] rounded-2xl border border-[var(--color-border)] shadow-sm p-5">
-            <div className="flex items-center gap-2 mb-3">
-              <div className="w-8 h-8 rounded-full bg-[var(--color-primary-light)] flex items-center justify-center">
-                <ShieldCheck size={16} className="text-[var(--color-primary)]" />
+          <div className="bg-[var(--color-surface)] rounded-xl sm:rounded-2xl border border-[var(--color-border)] shadow-sm p-4 sm:p-5">
+            <div className="flex items-center gap-2 sm:gap-2.5 mb-2.5 sm:mb-3">
+              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[var(--color-primary-light)] flex items-center justify-center">
+                <ShieldCheck size={14} className="sm:w-4 sm:h-4 text-[var(--color-primary)]" />
               </div>
-              <h3 className="text-xs font-bold tracking-wide uppercase text-[var(--color-text)]">
+              <h3 className="text-[10px] sm:text-xs font-bold tracking-wide uppercase text-[var(--color-text)]">
                 Payment Method
               </h3>
             </div>
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-[var(--color-bg-alt)] border border-[var(--color-border)]">
-                <CreditCard size={18} className="text-[var(--color-text)]" />
+            <div className="flex items-center gap-2.5 sm:gap-3">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center bg-[var(--color-bg-alt)] border border-[var(--color-border)]">
+                <CreditCard size={16} className="sm:w-[18px] sm:h-[18px] text-[var(--color-text)]" />
               </div>
-              <div>
-                <p className="text-sm font-semibold text-[var(--color-text)] capitalize">
+              <div className="min-w-0">
+                <p className="text-xs sm:text-sm font-semibold text-[var(--color-text)] capitalize truncate">
                   {order.payment_method.replace('_', ' ')}
                 </p>
-                <p className="text-xs text-[var(--color-muted)]">
+                <p className="text-[10px] sm:text-xs text-[var(--color-muted)]">
                   {order.payment_status === 'paid' ? 'Payment completed' : 'Payment pending'}
                 </p>
               </div>
-              <span className="ml-auto text-[10px] font-bold px-2.5 py-1 rounded-full bg-[var(--color-success-bg)] text-[var(--color-success)]">
+              <span className="ml-auto text-[9px] sm:text-[10px] font-bold px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full bg-[var(--color-success-bg)] text-[var(--color-success)]">
                 {order.payment_status === 'paid' ? 'PAID' : 'PENDING'}
               </span>
             </div>

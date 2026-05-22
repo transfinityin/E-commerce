@@ -1,5 +1,3 @@
-
-
 @import "tailwindcss";
 
 /* ============================================
@@ -52,29 +50,169 @@
   --shadow-gold:          0 4px 20px rgba(5,150,105,0.15);
 }
 
+/* ============================================
+   RESPONSIVE PAGE CONTAINER
+   ============================================ */
 @layer components {
   .page-container {
     width: 100%;
     max-width: 1280px;
     margin-left: auto;
     margin-right: auto;
-    padding: 16px;
+    padding: 12px;
   }
 
   @media (min-width: 640px) {
+    .page-container { padding: 20px; }
+  }
+
+  @media (min-width: 768px) {
     .page-container { padding: 24px; }
   }
 
   @media (min-width: 1024px) {
     .page-container { padding: 32px 24px; }
   }
+
+  @media (min-width: 1280px) {
+    .page-container { padding: 40px 32px; }
+  }
 }
 
+/* ============================================
+   MOBILE-FIRST RESPONSIVE UTILITIES
+   ============================================ */
 
+/* Scrollbar hide */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
 
+/* Safe area for notch phones */
+@supports (padding-top: env(safe-area-inset-top)) {
+  .safe-top { padding-top: env(safe-area-inset-top); }
+  .safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
+  .safe-left { padding-left: env(safe-area-inset-left); }
+  .safe-right { padding-right: env(safe-area-inset-right); }
+}
 
+/* Touch-friendly tap targets on mobile */
+@media (max-width: 640px) {
+  button, 
+  a, 
+  input, 
+  select, 
+  textarea,
+  [role="button"] {
+    min-height: 44px;
+  }
 
-/* Slow pulse for the active node */
+  /* Prevent iOS text zoom on input focus */
+  input, 
+  select, 
+  textarea {
+    font-size: 16px !important;
+  }
+
+  /* Prevent horizontal scroll */
+  body {
+    overflow-x: hidden;
+  }
+
+  /* Reduce motion for users who prefer it */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+/* Smooth scroll */
+html {
+  scroll-behavior: smooth;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-text-size-adjust: 100%;
+}
+
+/* Image loading placeholder */
+img {
+  background-color: var(--color-bg-alt);
+}
+
+/* ============================================
+   LINE CLAMP UTILITIES
+   ============================================ */
+.line-clamp-1 {
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ============================================
+   ASPECT RATIO UTILITIES
+   ============================================ */
+.aspect-square { aspect-ratio: 1 / 1; }
+.aspect-video { aspect-ratio: 16 / 9; }
+.aspect-portrait { aspect-ratio: 3 / 4; }
+.aspect-product { aspect-ratio: 3 / 4; }
+
+/* ============================================
+   ANIMATIONS
+   ============================================ */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.animate-fadeIn {
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fadeUp {
+  animation: fadeUp 0.4s ease forwards;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+.animate-slideUp {
+  animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.animate-shimmer {
+  animation: shimmer 1.5s infinite;
+  background-size: 200% 100%;
+}
+
 @keyframes pulse-slow {
   0%, 100% { 
     box-shadow: 0 0 30px rgba(0, 240, 255, 0.4), inset 0 0 20px rgba(0, 240, 255, 0.1);
@@ -85,17 +223,104 @@
     border-color: rgba(0, 240, 255, 0.9);
   }
 }
-
 .animate-pulse-slow {
   animation: pulse-slow 3s ease-in-out infinite;
 }
 
-/* Floating animation for the node */
 @keyframes float {
   0%, 100% { transform: translateY(0px); }
   50% { transform: translateY(-8px); }
 }
-
 .animate-float {
   animation: float 4s ease-in-out infinite;
+}
+
+/* ============================================
+   BACKDROP BLUR FALLBACK
+   ============================================ */
+@supports not (backdrop-filter: blur(8px)) {
+  .backdrop-blur-sm {
+    background-color: rgba(0, 0, 0, 0.6);
+  }
+  .backdrop-blur-md {
+    background-color: rgba(0, 0, 0, 0.7);
+  }
+}
+
+/* ============================================
+   FORM ELEMENTS BASE STYLES
+   ============================================ */
+input, select, textarea {
+  border-radius: 0.75rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-light);
+}
+
+/* ============================================
+   BUTTON BASE STYLES
+   ============================================ */
+button {
+  border-radius: 0.75rem;
+  transition: all 0.2s ease;
+}
+
+button:active {
+  transform: scale(0.98);
+}
+
+/* ============================================
+   CARD BASE STYLES
+   ============================================ */
+.card {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 1rem;
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow 0.2s, border-color 0.2s;
+}
+
+@media (min-width: 640px) {
+  .card {
+    border-radius: 1.25rem;
+  }
+}
+
+.card:hover {
+  box-shadow: var(--shadow-md);
+}
+
+/* ============================================
+   RESPONSIVE TYPOGRAPHY SCALE
+   ============================================ */
+.text-responsive-xs { font-size: 0.625rem; }
+.text-responsive-sm { font-size: 0.75rem; }
+.text-responsive-base { font-size: 0.8125rem; }
+.text-responsive-lg { font-size: 0.9375rem; }
+.text-responsive-xl { font-size: 1.125rem; }
+.text-responsive-2xl { font-size: 1.25rem; }
+.text-responsive-3xl { font-size: 1.5rem; }
+
+@media (min-width: 640px) {
+  .text-responsive-xs { font-size: 0.75rem; }
+  .text-responsive-sm { font-size: 0.8125rem; }
+  .text-responsive-base { font-size: 0.875rem; }
+  .text-responsive-lg { font-size: 1rem; }
+  .text-responsive-xl { font-size: 1.25rem; }
+  .text-responsive-2xl { font-size: 1.5rem; }
+  .text-responsive-3xl { font-size: 1.875rem; }
+}
+
+@media (min-width: 1024px) {
+  .text-responsive-xs { font-size: 0.75rem; }
+  .text-responsive-sm { font-size: 0.875rem; }
+  .text-responsive-base { font-size: 1rem; }
+  .text-responsive-lg { font-size: 1.125rem; }
+  .text-responsive-xl { font-size: 1.5rem; }
+  .text-responsive-2xl { font-size: 1.875rem; }
+  .text-responsive-3xl { font-size: 2.25rem; }
 }

@@ -16,19 +16,39 @@ export default function PrivacyPage() {
 
   return (
     <div className="min-h-screen bg-[var(--color-bg)]">
-      <div className="page-container max-w-3xl py-16">
-        <p className="text-xs font-bold tracking-[0.2em] uppercase text-[var(--color-primary)] mb-2">Legal</p>
-        <h1 className="text-3xl font-bold text-[var(--color-text)] tracking-tight mb-2">Privacy Policy</h1>
-        <p className="text-sm text-[var(--color-muted)] mb-8">Last updated: May 2026</p>
+      <div className="page-container max-w-3xl py-8 sm:py-12 lg:py-16 px-4 sm:px-6">
+        <p className="text-[10px] sm:text-[11px] font-bold tracking-[0.2em] uppercase text-[var(--color-primary)] mb-1.5 sm:mb-2">
+          Legal
+        </p>
+        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-[var(--color-text)] tracking-tight mb-1.5 sm:mb-2">
+          Privacy Policy
+        </h1>
+        <p className="text-xs sm:text-sm text-[var(--color-muted)] mb-6 sm:mb-8">
+          Last updated: May 2026
+        </p>
         
-        <div className="space-y-4">
+        <div className="space-y-3 sm:space-y-4 lg:space-y-6">
           {sections.map((s, i) => (
-            <div key={i} className="bg-[var(--color-surface)] rounded-2xl border border-[var(--color-border)] shadow-[var(--shadow-sm)] p-6">
-              <h3 className="text-base font-semibold text-[var(--color-text)] mb-2">{s.title}</h3>
-              {s.content && <p className="text-sm text-[var(--color-muted)] leading-relaxed">{s.content}</p>}
+            <div 
+              key={i} 
+              className="bg-[var(--color-surface)] rounded-xl sm:rounded-2xl border border-[var(--color-border)] shadow-[var(--shadow-sm)] p-4 sm:p-6 hover:shadow-md transition-shadow duration-300"
+            >
+              <h3 className="text-sm sm:text-base lg:text-lg font-semibold text-[var(--color-text)] mb-1.5 sm:mb-2">
+                {s.title}
+              </h3>
+              {s.content && (
+                <p className="text-xs sm:text-sm lg:text-base text-[var(--color-muted)] leading-relaxed">
+                  {s.content}
+                </p>
+              )}
               {s.list && (
-                <ul className="list-disc list-inside text-sm text-[var(--color-muted)] space-y-1.5">
-                  {s.list.map((item, j) => <li key={j}>{item}</li>)}
+                <ul className="list-disc list-inside text-xs sm:text-sm lg:text-base text-[var(--color-muted)] space-y-1 sm:space-y-1.5">
+                  {s.list.map((item, j) => (
+                    <li key={j} className="leading-relaxed">
+                      <span className="font-medium text-[var(--color-text)]">{item.split(' ')[0]}</span>{' '}
+                      {item.split(' ').slice(1).join(' ')}
+                    </li>
+                  ))}
                 </ul>
               )}
             </div>
