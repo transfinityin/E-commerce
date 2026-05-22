@@ -3,6 +3,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { Search, ShoppingBag, Heart, User, Menu, X, ChevronDown, Zap, QrCode } from 'lucide-react'
 import useAuthStore from '../store/authStore'
 import useCartStore from '../store/cartStore'
+import NotificationBell from './NotificationBell';
 
 export default function Navbar() {
   const [scrolled,     setScrolled]     = useState(false)
@@ -164,7 +165,7 @@ export default function Navbar() {
                 </span>
               )}
             </Link>
-
+ <NotificationBell />
             {/* Profile / Auth */}
             {isAuthenticated ? (
               <div ref={profileRef} className="relative hidden sm:block">

@@ -1,6 +1,93 @@
+
+
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.apps import apps
+from apps.notifications.utils import send_notification_email
+from apps.utils.google_sheets import log_to_sheet
+
+
+@receiver(post_save, sender='orders.Order')
+def order_status_notification(sender, instance, created, **kwargs):
+    Notification = apps.get_model('notifications', 'Notification')
+    
+    try:
+        items = instance.items.all()
+        product_names = ", ".join([item.product.name for item in items]) if items else "N/A"
+    except Exception:
+        product_names = "N/A"
+    
+    total = (
+        getattr(instance, 'total_amount', None) 
+        or getattr(instance, 'total', None) 
+        or getattr(instance, 'total_price', None) 
+        or getattr(instance, 'grand_total', None) 
+        or getattr(instance, 'amount', None) 
+        or '0'
+    )
+    total_str = str(total)
+    status = getattr(instance, 'status', 'placed')
+
+    if created:
+        notif = Notification.objects.create(
+            user=instance.user,
+            type='order',
+            title=f"✅ Order #{instance.id} Placed",
+            message=f"Your order for {product_names} worth ₹{total_str} has been confirmed!",
+            link=f"/orders/{instance.id}"
+        )
+        send_notification_email(instance.user, notif.title, notif.message)
+        log_to_sheet("Orders", [
+            str(instance.created_at),
+            instance.user.email,
+            instance.user.name,
+            str(instance.id),
+            product_names,
+            total_str,
+            status,
+            "Order Placed"
+        ])
+        return
+    
+    if status == 'shipped':
+        notif = Notification.objects.create(
+            user=instance.user,
+            type='order',
+            title=f"🚚 Order #{instance.id} Shipped",
+            message=f"Your order ({product_names}) is on the way!",
+            link=f"/orders/{instance.id}"
+        )
+        send_notification_email(instance.user, notif.title, notif.message)
+        log_to_sheet("Orders", [
+            str(getattr(instance, 'updated_at', instance.created_at)),
+            instance.user.email,
+            instance.user.name,
+            str(instance.id),
+            product_names,
+            total_str,
+            status,
+            "Shipped"
+        ])
+    
+    elif status == 'cancelled':
+        notif = Notification.objects.create(
+            user=instance.user,
+            type='system',
+            title=f"❌ Order #{instance.id} Cancelled",
+            message=f"Your order for {product_names} has been cancelled.",
+            link=f"/orders/{instance.id}"
+        )
+        send_notification_email(instance.user, notif.title, notif.message)
+        log_to_sheet("Orders", [
+            str(getattr(instance, 'updated_at', instance.created_at)),
+            instance.user.email,
+            instance.user.name,
+            str(instance.id),
+            product_names,
+            total_str,
+            status,
+            "Cancelled"
+        ])
 
 
 @receiver(post_save)

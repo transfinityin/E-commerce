@@ -755,6 +755,9 @@ EMAIL_HOST_USER  = os.getenv('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'noreply@transfinity.shop')
 
+
+GOOGLE_SHEET_ID = "1Cg0WdYbJSzrbzviaKmZ-NBXzvf_QgpTGoXw6o2aARfQ"
+
 # ── URLs ─────────────────────────────────────────────────────
 FRONTEND_URL = os.getenv('FRONTEND_URL', 'https://transfinity.shop')
 BACKEND_URL  = os.getenv('BACKEND_URL', 'https://transfinity-backend.onrender.com')
