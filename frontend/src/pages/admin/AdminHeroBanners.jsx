@@ -522,12 +522,16 @@ export default function AdminHeroBanners() {
       setForm(p => ({ ...p, image_url: data.url }))
       toast.success('Image uploaded!')
     } catch (err) {
-      // FIX: show actual error from backend
-      const msg = err.response?.data?.error || err.response?.status === 401
-        ? 'Unauthorized — please login again'
-        : err.response?.status === 403
-          ? 'Permission denied'
-          : 'Upload failed — check Cloudinary settings'
+      // FIX: correct ternary logic to show actual backend error
+      const errData = err.response?.data?.error
+      const status = err.response?.status
+      const msg = errData
+        ? errData
+        : status === 401
+          ? 'Unauthorized — please login again'
+          : status === 403
+            ? 'Permission denied — make sure your account has admin (is_staff) access'
+            : 'Upload failed — check Cloudinary settings'
       toast.error(msg)
     } finally {
       setUploading(false)

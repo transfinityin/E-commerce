@@ -120,7 +120,11 @@ class HeroBannerList(APIView):
         return [IsAdminUser()]  # IsAdminUser checks is_staff=True
 
     def get(self, request):
-        banners = HeroBanner.objects.filter(is_active=True).order_by('display_order')
+        # Admin (is_staff) → all banners including inactive; public → active only
+        if request.user and request.user.is_authenticated and request.user.is_staff:
+            banners = HeroBanner.objects.all().order_by('display_order')
+        else:
+            banners = HeroBanner.objects.filter(is_active=True).order_by('display_order')
         serializer = HeroBannerSerializer(banners, many=True, context={'request': request})
         return Response(serializer.data)
 
