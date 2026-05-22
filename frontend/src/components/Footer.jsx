@@ -10,7 +10,7 @@ export default function Footer() {
       <div className="relative overflow-hidden border-t border-b border-white/[0.06] py-10 sm:py-16 lg:py-20 px-4 sm:px-6 text-center bg-[var(--color-secondary)]">
         {/* Background subtle text */}
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none font-[Playfair_Display,serif] text-5xl sm:text-8xl lg:text-[120px] font-black text-white/[0.02] tracking-[-0.05em]">
-          INFINITY
+          TRANSINFINITY
         </div>
 
         <div className="relative z-10 max-w-[800px] mx-auto">
