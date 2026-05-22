@@ -486,15 +486,23 @@ export default function AdminHeroBanners() {
   }
 
   const handleDelete = async (id) => {
-    if (!confirm('Delete this banner?')) return
-    try {
-      await api.delete(`/core/hero-banners/${id}/`)
-      toast.success('Deleted')
-      fetchBanners()
-    } catch {
-      toast.error('Failed to delete')
-    }
+  if (!window.confirm('Delete this banner?')) return
+  try {
+    await api.delete(`/core/hero-banners/${id}/`)
+    toast.success('Banner deleted!')
+    fetchBanners()
+  } catch (err) {
+    const status = err.response?.status
+    const msg = err.response?.data?.detail
+      || err.response?.data?.error
+      || (status === 403 ? 'Permission denied — admin access required'
+        : status === 404 ? 'Banner not found'
+        : status === 401 ? 'Please login again'
+        : `Delete failed (${status})`)
+    toast.error(msg)
+    console.error('Delete error:', err.response?.data)
   }
+}
 
   // FIX 2: handleImageUpload — uploading state + better error message
   const handleImageUpload = async (e) => {

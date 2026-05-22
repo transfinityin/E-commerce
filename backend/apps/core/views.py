@@ -109,15 +109,23 @@ from .serializers import HeroBannerSerializer
 import cloudinary
 import cloudinary.uploader
 import logging
+from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser, BasePermission
 
 logger = logging.getLogger(__name__)
 
-
+class IsStaffUser(BasePermission):
+    """JWT-compatible staff check"""
+    def has_permission(self, request, view):
+        return bool(
+            request.user and
+            request.user.is_authenticated and
+            request.user.is_staff
+        )
 class HeroBannerList(APIView):
     def get_permissions(self):
         if self.request.method == 'GET':
             return [AllowAny()]
-        return [IsAdminUser()]  # IsAdminUser checks is_staff=True
+        return [IsStaffUser()]  # IsAdminUser checks is_staff=True
 
     def get(self, request):
         # Admin (is_staff) → all banners including inactive; public → active only
@@ -148,7 +156,7 @@ class HeroBannerDetail(APIView):
     def get_permissions(self):
         if self.request.method == 'GET':
             return [AllowAny()]
-        return [IsAdminUser()]
+        return [IsStaffUser()]
 
     def get(self, request, pk):
         banner = get_object_or_404(HeroBanner, pk=pk)
@@ -177,7 +185,7 @@ class HeroBannerDetail(APIView):
 
 class UploadImageView(APIView):
     # FIX: IsAdminUser instead of IsAuthenticated — only staff can upload banners
-    permission_classes = [IsAdminUser]
+    permission_classes = [IsStaffUser]
     parser_classes = [MultiPartParser, FormParser]
 
     def post(self, request):
