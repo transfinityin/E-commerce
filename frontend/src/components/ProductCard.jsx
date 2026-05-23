@@ -215,21 +215,38 @@ const nextImg = (e) => {
           )}
         </div>
 
-        {/* Wishlist */}
-        <button onClick={handleWishlist} style={{
-          position: 'absolute', top: '10px', right: '10px',
-          width: '32px', height: '32px',
-          background: wishlisted ? '#fee2e2' : 'rgba(255,255,255,0.9)',
-          border: 'none', borderRadius: '50%',
-          cursor: 'pointer', display: 'flex',
-          alignItems: 'center', justifyContent: 'center',
-          boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-          zIndex: 3, transition: 'all 0.2s',
-          color: wishlisted ? '#ef4444' : '#666',
-        }}>
-          <Heart size={14} fill={wishlisted ? 'currentColor' : 'none'} />
-        </button>
-
+{/* Wishlist - Mobile Circle Fix */}
+{/* Wishlist - Complete Fix */}
+<button
+  onClick={handleWishlist}
+  className={`
+    absolute top-2 right-2
+    sm:top-3 sm:right-3
+    w-7 h-7
+    sm:w-8 sm:h-8
+    min-h-0              {/* ← OVERRIDE min-height:44px */}
+    min-w-0
+    rounded-full
+    bg-white
+    border border-neutral-200
+    flex items-center justify-center
+    cursor-pointer
+    z-30
+    transition-all duration-200
+    shadow-[0_1px_4px_rgba(0,0,0,0.15)]
+    active:scale-90
+    ${wishlisted 
+      ? 'bg-red-50 border-red-200 text-red-500' 
+      : 'text-neutral-400 hover:text-neutral-600'
+    }
+  `}
+>
+  <Heart 
+    size={13}
+    fill={wishlisted ? 'currentColor' : 'none'} 
+    strokeWidth={2}
+  />
+</button>
         {/* Add to cart — bottom */}
         <div style={{
           position: 'absolute', bottom: 0,

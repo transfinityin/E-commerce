@@ -39,83 +39,65 @@ function HeroBannerCarousel({ banners }) {
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >
-      {/* Background Image */}
-      <div className="absolute inset-0 transition-opacity duration-700" style={{ opacity: isAnimating ? 1 : 0 }}>
-        {banner.image_url ? (
-          <img
-            src={banner.image_url}
-            alt={banner.title}
-            className="w-full h-full object-cover"
-            onError={(e) => {
-              e.target.style.display = 'none'
-              e.target.nextSibling.style.display = 'block'
-            }}
-          />
-        ) : null}
-        <div className="absolute inset-0 hidden bg-gradient-to-br from-[var(--color-secondary)] via-[#16213e] to-[#0f3460]" />
-        <div className="absolute inset-0 bg-black/50" />
-      </div>
-
+      {/* Background Image - Desktop & Mobile Separate */}
+{/* Background Image - Desktop & Mobile Separate */}
+<div className="absolute inset-0 transition-opacity duration-700" style={{ opacity: isAnimating ? 1 : 0 }}>
+  
+  {/* MOBILE IMAGE - Only visible below 640px (mobile) */}
+  {banner.mobile_image_url && (
+    <img
+      src={banner.mobile_image_url}
+      alt={banner.title}
+      style={{ objectPosition: 'top center' }}  // ← FIX: Show top portion
+      className="w-full h-full object-cover sm:hidden"
+      onError={(e) => { e.target.style.display = 'none' }}
+    />
+  )}
+  
+  {/* DESKTOP IMAGE - Visible on 640px and above (desktop/tablet) */}
+  {banner.image_url && (
+    <img
+      src={banner.image_url}
+      alt={banner.title}
+      className={`w-full h-full object-cover ${
+        banner.mobile_image_url ? 'hidden sm:block' : ''
+      }`}
+      onError={(e) => { 
+        e.target.style.display = 'none'
+        const fallback = e.target.parentElement?.querySelector('.fallback-gradient')
+        if (fallback) fallback.style.display = 'block'
+      }}
+    />
+  )}
+  
+  {/* Fallback gradient when no images */}
+  <div className="fallback-gradient absolute inset-0 hidden bg-gradient-to-br from-[var(--color-secondary)] via-[#16213e] to-[#0f3460]" />
+  
+  {/* Dark overlay */}
+  <div className="absolute inset-0 bg-black/50" />
+</div>
       {/* Content */}
       <div
-  className="absolute inset-0 z-10 flex flex-col justify-center transition-all duration-700 px-4 sm:px-6 lg:px-12 pt-[100px] sm:pt-[110px]"
-  style={{
-    opacity: isAnimating ? 1 : 0,
-    transform: isAnimating ? 'translateY(0)' : 'translateY(20px)',
-  }}
->
-        {/* <div className="page-container">
-          <span className="text-[10px] sm:text-xs lg:text-sm font-bold tracking-[0.2em] uppercase block mb-2 sm:mb-3 text-[var(--color-primary)]">
-            {banner.subtitle || 'Exclusive Collection'}
-          </span>
-
-          <h1 className="font-[Playfair_Display] text-xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-white max-w-2xl leading-tight mb-3 sm:mb-6">
-            {banner.title}
-          </h1>
-
-          <p className="text-xs sm:text-base lg:text-lg xl:text-xl max-w-lg mb-4 sm:mb-8 text-white/80">
-            Discover premium fashion crafted for the modern individual
-          </p>
-
-          <Link
-            to={banner.cta_link || '/products'}
-            className="inline-flex items-center gap-2 sm:gap-3 bg-[var(--color-surface)] hover:bg-[var(--color-primary)] text-[var(--color-text)] hover:text-[var(--color-btn-text)] font-bold text-[10px] sm:text-sm transition-all duration-300 rounded-full px-4 sm:px-8 py-2 sm:py-4 shadow-lg hover:shadow-xl hover:-translate-y-0.5"
-          >
-            {banner.cta_text || 'Shop Now'}
-            <ArrowRight size={12} className="sm:w-[18px] sm:h-[18px]" />
-          </Link>
-        </div> */}
+        className="absolute inset-0 z-10 flex flex-col justify-center transition-all duration-700 px-4 sm:px-6 lg:px-12 pt-[100px] sm:pt-[110px]"
+        style={{
+          opacity: isAnimating ? 1 : 0,
+          transform: isAnimating ? 'translateY(0)' : 'translateY(20px)',
+        }}
+      >
+        {/* Content is commented out in your original */}
       </div>
 
-      {/* Navigation Arrows */}
+      {/* Dot Indicators - Hidden on mobile */}
       {total > 1 && (
-        <>
-          {/* <button
-            onClick={prev}
-            className="absolute top-1/2 -translate-y-1/2 z-20 w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 rounded-full backdrop-blur-sm flex items-center justify-center transition-all duration-200 bg-white/10 border border-white/20 text-white hover:bg-white/20 left-2 sm:left-4 lg:left-8"
-          >
-            <ChevronLeft size={16} className="sm:w-5 sm:h-5 lg:w-6 lg:h-6" />
-          </button> */}
-          {/* <button
-            onClick={next}
-            className="absolute top-1/2 -translate-y-1/2 z-20 w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 rounded-full backdrop-blur-sm flex items-center justify-center transition-all duration-200 bg-white/10 border border-white/20 text-white hover:bg-white/20 right-2 sm:right-4 lg:right-8"
-          >
-            <ChevronRight size={16} className="sm:w-5 sm:h-5 lg:w-6 lg:h-6" />
-          </button> */}
-        </>
-      )}
-
-      {/* Dot Indicators */}
-      {total > 1 && (
-        <div className="absolute left-1/2 -translate-x-1/2 z-20 flex gap-2 sm:gap-3 bottom-3 sm:bottom-6 lg:bottom-8">
+        <div className="hidden sm:flex absolute left-1/2 -translate-x-1/2 z-20 gap-1.5 bottom-6 lg:bottom-8">
           {banners.map((_, i) => (
             <button
               key={i}
               onClick={() => goTo(i)}
-              className={`h-1.5 sm:h-2 rounded-full transition-all duration-500 ${
+              className={`h-1.5 rounded-full transition-all duration-500 ${
                 i === current 
-                  ? 'w-6 sm:w-8 bg-[var(--color-primary)]' 
-                  : 'w-1.5 sm:w-2 bg-white/40'
+                  ? 'w-5 bg-[var(--color-primary)]' 
+                  : 'w-1.5 bg-white/40'
               }`}
             />
           ))}
@@ -208,6 +190,9 @@ export default function Home() {
 
   useEffect(() => {
     api.get('/core/hero-banners/').then(r => {
+      console.log('=== Banners API Response ===')
+      console.log('First banner:', r.data[0])
+      console.log('mobile_image_url:', r.data[0]?.mobile_image_url)
       setBanners(r.data || [])
     }).catch(() => setBanners([]))
 

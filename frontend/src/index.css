@@ -265,14 +265,24 @@ input:focus, select:focus, textarea:focus {
    BUTTON BASE STYLES
    ============================================ */
 button {
-  border-radius: 0.75rem;
+  
   transition: all 0.2s ease;
 }
 
 button:active {
   transform: scale(0.98);
 }
-
+@media (max-width: 640px) {
+  /* Remove button from this list, or add :not(.no-min-height) */
+  a, input, select, textarea, [role="button"] {
+    min-height: 44px;
+  }
+  
+  /* Exclude icon buttons */
+  button:not(.icon-btn) {
+    min-height: 44px;
+  }
+}
 /* ============================================
    CARD BASE STYLES
    ============================================ */

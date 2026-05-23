@@ -105,7 +105,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework import status
 from .models import HeroBanner
-from .serializers import HeroBannerSerializer
+from .serializers import HeroBannerCreateUpdateSerializer, HeroBannerSerializer
 import cloudinary
 import cloudinary.uploader
 import logging
@@ -128,7 +128,6 @@ class HeroBannerList(APIView):
         return [IsStaffUser()]  # IsAdminUser checks is_staff=True
 
     def get(self, request):
-        # Admin (is_staff) → all banners including inactive; public → active only
         if request.user and request.user.is_authenticated and request.user.is_staff:
             banners = HeroBanner.objects.all().order_by('display_order')
         else:
@@ -138,13 +137,14 @@ class HeroBannerList(APIView):
 
     def post(self, request):
         try:
-            serializer = HeroBannerSerializer(
-                data=request.data,
-                context={'request': request}
-            )
+            serializer = HeroBannerCreateUpdateSerializer(data=request.data)
             if serializer.is_valid():
                 serializer.save()
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
+                # Return with read serializer for consistent response
+                return Response(
+                    HeroBannerSerializer(serializer.instance, context={'request': request}).data,
+                    status=status.HTTP_201_CREATED
+                )
             logger.error(f"HeroBanner POST validation errors: {serializer.errors}")
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
@@ -165,18 +165,19 @@ class HeroBannerDetail(APIView):
     def patch(self, request, pk):
         try:
             banner = get_object_or_404(HeroBanner, pk=pk)
-            serializer = HeroBannerSerializer(
-                banner, data=request.data,
-                partial=True, context={'request': request}
+            serializer = HeroBannerCreateUpdateSerializer(
+                banner, data=request.data, partial=True
             )
             if serializer.is_valid():
                 serializer.save()
-                return Response(serializer.data)
+                return Response(
+                    HeroBannerSerializer(serializer.instance, context={'request': request}).data
+                )
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
             logger.error(f"HeroBanner PATCH error: {str(e)}")
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
+        
     def delete(self, request, pk):
         banner = get_object_or_404(HeroBanner, pk=pk)
         banner.delete()

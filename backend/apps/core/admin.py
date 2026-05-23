@@ -12,7 +12,8 @@ class HeroBannerAdmin(admin.ModelAdmin):
     
     fieldsets = (
         (None, {
-            'fields': ('title', 'subtitle', 'image', 'mobile_image')
+            'fields': ('title', 'subtitle', 'image', 'mobile_image', 
+                      'image_url_direct', 'mobile_image_url_direct')  # ← NEW
         }),
         ('CTA', {
             'fields': ('cta_text', 'cta_link')
