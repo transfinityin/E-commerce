@@ -113,7 +113,7 @@ export default function Navbar() {
           <Link to="/" className="flex items-center no-underline shrink-0">
             <div className="flex flex-col gap-0.5 sm:gap-1 leading-tight">
               <img
-                src="/logosign1.png"
+                src="/logosign2.png"
                 alt="Transfinity Sign"
                 className="h-8 sm:h-10 md:h-12 w-auto object-contain self-start"
               />
