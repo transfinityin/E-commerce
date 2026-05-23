@@ -117,11 +117,14 @@ export default function Navbar() {
                 alt="Transfinity Sign"
                 className="h-8 sm:h-10 md:h-12 w-auto object-contain self-start"
               />
+              
               <span className="text-[5px] sm:text-[6px] font-semibold text-[var(--color-muted)] tracking-[0.15em] sm:tracking-[0.2em] uppercase">
                 Beyond The Limits
               </span>
+              
             </div>
           </Link>
+          
 
           {/* Nav links — desktop */}
           <div className="hidden md:flex flex-1 gap-1">

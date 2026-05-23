@@ -343,12 +343,39 @@ const zoomReset = () => setZoomLevel(1)
       </button>
     )}
 
-    {/* Badges, Arrows, Dots — same as before */}
-    ...
-  </div>
+   {/* Badges, Arrows, Dots */}
+{images.length > 1 && (
+  <>
+    {/* Left Arrow */}
+    <button onClick={prevImage} className="absolute left-2 top-1/2 -translate-y-1/2 ...">
+      <ChevronLeft size={20} />
+    </button>
+    {/* Right Arrow */}
+    <button onClick={nextImage} className="absolute right-2 top-1/2 -translate-y-1/2 ...">
+      <ChevronRight size={20} />
+    </button>
+    {/* Dots */}
+    <div className="absolute h-0  bottom-3 left-1/2 -translate-x-1/2 flex gap-1">
+      {images.map((_, i) => (
+        <button key={i} onClick={() => setSelImage(i)} 
+          className={`w-2 h-2 rounded-full ${selImage === i ? 'bg-white' : 'bg-white/50'}`} />
+      ))}
+    </div>
+  </>
+)}
+  
+{/* Mobile thumbnails */}
 
+</div>
   {/* Mobile thumbnails — same as before */}
-  ...
+  <div className="flex lg:hidden gap-2 overflow-x-auto mt-3 pb-1 scrollbar-hide">
+  {images.map((img, i) => (
+    <button key={i} onClick={() => setSelImage(i)} 
+      className={`w-16 h-20 shrink-0 rounded-lg overflow-hidden border-2 ${selImage === i ? 'border-primary' : 'border-border'}`}>
+      <img src={img.image} className="w-full h-full object-cover" />
+    </button>
+  ))}
+  </div>
 </div>
 
 {/* ── ZOOM MODAL ── */}
