@@ -304,7 +304,9 @@ export default function Addresses() {
       }
       setShowForm(false); setEditing(null); setForm(EMPTY); load()
     } catch {
-      toast.error('Failed to save address')
+       console.error('FULL ERROR:', err)
+    const msg = err.response?.data || err.message || 'Unknown error'
+    toast.error(`Save failed: ${JSON.stringify(msg)}`)
     }
   }
 
