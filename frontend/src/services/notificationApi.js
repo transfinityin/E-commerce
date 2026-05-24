@@ -1,7 +1,7 @@
 import axios from 'axios';
-
+const API_URL = import.meta.env.VITE_API_URL || 'https://transfinity-backend.onrender.com/api'
 const API = axios.create({
-  baseURL: 'http://localhost:8000/api',
+  baseURL: API_URL,
 });
 
 API.interceptors.request.use((config) => {
