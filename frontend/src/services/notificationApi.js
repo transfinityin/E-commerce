@@ -1,5 +1,6 @@
 import axios from 'axios';
-const API_URL = 'https://transfinity-backend.onrender.com/api';
+
+const API_URL = import.meta.env.VITE_API_URL || 'https://transfinity-backend.onrender.com/api';
 
 const API = axios.create({
   baseURL: API_URL,
@@ -28,5 +29,5 @@ export const getNotifications = async () => {
 };
 
 export const markAsRead = (id) => API.post(`/notifications/${id}/read/`);
-export const markAllAsRead = () => API.post('/notifications/read-all/');
+export const markAllAsRead = () => API.post('/notifications/mark-all-read/');
 export const getUnreadCount = () => API.get('/notifications/unread-count/');
