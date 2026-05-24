@@ -144,13 +144,17 @@ export default function Navbar() {
           </div>
 
           {/* Scan QR Link - Desktop */}
-          <Link 
+          {/* <Link 
             to="/scan" 
             className="hidden md:flex items-center gap-1.5 text-sm font-medium text-[var(--color-muted)] no-underline rounded-full transition-all duration-200 px-4 py-2 hover:bg-[var(--color-bg-alt)] hover:text-[var(--color-text)]"
           >
             <QrCode size={16} className="text-[var(--color-primary)]" />
             Scan QR
-          </Link>
+          </Link> */}
+
+          <Link to="/map" className="nav-link">
+  <span>🗺️</span> World Map
+</Link>
 
           {/* Right icons */}
           <div className="flex items-center ml-auto gap-0.5 sm:gap-1">

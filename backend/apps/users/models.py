@@ -50,13 +50,19 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 
     RANK_CHOICES = [
-        ('wanderer', 'Wanderer'),
-        ('founder', 'Founder'),
-        ('ascendant', 'Ascendant'),
-        ('phantom', 'Phantom'),
-        ('eclipse', 'Eclipse'),
-        ('eternal', 'Eternal'),
-    ]
+    ('wanderer', 'Wanderer'),      # 0
+    ('founder', 'Founder'),         # 1
+    ('ascendant', 'Ascendant'),    # 2
+    ('phantom', 'Phantom'),        # 3
+    ('eclipse', 'Eclipse'),        # 4
+    ('crimson', 'Crimson'),        # 5
+    ('void', 'Void'),              # 6
+    ('zenith', 'Zenith'),          # 7
+    ('cosmic', 'Cosmic'),          # 8
+    ('shadow_war', 'Shadow War'),  # 9
+    ('celestial', 'Celestial'),    # 10
+    ('eternal', 'Eternal'),        # 11
+]
     
     rank = models.CharField(max_length=20, choices=RANK_CHOICES, default='wanderer')
     xp = models.PositiveIntegerField(default=0)
@@ -68,20 +74,24 @@ class User(AbstractBaseUser, PermissionsMixin):
         return order.index(self.rank)
     
     def can_access_arc(self, arc_name):
-        order = [r[0] for r in self.RANK_CHOICES]
-        if arc_name not in order:
+        """Can user access (view) this arc - includes next arc"""
+        rank_order = [r[0] for r in self.RANK_CHOICES]
+        if arc_name not in rank_order:
             return False
-        user_idx = order.index(self.rank)
-        arc_idx = order.index(arc_name)
-        return arc_idx <= user_idx + 1
+        user_idx = rank_order.index(self.rank)
+        arc_idx = rank_order.index(arc_name)
+        # Can access current rank + next rank arc
+        return (user_idx + 1) >= arc_idx
 
     def is_arc_unlocked(self, arc_name):
-        order = [r[0] for r in self.RANK_CHOICES]
-        if arc_name not in order:
+        rank_order = [r[0] for r in self.RANK_CHOICES]
+        if arc_name not in rank_order:
             return False
-        user_idx = order.index(self.rank)
-        arc_idx = order.index(arc_name)
-        return user_idx >= arc_idx
+        user_idx = rank_order.index(self.rank)
+        arc_idx = rank_order.index(arc_name)
+        # All arcs at or below user's rank are unlocked
+        # founder(1) can access founder(1), wanderer(0) can access founder(1)
+        return user_idx >= (arc_idx - 1)
     
     def unlock_next_rank(self):
         order = [r[0] for r in self.RANK_CHOICES]

@@ -1,3 +1,145 @@
+// import { Routes, Route } from 'react-router-dom'
+// import Layout from './components/Layout'
+// import ProtectedRoute from './components/ProtectedRoute'
+// import AdminRoute from './components/AdminRoute'
+// import { useEffect } from 'react'
+// import AdminHeroBanners from './pages/admin/AdminHeroBanners'
+// import HomePage from './pages/HomePage'
+// import LorePage from './pages/LorePage'
+// import useAuthStore from './store/authStore'
+// import useCartStore from './store/cartStore'
+// import useWishlistStore from './store/wishlistStore'
+
+// // Pages
+// import Home          from './pages/Home'
+// import ProductList   from './pages/ProductList'
+// import ProductDetail from './pages/ProductDetail'
+// import Cart          from './pages/Cart'
+// // Wishlist separate page remove — profile tab-la render aagum
+// import Checkout      from './pages/Checkout'
+// import OrderSuccess  from './pages/OrderSuccess'
+// // OrderHistory, OrderDetail separate pages — but profile tab-la kooda render aagum
+// import OrderHistory  from './pages/OrderHistory'
+// import OrderDetail   from './pages/OrderDetail'
+// import Login         from './pages/Login'
+// import Register      from './pages/Register'
+// import ForgotPassword from './pages/ForgotPassword'
+// import Profile       from './pages/Profile'
+// // Addresses separate page remove — profile tab-la render aagum
+// import SearchResults from './pages/SearchResults'
+// import NotFound      from './pages/NotFound'
+// import Addresses     from './pages/Addresses' 
+// import Wishlist      from './pages/Wishlist'  
+
+// // Admin
+// import AdminDashboard from './pages/admin/Dashboard'
+// import AdminProducts  from './pages/admin/Products'
+// import AdminOrders    from './pages/admin/Orders'
+// import AdminUsers     from './pages/admin/Users'
+
+// import QROffers from './pages/admin/QROffers'
+// import TreasureHunt from './pages/TreasureHunt'
+// import QRScanner from './pages/QRScanner'
+// import MyMaps from './pages/MyMaps'
+// import HuntLocations from './pages/admin/HuntLocations'
+// import HuntQRCodes from './pages/admin/HuntQRCodes'
+
+
+
+
+
+
+// import SupportPage from './pages/SupportPage'
+// import ContactPage from './pages/ContactPage'
+// import ReturnsPage from './pages/ReturnsPage'
+// import ShippingPage from './pages/ShippingPage'
+// import PrivacyPage from './pages/PrivacyPage'
+// import TermsPage from './pages/TermsPage'
+// import CookiesPage from './pages/CookiesPage'
+// import RefundsPage from './pages/RefundsPage'
+// export default function App() {
+//   const isAuthenticated = useAuthStore((s) => s.isAuthenticated)
+//   const fetchCart       = useCartStore((s) => s.fetchCart)
+//   const fetchWishlist   = useWishlistStore((s) => s.fetchWishlist)
+
+//   useEffect(() => {
+//     if (isAuthenticated) {
+//       fetchCart()
+//       fetchWishlist()
+//     }
+//   }, [isAuthenticated])
+
+//   return (
+//     <Routes>
+//       {/* Public */}
+//       <Route element={<Layout />}>
+//         <Route path="/"                   element={<Home />} />
+//         <Route path="/products"           element={<ProductList />} />
+//         <Route path="/products/:slug"     element={<ProductDetail />} />
+//         <Route path="/search"             element={<SearchResults />} />
+//         <Route path="/login"              element={<Login />} />
+//         <Route path="/register"           element={<Register />} />
+//         <Route path="/forgot-password"    element={<ForgotPassword />} />
+
+
+//         <Route path="/homepage" element={<HomePage />} />
+//         <Route path="/lore/:arcName" element={<LorePage />} />
+        
+        
+//         {/* Protected */}
+//         <Route element={<ProtectedRoute />}>
+//           <Route path="/cart"             element={<Cart />} />
+//           <Route path="/checkout"         element={<Checkout />} />
+//           <Route path="/order-success/:id" element={<OrderSuccess />} />
+          
+//           {/* Profile with tabs — single route only */}
+//           <Route path="/profile"          element={<Profile />} />
+//           <Route path="/wishlist" element={<Wishlist />} />
+//           <Route path="/addresses"        element={<Addresses />} />     
+          
+//           {/* Keep separate pages for direct access from other places (optional) */}
+//           <Route path="/orders"           element={<OrderHistory />} />
+//           <Route path="/orders/:id"       element={<OrderDetail />} />
+//         </Route>
+//       </Route>
+
+//       {/* Admin */}
+//       <Route element={<AdminRoute />}>
+//         <Route path="/admin"              element={<AdminDashboard />} />
+//         <Route path="/admin/products"     element={<AdminProducts />} />
+//         <Route path="/admin/orders"       element={<AdminOrders />} />
+//         <Route path="/admin/users"        element={<AdminUsers />} />
+//         <Route path="/admin/hero-banners" element={<AdminHeroBanners />} />
+//         <Route path="/admin/qr-offers"    element={<QROffers />} />
+//         <Route path="/admin/hunt/locations" element={<HuntLocations />} />
+//         <Route path="/admin/hunt/qr-codes" element={<HuntQRCodes />} />
+//       </Route>
+//       // Inside your Routes:
+// <Route path="/support" element={<SupportPage />} />
+// <Route path="/contact" element={<ContactPage />} />
+// <Route path="/returns" element={<ReturnsPage />} />
+// <Route path="/shipping" element={<ShippingPage />} />
+// <Route path="/privacy" element={<PrivacyPage />} />
+// <Route path="/terms" element={<TermsPage />} />
+// <Route path="/cookies" element={<CookiesPage />} />
+// <Route path="/refunds" element={<RefundsPage />} />
+
+//       <Route path="/scan"               element={<QRScanner />} />
+//       <Route path="/scan/:qrCodeId"     element={<QRScanner />} />
+//       <Route path="/treasure-hunt"      element={<TreasureHunt />} />
+//       <Route path="*"                   element={<NotFound />} />
+
+//       <Route path="hunt" element={<TreasureHunt />} />
+//       <Route path="hunt/dashboard" element={<TreasureHunt />} />
+//       <Route path="hunt/map" element={<MyMaps />} />
+//       <Route path="scan" element={<QRScanner />} />
+//     </Routes>
+//   )
+// }
+
+
+
+
 import { Routes, Route } from 'react-router-dom'
 import Layout from './components/Layout'
 import ProtectedRoute from './components/ProtectedRoute'
@@ -15,17 +157,14 @@ import Home          from './pages/Home'
 import ProductList   from './pages/ProductList'
 import ProductDetail from './pages/ProductDetail'
 import Cart          from './pages/Cart'
-// Wishlist separate page remove — profile tab-la render aagum
 import Checkout      from './pages/Checkout'
 import OrderSuccess  from './pages/OrderSuccess'
-// OrderHistory, OrderDetail separate pages — but profile tab-la kooda render aagum
 import OrderHistory  from './pages/OrderHistory'
 import OrderDetail   from './pages/OrderDetail'
 import Login         from './pages/Login'
 import Register      from './pages/Register'
 import ForgotPassword from './pages/ForgotPassword'
 import Profile       from './pages/Profile'
-// Addresses separate page remove — profile tab-la render aagum
 import SearchResults from './pages/SearchResults'
 import NotFound      from './pages/NotFound'
 import Addresses     from './pages/Addresses' 
@@ -36,7 +175,6 @@ import AdminDashboard from './pages/admin/Dashboard'
 import AdminProducts  from './pages/admin/Products'
 import AdminOrders    from './pages/admin/Orders'
 import AdminUsers     from './pages/admin/Users'
-
 import QROffers from './pages/admin/QROffers'
 import TreasureHunt from './pages/TreasureHunt'
 import QRScanner from './pages/QRScanner'
@@ -44,11 +182,11 @@ import MyMaps from './pages/MyMaps'
 import HuntLocations from './pages/admin/HuntLocations'
 import HuntQRCodes from './pages/admin/HuntQRCodes'
 
+// ===== NEW: TRANSFINITY WORLD MAP =====
+import WorldMap from './components/WorldMap/WorldMap'
 
 
-
-
-
+// Support pages
 import SupportPage from './pages/SupportPage'
 import ContactPage from './pages/ContactPage'
 import ReturnsPage from './pages/ReturnsPage'
@@ -57,6 +195,7 @@ import PrivacyPage from './pages/PrivacyPage'
 import TermsPage from './pages/TermsPage'
 import CookiesPage from './pages/CookiesPage'
 import RefundsPage from './pages/RefundsPage'
+import ArcDetail from './components/WorldMap/ArcDetail'
 export default function App() {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated)
   const fetchCart       = useCartStore((s) => s.fetchCart)
@@ -81,9 +220,11 @@ export default function App() {
         <Route path="/register"           element={<Register />} />
         <Route path="/forgot-password"    element={<ForgotPassword />} />
 
-
         <Route path="/homepage" element={<HomePage />} />
         <Route path="/lore/:arcName" element={<LorePage />} />
+        <Route path="/arc/:arcKey/detail" element={<ArcDetail />} />
+        {/* ===== NEW: WORLD MAP ROUTES ===== */}
+        <Route path="/map" element={<WorldMap />} />
         
         
         {/* Protected */}
@@ -92,12 +233,10 @@ export default function App() {
           <Route path="/checkout"         element={<Checkout />} />
           <Route path="/order-success/:id" element={<OrderSuccess />} />
           
-          {/* Profile with tabs — single route only */}
           <Route path="/profile"          element={<Profile />} />
           <Route path="/wishlist" element={<Wishlist />} />
           <Route path="/addresses"        element={<Addresses />} />     
           
-          {/* Keep separate pages for direct access from other places (optional) */}
           <Route path="/orders"           element={<OrderHistory />} />
           <Route path="/orders/:id"       element={<OrderDetail />} />
         </Route>
@@ -114,25 +253,27 @@ export default function App() {
         <Route path="/admin/hunt/locations" element={<HuntLocations />} />
         <Route path="/admin/hunt/qr-codes" element={<HuntQRCodes />} />
       </Route>
-      // Inside your Routes:
-<Route path="/support" element={<SupportPage />} />
-<Route path="/contact" element={<ContactPage />} />
-<Route path="/returns" element={<ReturnsPage />} />
-<Route path="/shipping" element={<ShippingPage />} />
-<Route path="/privacy" element={<PrivacyPage />} />
-<Route path="/terms" element={<TermsPage />} />
-<Route path="/cookies" element={<CookiesPage />} />
-<Route path="/refunds" element={<RefundsPage />} />
 
+      {/* Support Pages */}
+      <Route path="/support" element={<SupportPage />} />
+      <Route path="/contact" element={<ContactPage />} />
+      <Route path="/returns" element={<ReturnsPage />} />
+      <Route path="/shipping" element={<ShippingPage />} />
+      <Route path="/privacy" element={<PrivacyPage />} />
+      <Route path="/terms" element={<TermsPage />} />
+      <Route path="/cookies" element={<CookiesPage />} />
+      <Route path="/refunds" element={<RefundsPage />} />
+
+      {/* Old Treasure Hunt (keep for backward compatibility) */}
       <Route path="/scan"               element={<QRScanner />} />
       <Route path="/scan/:qrCodeId"     element={<QRScanner />} />
       <Route path="/treasure-hunt"      element={<TreasureHunt />} />
-      <Route path="*"                   element={<NotFound />} />
+      
+      <Route path="/hunt" element={<TreasureHunt />} />
+      <Route path="/hunt/dashboard" element={<TreasureHunt />} />
+      <Route path="/hunt/map" element={<MyMaps />} />
 
-      <Route path="hunt" element={<TreasureHunt />} />
-      <Route path="hunt/dashboard" element={<TreasureHunt />} />
-      <Route path="hunt/map" element={<MyMaps />} />
-      <Route path="scan" element={<QRScanner />} />
+      <Route path="*"                   element={<NotFound />} />
     </Routes>
   )
 }

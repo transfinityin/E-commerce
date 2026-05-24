@@ -1,0 +1,135 @@
+/* ===== MOBILE-OPTIMIZED WORLD MAP ===== */
+
+.world-map-container.mobile {
+  touch-action: pan-y;
+  overflow: hidden;
+}
+
+.world-map-container.mobile .map-content {
+  touch-action: none;
+  will-change: transform;
+}
+
+/* Mobile Header */
+.map-header.mobile {
+  padding: 8px 16px;
+  border-radius: 12px;
+}
+.map-header.mobile h1 {
+  font-size: 16px;
+  letter-spacing: 3px;
+}
+
+/* Mobile Progress Panel */
+.progress-panel.mobile {
+  top: auto;
+  bottom: 80px;
+  right: 10px;
+  left: auto;
+  min-width: auto;
+  padding: 10px 14px;
+  border-radius: 12px;
+}
+.progress-panel.mobile .rank-row {
+  margin-bottom: 8px;
+  padding-bottom: 6px;
+}
+.progress-panel.mobile .rank-icon {
+  font-size: 18px;
+}
+.progress-panel.mobile .rank-name {
+  font-size: 12px;
+}
+.progress-panel.mobile .rank-xp {
+  font-size: 10px;
+}
+.progress-panel.mobile .stats-row {
+  font-size: 11px;
+  gap: 10px;
+}
+
+/* Mobile Island */
+.island-wrapper.mobile {
+  z-index: 20;
+}
+.island-wrapper.mobile .island-shape svg {
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+}
+.island-wrapper.mobile .island-label {
+  margin-top: 2px;
+}
+.island-wrapper.mobile .island-label .arc-number {
+  font-size: 7px;
+  letter-spacing: 1px;
+}
+.island-wrapper.mobile .island-label .arc-name {
+  font-size: 10px;
+}
+.island-wrapper.mobile .island-label .arc-status {
+  font-size: 8px;
+}
+
+/* Mobile Controls */
+.map-controls.mobile {
+  bottom: 15px;
+  right: 15px;
+}
+.map-controls.mobile .control-btn {
+  width: 40px;
+  height: 40px;
+  font-size: 16px;
+}
+
+/* Mobile Ship */
+.ship.mobile svg {
+  width: 28px;
+  height: 28px;
+}
+
+/* Mobile Travel Notification */
+.travel-notification.mobile {
+  font-size: 12px;
+  padding: 8px 16px;
+  bottom: 70px;
+}
+
+/* Reduced particles on mobile */
+.world-map-container.mobile .map-particles {
+  opacity: 0.5;
+}
+
+/* Touch-friendly tap targets */
+.island-wrapper.mobile .island-shape {
+  min-width: 44px;
+  min-height: 44px;
+}
+
+/* Prevent text selection during drag */
+.world-map-container.mobile {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+/* Smooth scroll snap for mobile */
+@media (max-width: 768px) {
+  .world-map-container {
+    overscroll-behavior: contain;
+  }
+
+  .map-bg-container {
+    min-height: 100vh;
+    min-height: 100dvh; /* Dynamic viewport height */
+  }
+
+  /* Optimize animations for low-power devices */
+  @media (prefers-reduced-motion: reduce) {
+    .particle,
+    .bird,
+    .bg-cloud,
+    .wave {
+      animation: none !important;
+      transition: none !important;
+    }
+  }
+}
