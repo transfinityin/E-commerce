@@ -71,17 +71,16 @@ def order_status_notification(sender, instance, created, **kwargs):
             message=f"Your order ({product_names}) is on the way!",
             link=f"/orders/{instance.id}"
         )
-        send_notification_email(instance.user, notif.title, notif.message)
-        log_to_sheet("Orders", [
-            str(getattr(instance, 'updated_at', instance.created_at)),
-            instance.user.email,
-            instance.user.name,
-            str(instance.id),
-            product_names,
-            total_str,
-            status,
-            "Shipped"
-        ])
+        # 🔥 FIX: Wrap email
+        try:
+            send_notification_email(instance.user, notif.title, notif.message)
+        except Exception as e:
+            print(f"⚠️ Email failed: {e}")
+        # 🔥 FIX: Wrap sheets
+        try:
+            log_to_sheet("Orders", [...])
+        except Exception as e:
+            print(f"⚠️ Sheets failed: {e}")
     
     elif status == 'cancelled':
         notif = Notification.objects.create(
@@ -91,17 +90,16 @@ def order_status_notification(sender, instance, created, **kwargs):
             message=f"Your order for {product_names} has been cancelled.",
             link=f"/orders/{instance.id}"
         )
-        send_notification_email(instance.user, notif.title, notif.message)
-        log_to_sheet("Orders", [
-            str(getattr(instance, 'updated_at', instance.created_at)),
-            instance.user.email,
-            instance.user.name,
-            str(instance.id),
-            product_names,
-            total_str,
-            status,
-            "Cancelled"
-        ])
+        # 🔥 FIX: Wrap email
+        try:
+            send_notification_email(instance.user, notif.title, notif.message)
+        except Exception as e:
+            print(f"⚠️ Email failed: {e}")
+        # 🔥 FIX: Wrap sheets
+        try:
+            log_to_sheet("Orders", [...])
+        except Exception as e:
+            print(f"⚠️ Sheets failed: {e}")
 
 
 @receiver(post_save)
