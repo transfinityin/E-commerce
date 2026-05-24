@@ -45,7 +45,8 @@ def order_status_notification(sender, instance, created, **kwargs):
             send_notification_email(instance.user, notif.title, notif.message)
         except Exception as e:
             print(f"⚠️ Email failed (non-critical): {e}")
-        
+        try:
+
             log_to_sheet("Orders", [
                 str(instance.created_at),
                 instance.user.email,
