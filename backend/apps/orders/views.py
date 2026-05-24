@@ -628,9 +628,16 @@ class OrderCreateView(APIView):
         if coupon_code:
             try:
                 coupon = Coupon.objects.get(code=coupon_code, is_active=True)
+                if coupon.is_valid():  # ← Add this if Coupon model has is_valid()
+                    discount = coupon.calculate_discount(subtotal)
+                else:
+                    return Response({'error': f'Coupon "{coupon_code}" is expired or fully used.'}, status=400)
                 discount = coupon.calculate_discount(subtotal)
             except Coupon.DoesNotExist:
-                pass
+                return Response({'error': f'Coupon "{coupon_code}" not found.'}, status=400)
+            except AttributeError:
+                # If calculate_discount doesn't exist
+                discount = Decimal('0.00')
 
         # Delivery fee
         delivery_fee = Decimal('0.00') if subtotal >= FREE_DELIVERY_ABOVE else DELIVERY_FEE

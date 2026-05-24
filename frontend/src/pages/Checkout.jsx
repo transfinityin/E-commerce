@@ -57,18 +57,25 @@ export default function Checkout() {
     }
   }
 
-  const placeOrder = async () => {
+const placeOrder = async () => {
     if (!selAddr) { toast.error('Select an address'); return }
     setPlacing(true)
     try {
       const payload = { address_id: selAddr }
       if (couponCode) payload.coupon_code = couponCode
+      console.log('📤 Sending order payload:', payload)
+      
       const { data } = await api.post('/orders/', payload)
+      console.log('📥 Order response:', data)
+      
       setOrder(data.order)
       setStep(2)
       toast.success('Order placed!')
     } catch (err) {
-      toast.error(err.response?.data?.error || 'Failed to place order')
+      console.error('❌ Order error full:', err)
+      console.error('❌ Response data:', err.response?.data)
+      console.error('❌ Status:', err.response?.status)
+      toast.error(err.response?.data?.error || err.response?.data?.detail || 'Failed to place order')
     } finally {
       setPlacing(false)
     }
