@@ -40,18 +40,27 @@ def order_status_notification(sender, instance, created, **kwargs):
             message=f"Your order for {product_names} worth ₹{total_str} has been confirmed!",
             link=f"/orders/{instance.id}"
         )
-        send_notification_email(instance.user, notif.title, notif.message)
-        log_to_sheet("Orders", [
-            str(instance.created_at),
-            instance.user.email,
-            instance.user.name,
-            str(instance.id),
-            product_names,
-            total_str,
-            status,
-            "Order Placed"
-        ])
+        # 🔥 FIX: Wrap email in try-except so order doesn't crash
+        try:
+            send_notification_email(instance.user, notif.title, notif.message)
+        except Exception as e:
+            print(f"⚠️ Email failed (non-critical): {e}")
+        
+            log_to_sheet("Orders", [
+                str(instance.created_at),
+                instance.user.email,
+                instance.user.name,
+                str(instance.id),
+                product_names,
+                total_str,
+                status,
+                "Order Placed"
+            ])
+        except Exception as e:
+            print(f"⚠️ Sheets log failed (non-critical): {e}")
+        
         return
+    
     
     if status == 'shipped':
         notif = Notification.objects.create(

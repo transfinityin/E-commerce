@@ -72,11 +72,27 @@ const placeOrder = async () => {
       setStep(2)
       toast.success('Order placed!')
     } catch (err) {
-      console.error('❌ Order error full:', err)
-      console.error('❌ Response data:', err.response?.data)
-      console.error('❌ Status:', err.response?.status)
-      toast.error(err.response?.data?.error || err.response?.data?.detail || 'Failed to place order')
-    } finally {
+    // ❌ Munnadi: simple toast
+    // ✅ Debug version:
+    const errorInfo = {
+      message: err.message,
+      status: err.response?.status,
+      statusText: err.response?.statusText,
+      data: err.response?.data,
+      url: err.config?.url,
+      method: err.config?.method,
+    }
+    console.error('🚨 PLACE ORDER ERROR:', errorInfo)
+    localStorage.setItem('last_order_error', JSON.stringify(errorInfo))
+    
+    toast.error(
+      err.response?.data?.error || 
+      err.response?.data?.detail || 
+      err.response?.data?.address_id?.[0] ||
+      err.response?.data?.coupon_code?.[0] ||
+      `Error ${err.response?.status}: ${JSON.stringify(err.response?.data).slice(0, 100)}`
+    )
+  }finally {
       setPlacing(false)
     }
   }

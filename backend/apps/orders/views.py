@@ -632,7 +632,7 @@ class OrderCreateView(APIView):
                     discount = coupon.calculate_discount(subtotal)
                 else:
                     return Response({'error': f'Coupon "{coupon_code}" is expired or fully used.'}, status=400)
-                discount = coupon.calculate_discount(subtotal)
+                # discount = coupon.calculate_discount(subtotal)
             except Coupon.DoesNotExist:
                 return Response({'error': f'Coupon "{coupon_code}" not found.'}, status=400)
             except AttributeError:
