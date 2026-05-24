@@ -38,3 +38,4 @@ env/
 .DS_Store
 Thumbs.db
 backend/apps/utils/service_account.json
+backend/apps/utils/service_account.json
