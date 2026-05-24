@@ -2,7 +2,7 @@ import axios from 'axios';
 
 const API_URL = import.meta.env.VITE_API_URL || 'https://transfinity-backend.onrender.com/api'
 const huntApi = axios.create({
-  baseURL: `${API_BASE}/hunt`,
+  baseURL: `${API_URL}/hunt`,
   headers: {
     'Content-Type': 'application/json'
   }
