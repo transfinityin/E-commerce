@@ -23,8 +23,12 @@ djangorestframework-simplejwt==5.3.1
 geographiclib==2.1
 geopy==2.4.1
 google-auth==2.52.0
+google-auth-oauthlib==1.4.0
+gspread==6.2.1
+gunicorn==21.2.0
 idna==3.13
 oauthlib==3.3.1
+packaging==26.2
 pillow==10.3.0
 psycopg2-binary==2.9.9
 pyasn1==0.6.3
@@ -45,6 +49,4 @@ social-auth-core==4.9.1
 sqlparse==0.5.5
 tzdata==2026.2
 urllib3==2.6.3
-gunicorn==21.2.0
 whitenoise==6.7.0
-google-auth>=2.22.0
