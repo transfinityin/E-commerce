@@ -64,4 +64,6 @@ def check_rank_upgrade(sender, instance, created, **kwargs):
             )
             instance.arc_unlock_processed = True
             instance.save(update_fields=['arc_unlock_processed'])
+            # Order.objects.filter(pk=instance.pk).update(arc_unlock_processed=True)
+
 
