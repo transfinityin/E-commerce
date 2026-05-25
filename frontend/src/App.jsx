@@ -45,7 +45,7 @@ import HuntLocations from './pages/admin/HuntLocations'
 
 // ===== NEW: TRANSFINITY WORLD MAP =====
 import WorldMap from './components/WorldMap/WorldMap'
-import CouponQRScanner from './pages/QRScanner'
+// import CouponQRScanner from './pages/QRScanner'
 import HuntQRCodes from './pages/admin/HuntQRCodes'
 // Support pages
 import SupportPage from './pages/SupportPage'
@@ -62,8 +62,8 @@ import Arcs from './pages/Arc'
 import Intro from './pages/Intro'
 
 
-import Wanderer from './pages/arcs/Wanderer'
-import Founderer from './pages/arcs/Founderer'
+import Wanderer from './pages/Arcs/Wanderer'
+import Founderer from './pages/Arcs/Founderer'
 // import Phantom from './pages/arcs/Phantom'
 // import Ascension from './pages/arcs/Ascension'
 // import Rebirth from './pages/arcs/Rebirth'
