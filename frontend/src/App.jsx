@@ -150,7 +150,7 @@ export default function App() {
      
      <Route path="/hunt/scanner" element={<QRScanner />} />
 <Route path="/scan" element={<QRScanner />} />
-<Route path="/scan/:qrCodeId" element={<QRScanner />} />  
+<Route path="scan/:qrCodeId" element={<QRScanner />} />  
       <Route path="/treasure-hunt"      element={<TreasureHunt />} />
      
       <Route path="/hunt" element={<TreasureHunt />} />
