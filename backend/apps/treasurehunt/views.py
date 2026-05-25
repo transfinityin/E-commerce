@@ -648,6 +648,7 @@ Path: backend/apps/treasurehunt/views.py
 NO MODEL DEFINITIONS HERE - import from models.py only.
 """
 
+from apps.treasurehunt.utils import calculate_hunt_score
 from rest_framework import viewsets, status, generics, permissions
 from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.response import Response
@@ -663,13 +664,13 @@ from .models import (
     FounderProgress, CommunityUnlockProgress, PurchaseLog,
     StorySegment, Challenge, Reward,
     TShirtQRCode, HuntLocation, UserHuntProgress,
-    HuntReward, HuntLeaderboard,
+    HuntReward, HuntLeaderboard
 )
 from .serializers import (
     ArcSerializer, ArcDetailSerializer, ShipPathSerializer,
     FounderProgressSerializer, TreasureSerializer,
     CommunityProgressSerializer, PurchaseLogSerializer,
-    QRActivateSerializer,HuntLocationSerializer
+    QRActivateSerializer,HuntLocationSerializer,UserHuntProgressSerializer, HuntRewardSerializer, LeaderboardSerializer
 )
 from .permissions import IsAdminOrReadOnly
 
@@ -1190,58 +1191,132 @@ def purchase_webhook(request):
 # LEGACY: T-SHIRT QR HUNT VIEWS
 # ═════════════════════════════════════════════════════════════════
 
+# class QRActivateView(generics.GenericAPIView):
+#     permission_classes = [permissions.IsAuthenticated]
+#     throttle_classes = [QRScanThrottle]
+
+#     def post(self, request):
+#         serializer = QRActivateSerializer(data=request.data)
+#         serializer.is_valid(raise_exception=True)
+#         secret_hash = serializer.validated_data['code']
+#         user = request.user
+
+#         try:
+#             qr_code = TShirtQRCode.objects.select_related('order').get(
+#                 secret_hash=secret_hash,
+#                 is_activated=False
+#             )
+#         except TShirtQRCode.DoesNotExist:
+#             if TShirtQRCode.objects.filter(secret_hash=secret_hash, is_activated=True).exists():
+#                 return Response(
+#                     {'error': 'This T-Shirt QR is already claimed.', 'code': 'ALREADY_CLAIMED'},
+#                     status=400
+#                 )
+#             return Response({'error': 'Invalid QR code.', 'code': 'INVALID_QR'}, status=404)
+
+#         if hasattr(user, 'hunt_progress'):
+#             return Response(
+#                 {'error': 'You already have an active treasure hunt.', 'code': 'HUNT_EXISTS'},
+#                 status=400
+#             )
+
+#         with transaction.atomic():
+#             qr_code.is_activated = True
+#             qr_code.activated_by = user
+#             qr_code.activated_at = timezone.now()
+#             qr_code.save()
+
+#             progress = UserHuntProgress.objects.create(  # ✅ once, save the reference
+#                 user=user,
+#                 tshirt_qr=qr_code,
+#                 current_level=1,
+#                 last_unlocked_at=timezone.now()
+#             )
+
+#             HuntLeaderboard.objects.get_or_create(
+#                 user=user,
+#                 defaults={"score": 0, "progress": progress}  # ✅ use same progress object
+#             )
+
+#         return Response({
+#             'success': True,
+#             'message': 'Treasure Hunt activated! Level 1 unlocked.',
+#         }, status=201)
+        
 class QRActivateView(generics.GenericAPIView):
+    """
+    POST /api/hunt/activate/
+    Body: { "code": "th-abc123" }
+
+    First scan of T-shirt QR. Links QR to user account.
+    Creates UserHuntProgress at Level 1.
+    """
+    serializer_class = QRActivateSerializer
     permission_classes = [permissions.IsAuthenticated]
     throttle_classes = [QRScanThrottle]
 
     def post(self, request):
-        serializer = QRActivateSerializer(data=request.data)
+        serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
+
         secret_hash = serializer.validated_data['code']
         user = request.user
 
+        # 1. Find the QR code
         try:
             qr_code = TShirtQRCode.objects.select_related('order').get(
                 secret_hash=secret_hash,
-                is_activated=False
+                is_activated=False  # Must not be already claimed
             )
         except TShirtQRCode.DoesNotExist:
+            # Check if already claimed by someone else
             if TShirtQRCode.objects.filter(secret_hash=secret_hash, is_activated=True).exists():
                 return Response(
-                    {'error': 'This T-Shirt QR is already claimed.', 'code': 'ALREADY_CLAIMED'},
-                    status=400
+                    {'error': 'This T-Shirt QR is already claimed by another user.', 
+                     'code': 'ALREADY_CLAIMED'},
+                    status=status.HTTP_400_BAD_REQUEST
                 )
-            return Response({'error': 'Invalid QR code.', 'code': 'INVALID_QR'}, status=404)
-
-        if hasattr(user, 'hunt_progress'):
             return Response(
-                {'error': 'You already have an active treasure hunt.', 'code': 'HUNT_EXISTS'},
-                status=400
+                {'error': 'Invalid QR code.', 'code': 'INVALID_QR'},
+                status=status.HTTP_404_NOT_FOUND
             )
 
+        # 2. Anti-sharing: Check if user already has a hunt in progress
+        if hasattr(user, 'hunt_progress'):
+            return Response(
+                {'error': 'You already have an active treasure hunt.', 
+                 'code': 'HUNT_EXISTS',
+                 'current_level': user.hunt_progress.current_level},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # 3. Activate QR and create progress
         with transaction.atomic():
             qr_code.is_activated = True
             qr_code.activated_by = user
             qr_code.activated_at = timezone.now()
             qr_code.save()
 
-            progress = UserHuntProgress.objects.create(  # ✅ once, save the reference
+            progress = UserHuntProgress.objects.create(
                 user=user,
                 tshirt_qr=qr_code,
-                current_level=1,
+                current_level=1,  # Unlocks Level 1
                 last_unlocked_at=timezone.now()
             )
 
-            HuntLeaderboard.objects.get_or_create(
+            # Create leaderboard entry
+            HuntLeaderboard.objects.create(
                 user=user,
-                defaults={"score": 0, "progress": progress}  # ✅ use same progress object
+                progress=progress,
+                score=calculate_hunt_score(progress)
             )
 
         return Response({
             'success': True,
             'message': 'Treasure Hunt activated! Level 1 unlocked.',
-        }, status=201)
-        
+            'progress': UserHuntProgressSerializer(progress).data
+        }, status=status.HTTP_201_CREATED)
+
 
 class HuntProgressView(generics.RetrieveAPIView):
     permission_classes = [permissions.IsAuthenticated]

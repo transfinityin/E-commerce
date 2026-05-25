@@ -113,7 +113,8 @@ class QROffer(models.Model):
     def generate_qr_image(self):
         """Generate QR code image"""
         # Frontend URL - customer scans this
-        scan_url = f"https://yourdomain.com/scan/{self.qr_code_id}"
+        frontend_url = getattr(settings, 'FRONTEND_URL', 'https://www.transfinity.shop')
+        scan_url = f"{frontend_url}/scan/{self.qr_code_id}"
         
         qr = qrcode.QRCode(version=1, box_size=10, border=5)
         qr.add_data(scan_url)

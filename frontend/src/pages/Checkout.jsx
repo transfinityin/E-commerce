@@ -67,11 +67,13 @@ export default function Checkout() {
 
   const applyCoupon = async () => {
     if (!couponCode) return
-
+    
+    console.log("Cart Object:", cart)
+    console.log("Subtotal Value being sent:", parseFloat(cart?.subtotal || 0))
     setApplyCouponLoading(true)
 
     try {
-      const subtotalValue = parseFloat(cart?.subtotal || 0)  // ✅ FIXED
+      const subtotalValue = cart?.subtotal ? Number(cart.subtotal).toFixed(2) : "0.00";
       const { data } = await api.post('/coupons/validate/', {
         code: couponCode,
         subtotal: subtotalValue,
@@ -81,6 +83,7 @@ export default function Checkout() {
       toast.success(data.message)
     } catch (err) {
       setCouponData(null)
+      console.log("BACKEND ERROR DETAILS:", err.response?.data)
       toast.error(err.response?.data?.code?.[0] || 'Invalid coupon')
     } finally {
       setApplyCouponLoading(false)

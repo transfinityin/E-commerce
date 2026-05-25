@@ -83,7 +83,7 @@ def calculate_hunt_score(progress):
         base_score += speed_bonus
     
     # Completion bonus
-    if progress.is_completed:
+    if progress.current_level >= 5:
         base_score += 1000
     
     return base_score

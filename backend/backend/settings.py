@@ -620,7 +620,8 @@ LOCAL_APPS = [
     'apps.support',
     'apps.notifications',
     'apps.core',
-    'apps.treasurehunt'
+    'apps.treasurehunt',
+    'apps.utils'
 ] 
 
 SITE_ID = 1
@@ -642,7 +643,15 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'allauth.account.middleware.AccountMiddleware',
 ]
-
+# Django 5+ kaga puthu Storage system (Ithu thaan Cloudinary-kku force pannum)
+STORAGES = {
+    "default": {
+        "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
 ROOT_URLCONF = 'backend.urls'
 
 TEMPLATES = [
@@ -694,7 +703,7 @@ USE_TZ = True
 # ── Static & Media ───────────────────────────────────────────
 STATIC_URL = 'static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
@@ -704,7 +713,6 @@ CLOUDINARY_STORAGE = {
     'API_KEY':    os.getenv('CLOUDINARY_API_KEY'),
     'API_SECRET': os.getenv('CLOUDINARY_API_SECRET'),
 }
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 # ── DRF ──────────────────────────────────────────────────────
 REST_FRAMEWORK = {
