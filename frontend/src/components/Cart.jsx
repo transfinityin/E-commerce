@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { Trash2, Plus, Minus, ShoppingBag, ArrowRight, Shield, Truck, Tag } from 'lucide-react'
+import { Trash2, Plus, Minus, ShoppingBag, ArrowRight, Shield, Truck, Tag, Infinity } from 'lucide-react'
 import { toast } from 'react-hot-toast'
 import useCartStore from '../store/cartStore'
 
@@ -42,16 +42,16 @@ export default function Cart() {
 
   /* ── Loading ─────────────────────────────────────────── */
   if (loading) return (
-    <div style={{ minHeight: '100vh', background: 'var(--paper)', padding: '40px 24px' }}>
-      <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
-        <div className="skeleton" style={{ height: '36px', width: '200px', marginBottom: '40px' }} />
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: '28px' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+    <div className="bg-black min-h-screen pt-[80px] sm:pt-[96px]">
+      <div className="page-container">
+        <div className="h-8 sm:h-10 w-48 bg-gold/5 animate-pulse mb-8 sm:mb-12" />
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_340px] gap-6 sm:gap-8">
+          <div className="flex flex-col gap-3 sm:gap-4">
             {[1,2,3].map(i => (
-              <div key={i} className="skeleton" style={{ height: '110px', borderRadius: 'var(--radius-lg)' }} />
+              <div key={i} className="bg-[#0A0A0A] border border-gold/10 h-24 sm:h-28 animate-pulse" />
             ))}
           </div>
-          <div className="skeleton" style={{ height: '340px', borderRadius: 'var(--radius-lg)' }} />
+          <div className="bg-[#0A0A0A] border border-gold/10 h-80 animate-pulse" />
         </div>
       </div>
     </div>
@@ -59,44 +59,28 @@ export default function Cart() {
 
   /* ── Empty ───────────────────────────────────────────── */
   if (!cart || cart.items?.length === 0) return (
-    <div style={{
-      minHeight: '80vh', background: 'var(--paper)',
-      display: 'flex', alignItems: 'center', justifyContent: 'center',
-      padding: '40px 24px',
-    }}>
-      <div style={{ textAlign: 'center', animation: 'fadeUp 0.5s ease both' }}>
-        <div style={{
-          width: '96px', height: '96px', borderRadius: '50%',
-          background: 'var(--accent-soft)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          margin: '0 auto 28px',
-        }}>
-          <ShoppingBag size={40} color="var(--accent-dark)" strokeWidth={1.5} />
+    <div className="bg-black min-h-[80vh] flex items-center justify-center pt-[80px] sm:pt-[96px] px-4">
+      <div className="text-center animate-fadeUp max-w-md mx-auto">
+        {/* Infinity icon */}
+        <div className="w-20 h-20 sm:w-24 sm:h-24 border border-gold/20 flex items-center justify-center mx-auto mb-6 sm:mb-8">
+          <Infinity size={36} className="sm:w-10 sm:h-10 text-gold/40" strokeWidth={1} />
         </div>
 
-        <h2 style={{
-          fontFamily: 'Playfair Display, serif',
-          fontSize: '32px', fontWeight: 700,
-          color: 'var(--ink)', marginBottom: '12px',
-        }}>Your cart is empty</h2>
+        <p className="label-gold mb-3 sm:mb-4">The Void is Empty</p>
 
-        <p style={{
-          color: 'var(--ink-muted)', fontSize: '15px',
-          marginBottom: '36px', lineHeight: 1.6, maxWidth: '320px',
-        }}>
-          Explore our premium collection and add your favourite pieces.
+        <h2 className="font-display text-2xl sm:text-3xl lg:text-4xl text-white tracking-wider mb-3 sm:mb-4">
+          CART IS EMPTY
+        </h2>
+
+        <p className="text-muted text-sm sm:text-base mb-8 sm:mb-10 leading-relaxed">
+          Your collection awaits. Explore the archives and select your artifacts.
         </p>
 
-        <Link to="/products" style={{
-          display: 'inline-flex', alignItems: 'center', gap: '8px',
-          background: 'var(--ink)', color: 'white',
-          padding: '14px 32px', borderRadius: '99px',
-          fontSize: '14px', fontWeight: 600,
-          textDecoration: 'none', transition: 'all 0.25s',
-        }}
-        onMouseEnter={e => { e.currentTarget.style.background = 'var(--accent)' }}
-        onMouseLeave={e => { e.currentTarget.style.background = 'var(--ink)' }}>
-          Start Shopping <ArrowRight size={16} />
+        <Link to="/products"
+          className="btn-primary inline-flex items-center gap-2"
+        >
+          EXPLORE ARTIFACTS
+          <ArrowRight size={16} />
         </Link>
       </div>
     </div>
@@ -104,51 +88,28 @@ export default function Cart() {
 
   /* ── Cart ────────────────────────────────────────────── */
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--paper)' }}>
+    <div className="bg-black min-h-screen">
 
       {/* Page header */}
-      <div style={{
-        background: 'var(--ink)',
-        padding: '40px clamp(20px, 5vw, 60px)',
-      }}>
-        <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px' }}>
+      <div className="bg-[#0A0A0A] border-b border-gold/10 pt-[80px] sm:pt-[96px]">
+        <div className="page-container py-8 sm:py-10 lg:py-12">
+          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
             <div>
-              <p style={{
-                fontSize: '11px', fontWeight: 700, letterSpacing: '0.12em',
-                color: 'var(--accent)', textTransform: 'uppercase', marginBottom: '8px',
-              }}>Your Selection</p>
-              <h1 style={{
-                fontFamily: 'Playfair Display, serif',
-                fontSize: 'clamp(28px, 4vw, 40px)',
-                fontWeight: 700, color: 'white',
-              }}>
-                Shopping Cart
-                <span style={{
-                  marginLeft: '14px',
-                  fontSize: '16px',
-                  color: 'rgba(255,255,255,0.35)',
-                  fontFamily: 'DM Sans, sans-serif',
-                  fontWeight: 400,
-                }}>
-                  {cart.total_items} {cart.total_items === 1 ? 'item' : 'items'}
+              <p className="label-gold mb-2 sm:mb-3">Your Collection</p>
+              <h1 className="font-display text-2xl sm:text-3xl lg:text-4xl text-white tracking-wider">
+                CART
+                <span className="text-muted text-base sm:text-lg font-body font-normal tracking-normal ml-3 sm:ml-4">
+                  {cart.total_items} {cart.total_items === 1 ? 'artifact' : 'artifacts'}
                 </span>
               </h1>
             </div>
 
             {cart.items?.length > 0 && (
-              <button onClick={clearCart} style={{
-                background: 'rgba(214,69,69,0.12)',
-                border: '1px solid rgba(214,69,69,0.25)',
-                color: '#E07070',
-                padding: '9px 20px',
-                borderRadius: 'var(--radius-md)',
-                fontSize: '13px', fontWeight: 500,
-                cursor: 'pointer', transition: 'all 0.2s',
-                fontFamily: 'DM Sans, sans-serif',
-              }}
-              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(214,69,69,0.2)' }}
-              onMouseLeave={e => { e.currentTarget.style.background = 'rgba(214,69,69,0.12)' }}>
+              <button onClick={clearCart}
+                className="text-[11px] sm:text-xs font-mono tracking-wider uppercase text-red-400 
+                  border border-red-400/20 px-4 sm:px-5 py-2 sm:py-2.5 
+                  transition-all duration-300 hover:bg-red-400/10 hover:border-red-400/40 cursor-pointer"
+              >
                 Clear Cart
               </button>
             )}
@@ -157,151 +118,77 @@ export default function Cart() {
       </div>
 
       {/* Main grid */}
-      <div style={{
-        maxWidth: '1100px', margin: '0 auto',
-        padding: '40px clamp(20px, 5vw, 60px)',
-        display: 'grid',
-        gridTemplateColumns: 'minmax(0,1fr)',
-        gap: '28px',
-      }}>
-        <style>{`
-          @media (min-width: 1024px) {
-            .cart-grid { grid-template-columns: minmax(0,1fr) 340px !important; }
-          }
-        `}</style>
-
-        <div className="cart-grid" style={{
-          display: 'grid',
-          gridTemplateColumns: 'minmax(0,1fr)',
-          gap: '28px',
-        }}>
+      <div className="page-container py-6 sm:py-8 lg:py-10">
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_340px] gap-6 sm:gap-8">
 
           {/* ── Left: Items ────────────────────────────── */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+          <div className="flex flex-col gap-3 sm:gap-4">
             {cart.items?.map((item, index) => (
               <div
                 key={item.id}
-                style={{
-                  background: 'var(--paper-card)',
-                  border: '1px solid var(--border)',
-                  borderRadius: 'var(--radius-lg)',
-                  padding: '20px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '20px',
-                  transition: 'all 0.3s ease',
-                  opacity: removingItems.has(item.id) ? 0 : 1,
-                  transform: removingItems.has(item.id) ? 'translateX(-20px)' : 'translateX(0)',
-                  animation: `fadeUp 0.4s ease ${index * 0.06}s both`,
-                }}
+                className={`bg-[#0A0A0A] border border-gold/10 hover:border-gold/20 
+                  transition-all duration-500 p-3 sm:p-4 lg:p-5 flex items-center gap-3 sm:gap-4 lg:gap-5
+                  ${removingItems.has(item.id) ? 'opacity-0 -translate-x-5' : 'opacity-100 translate-x-0'}
+                `}
+                style={{ transitionDelay: `${index * 50}ms` }}
               >
                 {/* Product image */}
-                <div style={{
-                  width: '88px', height: '88px',
-                  borderRadius: 'var(--radius-md)',
-                  overflow: 'hidden', flexShrink: 0,
-                  background: 'var(--paper-warm)',
-                  border: '1px solid var(--border)',
-                }}>
+                <div className="w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 border border-gold/10 overflow-hidden shrink-0">
                   <img
                     src={item.product.primary_image?.image || item.product.image || ''}
                     alt={item.product.name}
-                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                    className="w-full h-full object-cover"
                   />
                 </div>
 
                 {/* Name + price */}
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <Link to={`/products/${item.product.slug}`} style={{
-                    fontFamily: 'DM Sans, sans-serif',
-                    fontWeight: 600, fontSize: '15px',
-                    color: 'var(--ink)', textDecoration: 'none',
-                    display: '-webkit-box',
-                    WebkitLineClamp: 2,
-                    WebkitBoxOrient: 'vertical',
-                    overflow: 'hidden',
-                    lineHeight: 1.4,
-                    transition: 'color 0.2s',
-                  }}
-                  onMouseEnter={e => { e.currentTarget.style.color = 'var(--accent-dark)' }}
-                  onMouseLeave={e => { e.currentTarget.style.color = 'var(--ink)' }}>
+                <div className="flex-1 min-w-0">
+                  <Link to={`/products/${item.product.slug}`}
+                    className="font-body font-semibold text-sm sm:text-[15px] text-white no-underline 
+                      line-clamp-2 hover:text-gold transition-colors duration-300 block mb-1 sm:mb-2"
+                  >
                     {item.product.name}
                   </Link>
 
-                  <p style={{
-                    fontFamily: 'Playfair Display, serif',
-                    fontSize: '16px', fontWeight: 700,
-                    color: 'var(--accent-dark)', marginTop: '6px',
-                  }}>
+                  <p className="font-mono text-sm sm:text-base text-gold tracking-wider">
                     ₹{Number(item.product.effective_price).toLocaleString('en-IN')}
                   </p>
                 </div>
 
                 {/* Qty controls */}
-                <div style={{
-                  display: 'flex', alignItems: 'center',
-                  border: '1.5px solid var(--border)',
-                  borderRadius: 'var(--radius-md)',
-                  overflow: 'hidden', flexShrink: 0,
-                }}>
+                <div className="flex items-center border border-gold/20 shrink-0">
                   <button
                     onClick={() => handleUpdate(item.id, item.quantity - 1)}
                     disabled={updatingItems.has(item.id) || item.quantity <= 1}
-                    style={{
-                      width: '36px', height: '36px',
-                      background: 'none', border: 'none',
-                      cursor: 'pointer', color: 'var(--ink)',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      transition: 'background 0.15s',
-                      opacity: item.quantity <= 1 ? 0.3 : 1,
-                    }}
-                    onMouseEnter={e => { e.currentTarget.style.background = 'var(--paper-warm)' }}
-                    onMouseLeave={e => { e.currentTarget.style.background = 'none' }}
+                    className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center text-muted 
+                      hover:text-white hover:bg-gold/5 transition-all duration-200 
+                      disabled:opacity-30 cursor-pointer border-none bg-transparent"
                   >
                     <Minus size={14} />
                   </button>
 
-                  <span style={{
-                    width: '36px', textAlign: 'center',
-                    fontSize: '14px', fontWeight: 700,
-                    color: 'var(--ink)',
-                    borderLeft: '1px solid var(--border)',
-                    borderRight: '1px solid var(--border)',
-                    lineHeight: '36px',
-                  }}>
+                  <span className="w-8 sm:w-10 text-center text-sm font-mono text-white 
+                    border-l border-r border-gold/20 leading-8 sm:leading-9">
                     {updatingItems.has(item.id) ? (
-                      <span style={{ fontSize: '10px', color: 'var(--ink-muted)' }}>…</span>
+                      <span className="text-gold/60">…</span>
                     ) : item.quantity}
                   </span>
 
                   <button
                     onClick={() => handleUpdate(item.id, item.quantity + 1)}
                     disabled={updatingItems.has(item.id)}
-                    style={{
-                      width: '36px', height: '36px',
-                      background: 'none', border: 'none',
-                      cursor: 'pointer', color: 'var(--ink)',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      transition: 'background 0.15s',
-                    }}
-                    onMouseEnter={e => { e.currentTarget.style.background = 'var(--paper-warm)' }}
-                    onMouseLeave={e => { e.currentTarget.style.background = 'none' }}
+                    className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center text-muted 
+                      hover:text-white hover:bg-gold/5 transition-all duration-200 
+                      cursor-pointer border-none bg-transparent"
                   >
                     <Plus size={14} />
                   </button>
                 </div>
 
                 {/* Line total */}
-                <div style={{
-                  textAlign: 'right', flexShrink: 0,
-                  minWidth: '80px',
-                }}>
-                  <p style={{ fontSize: '11px', color: 'var(--ink-muted)', marginBottom: '4px' }}>Total</p>
-                  <p style={{
-                    fontFamily: 'Playfair Display, serif',
-                    fontSize: '17px', fontWeight: 700,
-                    color: 'var(--ink)',
-                  }}>
+                <div className="text-right shrink-0 hidden sm:block min-w-[70px]">
+                  <p className="text-[10px] font-mono tracking-wider text-muted uppercase mb-1">Total</p>
+                  <p className="font-mono text-sm lg:text-base text-white tracking-wider">
                     ₹{Number(item.line_total).toLocaleString('en-IN')}
                   </p>
                 </div>
@@ -310,126 +197,84 @@ export default function Cart() {
                 <button
                   onClick={() => handleRemove(item.id)}
                   disabled={removingItems.has(item.id)}
-                  style={{
-                    width: '36px', height: '36px', flexShrink: 0,
-                    background: 'none', border: '1px solid var(--border)',
-                    borderRadius: 'var(--radius-sm)',
-                    cursor: 'pointer', color: 'var(--ink-muted)',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    transition: 'all 0.2s',
-                  }}
-                  onMouseEnter={e => {
-                    e.currentTarget.style.background = 'rgba(214,69,69,0.08)'
-                    e.currentTarget.style.borderColor = 'rgba(214,69,69,0.3)'
-                    e.currentTarget.style.color = 'var(--danger)'
-                  }}
-                  onMouseLeave={e => {
-                    e.currentTarget.style.background = 'none'
-                    e.currentTarget.style.borderColor = 'var(--border)'
-                    e.currentTarget.style.color = 'var(--ink-muted)'
-                  }}
+                  className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center 
+                    text-muted border border-gold/10 hover:text-red-400 hover:border-red-400/30 
+                    hover:bg-red-400/5 transition-all duration-300 cursor-pointer 
+                    border-none bg-transparent shrink-0"
                 >
-                  <Trash2 size={15} />
+                  <Trash2 size={14} className="sm:w-4 sm:h-4" />
                 </button>
               </div>
             ))}
 
             {/* Continue shopping */}
-            <Link to="/products" style={{
-              display: 'inline-flex', alignItems: 'center', gap: '6px',
-              fontSize: '13px', fontWeight: 600,
-              color: 'var(--ink-muted)', textDecoration: 'none',
-              marginTop: '4px', transition: 'color 0.2s',
-              width: 'fit-content',
-            }}
-            onMouseEnter={e => { e.currentTarget.style.color = 'var(--ink)' }}
-            onMouseLeave={e => { e.currentTarget.style.color = 'var(--ink-muted)' }}>
-              ← Continue Shopping
+            <Link to="/products"
+              className="text-[11px] sm:text-xs font-mono tracking-wider uppercase text-muted 
+                hover:text-gold transition-colors duration-300 flex items-center gap-2 mt-2 sm:mt-4 w-fit"
+            >
+              <ArrowRight size={12} className="rotate-180" />
+              Continue Shopping
             </Link>
           </div>
 
           {/* ── Right: Order Summary ────────────────────── */}
-          <div style={{ position: 'sticky', top: '100px', height: 'fit-content' }}>
-            <div style={{
-              background: 'var(--paper-card)',
-              border: '1px solid var(--border)',
-              borderRadius: 'var(--radius-xl)',
-              overflow: 'hidden',
-              boxShadow: 'var(--shadow-md)',
-            }}>
+          <div className="lg:sticky lg:top-[110px] h-fit">
+            <div className="bg-[#0A0A0A] border border-gold/10">
+
               {/* Summary header */}
-              <div style={{
-                background: 'var(--ink)',
-                padding: '24px 28px',
-              }}>
-                <h3 style={{
-                  fontFamily: 'Playfair Display, serif',
-                  fontSize: '20px', fontWeight: 700,
-                  color: 'white',
-                }}>Order Summary</h3>
-                <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.35)', marginTop: '4px' }}>
-                  {cart.total_items} {cart.total_items === 1 ? 'item' : 'items'} in your cart
+              <div className="bg-black border-b border-gold/10 p-5 sm:p-6">
+                <h3 className="font-display text-lg sm:text-xl text-white tracking-wider">
+                  ORDER SUMMARY
+                </h3>
+                <p className="text-[11px] font-mono tracking-wider text-muted mt-1">
+                  {cart.total_items} {cart.total_items === 1 ? 'artifact' : 'artifacts'} selected
                 </p>
               </div>
 
               {/* Summary body */}
-              <div style={{ padding: '24px 28px' }}>
+              <div className="p-5 sm:p-6 space-y-4 sm:space-y-5">
 
                 {/* Free delivery banner */}
                 {deliveryFee > 0 && (
-                  <div style={{
-                    background: 'var(--accent-soft)',
-                    border: '1px solid rgba(200,169,110,0.3)',
-                    borderRadius: 'var(--radius-md)',
-                    padding: '12px 14px',
-                    marginBottom: '20px',
-                    display: 'flex', alignItems: 'center', gap: '10px',
-                  }}>
-                    <Tag size={14} color="var(--accent-dark)" />
-                    <p style={{ fontSize: '12px', color: 'var(--accent-dark)', fontWeight: 500 }}>
-                      Add ₹{(999 - totalPrice).toFixed(0)} more for FREE delivery!
+                  <div className="bg-gold/5 border border-gold/20 p-3 sm:p-4 flex items-center gap-3">
+                    <Tag size={14} className="text-gold shrink-0" />
+                    <p className="text-[11px] sm:text-xs text-gold/80 font-mono tracking-wider">
+                      Add ₹{(999 - totalPrice).toFixed(0)} more for FREE transmission!
                     </p>
                   </div>
                 )}
 
                 {/* Line items */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', marginBottom: '20px' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span style={{ fontSize: '14px', color: 'var(--ink-muted)' }}>Subtotal</span>
-                    <span style={{ fontSize: '15px', fontWeight: 600, color: 'var(--ink)' }}>
+                <div className="space-y-3 sm:space-y-4">
+                  <div className="flex justify-between items-center">
+                    <span className="text-xs sm:text-sm text-muted">Subtotal</span>
+                    <span className="text-sm sm:text-base font-mono text-white tracking-wider">
                       ₹{Number(totalPrice).toLocaleString('en-IN')}
                     </span>
                   </div>
 
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span style={{ fontSize: '14px', color: 'var(--ink-muted)' }}>Delivery</span>
+                  <div className="flex justify-between items-center">
+                    <span className="text-xs sm:text-sm text-muted">Transmission Fee</span>
                     {deliveryFee === 0 ? (
-                      <span style={{
-                        fontSize: '12px', fontWeight: 700,
-                        color: 'var(--success)',
-                        background: '#D6F0E4',
-                        padding: '3px 10px', borderRadius: '99px',
-                      }}>FREE</span>
+                      <span className="text-[11px] sm:text-xs font-mono tracking-wider text-green-400 
+                        bg-green-400/10 px-2.5 sm:px-3 py-1">
+                        FREE
+                      </span>
                     ) : (
-                      <span style={{ fontSize: '15px', fontWeight: 600, color: 'var(--ink)' }}>₹{deliveryFee}</span>
+                      <span className="text-sm sm:text-base font-mono text-white tracking-wider">
+                        ₹{deliveryFee}
+                      </span>
                     )}
                   </div>
                 </div>
 
                 {/* Divider */}
-                <div style={{ borderTop: '1px solid var(--border)', margin: '20px 0' }} />
+                <div className="h-[1px] bg-gold/10" />
 
                 {/* Total */}
-                <div style={{
-                  display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                  marginBottom: '24px',
-                }}>
-                  <span style={{ fontSize: '16px', fontWeight: 700, color: 'var(--ink)' }}>Total</span>
-                  <span style={{
-                    fontFamily: 'Playfair Display, serif',
-                    fontSize: '26px', fontWeight: 700,
-                    color: 'var(--ink)',
-                  }}>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm sm:text-base font-semibold text-white tracking-wider">TOTAL</span>
+                  <span className="font-display text-2xl sm:text-3xl text-gold tracking-wider">
                     ₹{Number(finalTotal).toLocaleString('en-IN')}
                   </span>
                 </div>
@@ -437,51 +282,25 @@ export default function Cart() {
                 {/* Checkout button */}
                 <button
                   onClick={() => navigate('/checkout')}
-                  style={{
-                    width: '100%', height: '52px',
-                    background: 'var(--ink)', color: 'white',
-                    border: 'none', borderRadius: 'var(--radius-md)',
-                    fontSize: '15px', fontWeight: 700,
-                    cursor: 'pointer', fontFamily: 'DM Sans, sans-serif',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    gap: '10px', transition: 'all 0.25s',
-                    marginBottom: '16px',
-                  }}
-                  onMouseEnter={e => {
-                    e.currentTarget.style.background = 'var(--accent)'
-                    e.currentTarget.style.transform = 'translateY(-1px)'
-                    e.currentTarget.style.boxShadow = 'var(--shadow-md)'
-                  }}
-                  onMouseLeave={e => {
-                    e.currentTarget.style.background = 'var(--ink)'
-                    e.currentTarget.style.transform = 'translateY(0)'
-                    e.currentTarget.style.boxShadow = 'none'
-                  }}
+                  className="w-full btn-primary flex items-center justify-center gap-2 py-3.5 sm:py-4"
                 >
-                  Proceed to Checkout <ArrowRight size={18} />
+                  PROCEED TO CHECKOUT
+                  <ArrowRight size={16} />
                 </button>
 
                 {/* Trust badges */}
-                <div style={{
-                  display: 'flex', gap: '12px',
-                  padding: '14px',
-                  background: 'var(--paper-warm)',
-                  borderRadius: 'var(--radius-md)',
-                  border: '1px solid var(--border)',
-                }}>
-                  <div style={{
-                    display: 'flex', alignItems: 'center', gap: '6px',
-                    flex: 1,
-                  }}>
-                    <Shield size={14} color="var(--ink-muted)" />
-                    <span style={{ fontSize: '11px', color: 'var(--ink-muted)' }}>Secure checkout</span>
+                <div className="grid grid-cols-2 gap-2 sm:gap-3 p-3 sm:p-4 bg-black border border-gold/10">
+                  <div className="flex items-center gap-2">
+                    <Shield size={14} className="text-gold/40 shrink-0" />
+                    <span className="text-[10px] sm:text-[11px] text-muted font-mono tracking-wider uppercase truncate">
+                      Encrypted
+                    </span>
                   </div>
-                  <div style={{
-                    display: 'flex', alignItems: 'center', gap: '6px',
-                    flex: 1,
-                  }}>
-                    <Truck size={14} color="var(--ink-muted)" />
-                    <span style={{ fontSize: '11px', color: 'var(--ink-muted)' }}>Fast delivery</span>
+                  <div className="flex items-center gap-2">
+                    <Truck size={14} className="text-gold/40 shrink-0" />
+                    <span className="text-[10px] sm:text-[11px] text-muted font-mono tracking-wider uppercase truncate">
+                      Fast Transmit
+                    </span>
                   </div>
                 </div>
 

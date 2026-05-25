@@ -9,10 +9,10 @@ import useAuthStore from '../store/authStore'
 import SocialAuth from './SocialAuth'
 
 const schema = z.object({
-  name:      z.string().min(2, 'Name too short'),
-  email:     z.string().email('Invalid email'),
-  phone:     z.string().min(10, 'Invalid phone'),
-  password:  z.string().min(8, 'Min 8 characters'),
+  name: z.string().min(2, 'Name too short'),
+  email: z.string().email('Invalid email'),
+  phone: z.string().min(10, 'Invalid phone'),
+  password: z.string().min(8, 'Min 8 characters'),
   password2: z.string(),
 }).refine((d) => d.password === d.password2, {
   message: 'Passwords do not match',
@@ -22,12 +22,17 @@ const schema = z.object({
 export default function Register() {
   const { register: registerUser } = useAuthStore()
   const navigate = useNavigate()
-  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm({
-    resolver: zodResolver(schema),
-  })
 
   const [showPass, setShowPass] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm({
+    resolver: zodResolver(schema),
+  })
 
   const onSubmit = async (data) => {
     try {
@@ -40,157 +45,247 @@ export default function Register() {
   }
 
   const fields = [
-    { name: 'name',      label: 'Full Name',        type: 'text',     placeholder: 'Your full name', icon: User },
-    { name: 'email',     label: 'Email Address',    type: 'email',    placeholder: 'you@example.com', icon: Mail },
-    { name: 'phone',     label: 'Phone Number',     type: 'tel',      placeholder: 'Your phone number', icon: Phone },
-    { name: 'password',  label: 'Password',         type: 'password', placeholder: 'Minimum 8 characters', icon: Lock, showToggle: true, showState: showPass, setShow: setShowPass },
-    { name: 'password2', label: 'Confirm Password', type: 'password', placeholder: 'Re-enter password', icon: Lock, showToggle: true, showState: showConfirm, setShow: setShowConfirm },
+    {
+      name: 'name',
+      label: 'CODENAME',
+      type: 'text',
+      placeholder: 'Wanderer-001',
+      icon: User,
+    },
+    {
+      name: 'email',
+      label: 'EMAIL',
+      type: 'email',
+      placeholder: 'signal@transfinity.shop',
+      icon: Mail,
+    },
+    {
+      name: 'phone',
+      label: 'SIGNAL',
+      type: 'tel',
+      placeholder: 'Your phone number',
+      icon: Phone,
+    },
+    {
+      name: 'password',
+      label: 'PASSPHRASE',
+      type: 'password',
+      placeholder: 'Minimum 8 characters',
+      icon: Lock,
+      showToggle: true,
+      showState: showPass,
+      setShow: setShowPass,
+    },
+    {
+      name: 'password2',
+      label: 'CONFIRM PASSPHRASE',
+      type: 'password',
+      placeholder: 'Re-enter passphrase',
+      icon: Lock,
+      showToggle: true,
+      showState: showConfirm,
+      setShow: setShowConfirm,
+    },
   ]
 
+  const inputClass = (hasError) =>
+    `input-gold w-full pl-9 pr-3 text-sm sm:text-[15px] text-white placeholder:text-muted/45 bg-transparent ${
+      hasError ? '!border-[var(--color-danger)]' : ''
+    }`
+
   return (
-    <div className="grid min-h-[calc(100vh-80px)] sm:min-h-[calc(100vh-100px)] lg:min-h-[calc(100vh-136px)] lg:grid-cols-2">
+    <div className="min-h-screen bg-black overflow-x-hidden pt-[76px] sm:pt-[88px] lg:pt-0">
+      <div className="grid min-h-[calc(100vh-76px)] sm:min-h-[calc(100vh-88px)] lg:min-h-screen lg:grid-cols-2">
 
-      {/* LEFT PANEL - Desktop only */}
-      <div className="hidden lg:flex relative flex-col justify-center items-start overflow-hidden bg-[var(--color-secondary)] text-white px-10 xl:px-14 py-12 xl:py-16">
-        {/* Decorative circles */}
-        <div className="absolute w-[400px] h-[400px] xl:w-[480px] xl:h-[480px] -top-[180px] -right-[160px] rounded-full border border-[var(--color-primary)]/10 pointer-events-none" />
-        <div className="absolute w-[480px] h-[480px] xl:w-[560px] xl:h-[560px] -bottom-[220px] -left-[180px] rounded-full border border-[var(--color-primary)]/10 pointer-events-none" />
+        {/* LEFT PANEL - DESKTOP */}
+        <aside className="hidden lg:flex relative flex-col justify-center items-start overflow-hidden bg-[#050505] text-white px-10 xl:px-14 2xl:px-20 py-12 xl:py-16">
+          {/* Background Glow */}
+          <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_25%_20%,rgba(212,175,55,0.10),transparent_32%),radial-gradient(circle_at_80%_80%,rgba(212,175,55,0.07),transparent_35%)]" />
 
-        <div className="relative z-10 w-full max-w-md">
+          {/* Decorative Circles */}
+          <div className="absolute w-[420px] h-[420px] xl:w-[520px] xl:h-[520px] -top-[190px] -right-[170px] rounded-full border border-gold/15 pointer-events-none" />
+          <div className="absolute w-[520px] h-[520px] xl:w-[620px] xl:h-[620px] -bottom-[260px] -left-[220px] rounded-full border border-gold/10 pointer-events-none" />
 
-          <Link to="/" className="font-[Playfair_Display] text-2xl xl:text-3xl font-bold text-white no-underline block mb-8 xl:mb-12">
-            Trans<span className="text-[var(--color-primary)]">Finity</span>
-          </Link>
+          {/* Subtle Grid */}
+          <div className="absolute inset-0 grid-bg opacity-30 pointer-events-none" />
 
-          <h3 className="font-[Playfair_Display] text-3xl xl:text-5xl 2xl:text-6xl font-bold text-white leading-tight mb-4 xl:mb-5">
-            Join <br />
-            <span className="italic text-[var(--color-primary)]">us.</span>
-          </h3>
+          <div className="relative z-10 w-full max-w-lg">
+            <Link
+              to="/"
+              className="font-display text-2xl xl:text-3xl font-bold text-white no-underline block mb-10 xl:mb-14 tracking-[0.22em]"
+            >
+              TRANS<span className="text-gradient-gold">FINITY</span>
+            </Link>
 
-          <p className="text-sm xl:text-base text-white/55 leading-relaxed max-w-sm mb-8 xl:mb-10">
-            Create your account to unlock premium collections, faster checkout, wishlist access, and exclusive offers.
-          </p>
+            <p className="label-gold mb-4">New Identity Protocol</p>
 
-          {/* Testimonial Card */}
-          <div className="bg-white/5 border border-white/[0.08] rounded-2xl p-5 xl:p-6">
-            <p className="text-white/60 text-sm leading-relaxed mb-4">
-              "Premium experience from browsing to delivery. Everything feels elegant."
+            <h2 className="font-display text-4xl xl:text-5xl 2xl:text-6xl font-bold text-white leading-tight mb-5 xl:mb-6 tracking-[0.12em]">
+              CROSS <br />
+              <span className="text-gradient-gold italic">THE THRESHOLD.</span>
+            </h2>
+
+            <p className="text-sm xl:text-base text-muted leading-relaxed max-w-md mb-9 xl:mb-11 font-mono tracking-wider">
+              Forge your TRANSFINITY identity. Create your account to unlock premium collections,
+              faster checkout, and exclusive arcs.
             </p>
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-full bg-[var(--color-primary)] flex items-center justify-center font-[Playfair_Display] text-[15px] font-bold text-white shrink-0">
-                P
-              </div>
-              <div>
-                <p className="text-xs font-semibold text-white">Priya S.</p>
-                <p className="text-xs text-white/35">Verified Customer</p>
-              </div>
-              <div className="ml-auto flex gap-0.5">
-                {[1,2,3,4,5].map(i => (
-                  <Star key={i} size={12} className="text-[var(--color-primary)] fill-[var(--color-primary)]" />
-                ))}
+
+            {/* Testimonial Card */}
+            <div className="relative bg-[#0A0A0A]/90 border border-gold/20 p-5 xl:p-6 shadow-[0_20px_70px_rgba(0,0,0,0.45)] overflow-hidden">
+              <div className="absolute top-0 left-0 w-16 h-px bg-gold/70" />
+              <div className="absolute top-0 left-0 w-px h-16 bg-gold/70" />
+
+              <p className="text-muted text-sm leading-relaxed mb-5 italic">
+                "Premium experience from browsing to delivery. Everything feels like an artifact."
+              </p>
+
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-gold flex items-center justify-center font-display text-[15px] font-bold text-black shrink-0">
+                  P
+                </div>
+
+                <div>
+                  <p className="text-xs font-semibold text-white tracking-wider">Priya S.</p>
+                  <p className="text-xs text-muted font-mono">Verified Wanderer</p>
+                </div>
+
+                <div className="ml-auto flex gap-0.5">
+                  {[1, 2, 3, 4, 5].map((i) => (
+                    <Star key={i} size={12} className="text-gold fill-gold" />
+                  ))}
+                </div>
               </div>
             </div>
           </div>
+        </aside>
 
-        </div>
-      </div>
+        {/* RIGHT PANEL */}
+        <main className="relative flex flex-col justify-center items-center bg-black px-4 sm:px-6 md:px-8 py-8 sm:py-10 lg:px-10 xl:px-12 min-h-full overflow-hidden">
+          {/* Mobile/Tablet Background Effects */}
+          <div className="absolute inset-0 pointer-events-none grid-bg opacity-20 lg:opacity-10" />
+          <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_top,rgba(212,175,55,0.10),transparent_35%)]" />
 
-      {/* RIGHT PANEL */}
-      <div className="flex flex-col justify-center items-center bg-[var(--color-bg)] px-4 sm:px-6 py-8 sm:py-10 lg:px-8 xl:px-10 min-h-full">
-        {/* Mobile Logo */}
-        <Link to="/" className="lg:hidden font-[Playfair_Display] text-xl sm:text-2xl font-bold text-[var(--color-text)] no-underline block mb-6 sm:mb-8">
-          Trans<span className="text-[var(--color-primary)]">Finity</span>
-        </Link>
+          {/* Mobile Logo */}
+          <Link
+            to="/"
+            className="relative z-10 lg:hidden font-display text-xl sm:text-2xl font-bold text-white no-underline block mb-6 sm:mb-8 tracking-[0.22em]"
+          >
+            TRANS<span className="text-gradient-gold">FINITY</span>
+          </Link>
 
-        <div className="w-full max-w-sm sm:max-w-md animate-fadeUp">
+          <div className="relative z-10 w-full max-w-sm sm:max-w-md animate-fadeUp">
+            {/* Register Card */}
+            <div className="bg-[#0A0A0A]/85 backdrop-blur-md border border-gold/15 p-5 sm:p-7 md:p-8 shadow-[0_20px_80px_rgba(0,0,0,0.5)] overflow-hidden relative">
+              <div className="absolute top-0 left-0 w-14 h-px bg-gold/60" />
+              <div className="absolute top-0 left-0 w-px h-14 bg-gold/60" />
 
-          <p className="text-[10px] sm:text-[11px] font-bold tracking-[0.2em] uppercase text-[var(--color-primary)] mb-1.5 sm:mb-2">
-            Get Started
-          </p>
-          <h1 className="font-[Playfair_Display] text-2xl sm:text-3xl md:text-4xl font-bold text-[var(--color-text)] mb-1.5 sm:mb-2">
-            Create Account
-          </h1>
-          <p className="text-xs sm:text-sm text-[var(--color-muted)] mb-5 sm:mb-6 lg:mb-7">
-            Join TransFinity and start your premium shopping experience.
-          </p>
+              <div className="mb-6 sm:mb-7">
+                <p className="label-gold mb-3">GET STARTED</p>
 
-          <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-3 sm:gap-3.5 lg:gap-4">
+                <h1 className="font-display text-[1.65rem] sm:text-3xl md:text-4xl font-bold text-white mb-2 leading-tight tracking-[0.12em]">
+                  CROSS THE <span className="text-gradient-gold">THRESHOLD</span>
+                </h1>
 
-            {fields.map((f) => {
-              const Icon = f.icon
-              return (
-                <div key={f.name} className="flex flex-col gap-1 sm:gap-1.5 lg:gap-2">
-                  <label className="text-xs sm:text-[13px] font-semibold text-[var(--color-text)] tracking-wide">
-                    {f.label}
-                  </label>
-                  <div className="relative">
-                    <span className="absolute left-3 sm:left-3.5 top-1/2 -translate-y-1/2 text-[var(--color-muted)] pointer-events-none">
-                      <Icon size={14} className="sm:w-4 sm:h-4" />
-                    </span>
-                    <input
-                      {...register(f.name)}
-                      type={f.showToggle ? (f.showState ? 'text' : 'password') : f.type}
-                      placeholder={f.placeholder}
-                      className={`w-full bg-[var(--color-surface)] border-[1.5px] border-[var(--color-border)] rounded-xl text-sm text-[var(--color-text)] transition-all duration-300 focus:border-[var(--color-text)] focus:shadow-[0_0_0_3px_rgba(13,13,13,0.06)] outline-none pl-10 sm:pl-11 pr-4 h-11 sm:h-12 placeholder:text-[var(--color-muted-light)] ${errors[f.name] ? '!border-[var(--color-danger)]' : ''}`}
-                    />
-                    {f.showToggle && (
-                      <button
-                        type="button"
-                        className="absolute right-3 sm:right-3.5 top-1/2 -translate-y-1/2 bg-transparent border-none cursor-pointer text-[var(--color-muted)] flex items-center transition-colors duration-300 hover:text-[var(--color-text)]"
-                        onClick={() => f.setShow(!f.showState)}
-                      >
-                        {f.showState ? <EyeOff size={14} className="sm:w-4 sm:h-4" /> : <Eye size={14} className="sm:w-4 sm:h-4" />}
-                      </button>
-                    )}
-                  </div>
-                  {errors[f.name] && (
-                    <span className="text-[var(--color-danger)] text-xs">{errors[f.name].message}</span>
+                <p className="text-xs sm:text-sm text-muted font-mono tracking-wider leading-relaxed">
+                  Forge your TRANSFINITY identity.
+                </p>
+              </div>
+
+              <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+                {fields.map((f) => {
+                  const Icon = f.icon
+                  const hasError = Boolean(errors[f.name])
+
+                  return (
+                    <div key={f.name} className="flex flex-col gap-1.5">
+                      <label className="label-gold text-[10px] sm:text-[11px]">
+                        {f.label}
+                      </label>
+
+                    <div className="auth-input-wrap">
+  <span className="auth-input-icon">
+    <Icon size={15} className="sm:w-4 sm:h-4" />
+  </span>
+
+  <input
+    {...register(f.name)}
+    type={f.showToggle ? (f.showState ? 'text' : 'password') : f.type}
+    placeholder={f.placeholder}
+    className={`input-gold auth-input ${!f.showToggle ? 'no-eye' : ''} ${
+      hasError ? '!border-[var(--color-danger)]' : ''
+    }`}
+  />
+
+  {f.showToggle && (
+    <button
+      type="button"
+      className="auth-input-eye"
+      onClick={() => f.setShow(!f.showState)}
+      aria-label={f.showState ? 'Hide password' : 'Show password'}
+    >
+      {f.showState ? (
+        <EyeOff size={15} className="sm:w-4 sm:h-4" />
+      ) : (
+        <Eye size={15} className="sm:w-4 sm:h-4" />
+      )}
+    </button>
+  )}
+</div>
+
+                      {hasError && (
+                        <span className="text-[var(--color-danger)] text-xs font-mono tracking-wide">
+                          {errors[f.name].message}
+                        </span>
+                      )}
+                    </div>
+                  )
+                })}
+
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="btn-primary w-full mt-2 min-h-[48px]"
+                >
+                  {isSubmitting ? (
+                    <>
+                      <span className="w-4 h-4 sm:w-[18px] sm:h-[18px] border-2 border-black/30 border-t-black rounded-full animate-spin" />
+                      <span className="text-xs tracking-[0.2em]">INITIATING ARC...</span>
+                    </>
+                  ) : (
+                    <>
+                      <span className="text-xs tracking-[0.2em]">INITIATE ARC</span>
+                      <ArrowRight size={16} className="sm:w-[18px] sm:h-[18px]" />
+                    </>
                   )}
-                </div>
-              )
-            })}
+                </button>
+              </form>
 
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="w-full bg-[var(--color-btn)] hover:bg-[var(--color-btn-hover)] text-[var(--color-btn-text)] border-none rounded-xl text-sm sm:text-[15px] font-semibold cursor-pointer flex items-center justify-center gap-2 sm:gap-2.5 transition-all duration-300 hover:-translate-y-px hover:shadow-lg active:translate-y-0 disabled:bg-[var(--color-muted)] disabled:cursor-not-allowed h-12 sm:h-[50px] mt-1 sm:mt-2"
-            >
-              {isSubmitting ? (
-                <><span className="w-4 h-4 sm:w-[18px] sm:h-[18px] border-2 border-white/30 border-t-white rounded-full animate-spin" /> Creating Account...</>
-              ) : (
-                <>Create Account <ArrowRight size={16} className="sm:w-[18px] sm:h-[18px]" /></>
-              )}
-            </button>
+              <div className="flex items-center gap-3 sm:gap-4 my-5 sm:my-6">
+                <div className="flex-1 h-px bg-gold/15" />
+                <span className="text-[10px] sm:text-xs text-muted font-mono tracking-[0.25em] whitespace-nowrap">
+                  — OR —
+                </span>
+                <div className="flex-1 h-px bg-gold/15" />
+              </div>
 
-          </form>
+              <SocialAuth
+                mode="register"
+                className="w-full"
+                buttonClass="btn-outline w-full"
+              />
 
-          <div className="flex items-center gap-3 sm:gap-4 my-4 sm:my-5">
-            <div className="flex-1 h-px bg-[var(--color-border-light)]" />
-            <span className="text-[11px] sm:text-xs text-[var(--color-muted)] font-medium whitespace-nowrap">or Sign up with</span>
-            <div className="flex-1 h-px bg-[var(--color-border-light)]" />
+              <p className="text-center text-xs sm:text-sm text-muted mt-5 sm:mt-6 font-mono tracking-wider leading-relaxed">
+                Already have an account?{' '}
+                <Link
+                  to="/login"
+                  className="text-gold no-underline font-medium hover:text-gold-light transition-colors"
+                >
+                  ENTER THE WORLD
+                </Link>
+              </p>
+            </div>
           </div>
-
-          <SocialAuth mode="register" />
-
-          <p className="text-center text-xs sm:text-sm text-[var(--color-muted)] mt-4 sm:mt-5">
-            Already have an account?{' '}
-            <Link to="/login" className="text-[var(--color-primary)] no-underline font-medium hover:text-[var(--color-primary-dark)] transition-colors">
-              Login
-            </Link>
-          </p>
-
-        </div>
+        </main>
       </div>
-
-      <style>{`
-        @keyframes fadeUp {
-          from { opacity: 0; transform: translateY(16px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        .animate-fadeUp {
-          animation: fadeUp 0.45s ease both;
-        }
-      `}</style>
     </div>
   )
 }

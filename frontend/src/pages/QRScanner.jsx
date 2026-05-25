@@ -1,308 +1,400 @@
-import { useEffect, useRef, useState } from 'react';
-import { Html5Qrcode } from 'html5-qrcode';
-import { useNavigate } from 'react-router-dom';
-import { useHuntStore } from '../store/useHuntStore';
-import { huntService } from '../services/huntApi';
-import { toast } from 'react-hot-toast';
+import { useEffect, useRef, useState } from 'react'
+import { Html5Qrcode } from 'html5-qrcode'
+import { useNavigate } from 'react-router-dom'
+import { useHuntStore } from '../store/useHuntStore'
+import { huntService } from '../services/huntApi'
+import { toast } from 'react-hot-toast'
 
 const QRScanner = () => {
-  const scannerRef = useRef(null);
-  const html5QrCodeRef = useRef(null);
-  const [isScanning, setIsScanning] = useState(false);
-  const [scanMode, setScanMode] = useState('tshirt');
-  const [locationCoords, setLocationCoords] = useState(null);
+  const scannerRef = useRef(null)
+  const html5QrCodeRef = useRef(null)
 
-  const navigate = useNavigate();
-  const { setProgress, setLoading, unlockLevel } = useHuntStore();
+  const [isScanning, setIsScanning] = useState(false)
+  const [scanMode, setScanMode] = useState('tshirt')
+  const [locationCoords, setLocationCoords] = useState(null)
+
+  const navigate = useNavigate()
+  const { setProgress, setLoading, unlockLevel } = useHuntStore()
 
   const getCurrentPosition = () => {
     return new Promise((resolve, reject) => {
       if (!navigator.geolocation) {
-        reject(new Error('Geolocation not supported'));
-        return;
+        reject(new Error('Geolocation not supported'))
+        return
       }
+
       navigator.geolocation.getCurrentPosition(
         (position) => {
           resolve({
             lat: position.coords.latitude,
             long: position.coords.longitude,
-            accuracy: position.coords.accuracy
-          });
+            accuracy: position.coords.accuracy,
+          })
         },
         (error) => reject(error),
         { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
-      );
-    });
-  };
+      )
+    })
+  }
 
   const startScanner = async () => {
     try {
-      const html5QrCode = new Html5Qrcode("qr-reader");
-      html5QrCodeRef.current = html5QrCode;
+      const html5QrCode = new Html5Qrcode('qr-reader')
+      html5QrCodeRef.current = html5QrCode
 
       await html5QrCode.start(
-        { facingMode: "environment" },
-        { fps: 10, qrbox: { width: 250, height: 250 } },
+        { facingMode: 'environment' },
+        {
+          fps: 10,
+          qrbox: { width: 220, height: 220 },
+        },
         onScanSuccess,
         onScanFailure
-      );
-      setIsScanning(true);
+      )
+
+      setIsScanning(true)
     } catch (err) {
-      toast.error('Camera access denied or not available');
-      console.error('Scanner error:', err);
+      toast.error('Camera access denied or not available')
+      console.error('Scanner error:', err)
     }
-  };
+  }
 
   const stopScanner = async () => {
     if (html5QrCodeRef.current && isScanning) {
-      await html5QrCodeRef.current.stop();
-      setIsScanning(false);
+      await html5QrCodeRef.current.stop()
+      setIsScanning(false)
     }
-  };
+  }
 
-  const onScanSuccess = async (decodedText) => {
-    await stopScanner();
+const onScanSuccess = async (decodedText) => {
+  await stopScanner()
 
-    let code = decodedText;
-    if (decodedText.includes('code=')) {
-      code = new URL(decodedText).searchParams.get('code');
+  let code = decodedText
+
+  try {
+    const url = new URL(decodedText)
+
+    const codeParam = url.searchParams.get('code')
+    const locParam = url.searchParams.get('loc')
+
+    if (codeParam) {
+      code = codeParam
+    } else if (locParam) {
+      code = locParam
     }
-    if (decodedText.includes('loc=')) {
-      code = new URL(decodedText).searchParams.get('loc');
-    }
+  } catch {
+    code = decodedText
+  }
 
-    setLoading(true);
+  code = code.trim()
 
-    try {
-      if (scanMode === 'tshirt') {
-        const result = await huntService.activateQR(code);
-        if (result.success) {
-          setProgress(result.progress);
-          toast.success('🎉 Treasure Hunt Activated! Level 1 unlocked!');
-          navigate('/hunt/dashboard');
-        }
-      } else {
-        toast.loading('Verifying location...');
-        const coords = await getCurrentPosition();
-        setLocationCoords(coords);
+  console.log('QR CODE SENT TO BACKEND:', code)
 
-        const result = await huntService.verifyLocation(code, coords.lat, coords.long);
-        toast.dismiss();
+  setLoading(true)
 
-        if (result.success) {
-          unlockLevel(result.progress.current_level, result.reward);
-          setProgress(result.progress);
-          toast.success(`🎊 Level ${result.reward.level} Complete!`, { duration: 5000 });
-          navigate('/hunt/dashboard', { state: { showReward: true, reward: result.reward }});
-        }
+  try {
+    if (scanMode === 'tshirt') {
+      const result = await huntService.activateQR(code)
+      
+      if (result.success) {
+        setProgress(result.progress)
+        toast.success('🎉 Treasure Hunt Activated! Level 1 unlocked!')
+        navigate('/hunt/dashboard')
       }
-    } catch (error) {
-      toast.dismiss();
-      toast.error(error.message || 'Scan failed');
-    } finally {
-      setLoading(false);
     }
-  };
+  } catch (error) {
+    toast.error(error.message || 'Scan failed')
+  } finally {
+    setLoading(false)
+  }
+}
 
-  const onScanFailure = (error) => {};
+  const onScanFailure = () => {}
 
   useEffect(() => {
-    return () => { stopScanner(); };
-  }, []);
+    return () => {
+      stopScanner()
+    }
+  }, [])
 
   return (
-    <div className="min-h-screen bg-[var(--color-bg)] text-[var(--color-text)]">
+    <div className="min-h-screen bg-black text-[var(--color-text)] font-body overflow-x-hidden">
       {/* Header */}
-      <div className="bg-[var(--color-surface)] border-b border-[var(--color-border)] shadow-sm">
-        <div className="page-container py-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-xl font-bold text-[var(--color-primary)]">📷 QR Scanner</h1>
-              <p className="text-[var(--color-muted)] text-xs">Scan your T-shirt or Location QR</p>
-            </div>
-            <button
-              onClick={() => navigate('/hunt')}
-              className="text-[var(--color-muted)] hover:text-[var(--color-text)]"
-            >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
+      <header className="fixed top-0 left-0 right-0 z-[9999] bg-black/95 border-b border-gold/10 backdrop-blur-md">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8 h-16">
+          <div className="flex items-center gap-3">
+            <span className="text-gold text-xl">∞</span>
+            <span className="font-display text-gold text-xs sm:text-sm tracking-[0.28em]">
+              TRANSFINITY
+            </span>
           </div>
-        </div>
-      </div>
 
-      <div className="page-container py-6 max-w-md mx-auto">
-        {/* Mode Toggle */}
-        <div className="flex bg-[var(--color-bg-alt)] rounded-xl p-1.5 mb-6 border border-[var(--color-border)]">
           <button
-            onClick={() => { stopScanner(); setScanMode('tshirt'); }}
-            className={`flex-1 py-2.5 rounded-lg text-sm font-semibold transition-all ${
-              scanMode === 'tshirt'
-                ? 'bg-[var(--color-primary)] text-white shadow-sm'
-                : 'text-[var(--color-muted)] hover:text-[var(--color-text)]'
-            }`}
+            onClick={() => navigate('/hunt')}
+            className="text-muted hover:text-gold transition-colors bg-transparent border-none cursor-pointer"
+            aria-label="Close scanner"
           >
-            🎽 T-Shirt QR
-          </button>
-          <button
-            onClick={() => { stopScanner(); setScanMode('location'); }}
-            className={`flex-1 py-2.5 rounded-lg text-sm font-semibold transition-all ${
-              scanMode === 'location'
-                ? 'bg-[var(--color-primary)] text-white shadow-sm'
-                : 'text-[var(--color-muted)] hover:text-[var(--color-text)]'
-            }`}
-          >
-            📍 Location QR
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={1.5}
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
           </button>
         </div>
+      </header>
+
+      {/* Main */}
+      <main className="mx-auto w-full max-w-[760px] px-4 sm:px-6 pt-24 sm:pt-28 pb-12">
+        {/* Title */}
+        <section className="text-center mb-6 sm:mb-8 animate-fadeUp">
+          <p className="label-gold mb-2 text-[10px] sm:text-xs">
+            SCANNER PROTOCOL
+          </p>
+
+          <h1 className="font-display text-3xl sm:text-4xl lg:text-5xl tracking-[0.18em] text-white mb-2">
+            QR SCANNER
+          </h1>
+
+          <p className="text-muted text-xs sm:text-sm">
+            Scan your artifact or location beacon
+          </p>
+        </section>
+
+        {/* Mode Toggle */}
+        <section className="flex bg-[#080808] border border-gold/15 p-1 mb-5 sm:mb-6">
+          <button
+            onClick={() => {
+              stopScanner()
+              setScanMode('tshirt')
+            }}
+            className={`flex-1 py-3 text-[10px] sm:text-xs font-semibold tracking-[0.15em] uppercase transition-all duration-300 border-none cursor-pointer ${
+              scanMode === 'tshirt'
+                ? 'bg-gold text-black'
+                : 'bg-transparent text-muted hover:text-gold'
+            }`}
+          >
+            ARTIFACT QR
+          </button>
+
+          <button
+            onClick={() => {
+              stopScanner()
+              setScanMode('location')
+            }}
+            className={`flex-1 py-3 text-[10px] sm:text-xs font-semibold tracking-[0.15em] uppercase transition-all duration-300 border-none cursor-pointer ${
+              scanMode === 'location'
+                ? 'bg-gold text-black'
+                : 'bg-transparent text-muted hover:text-gold'
+            }`}
+          >
+            BEACON QR
+          </button>
+        </section>
 
         {/* Scanner Container */}
-        <div className="relative bg-[var(--color-secondary)] rounded-2xl overflow-hidden border-2 border-[var(--color-border)] shadow-lg">
-          <div id="qr-reader" className="w-full aspect-square" ref={scannerRef} />
+        <section className="relative overflow-hidden border border-gold/15 bg-[#050505] mb-6 animate-fadeUp shadow-[0_20px_80px_rgba(0,0,0,0.45)]">
+          <div
+            id="qr-reader"
+            className="w-full h-[280px] sm:h-[340px] md:h-[380px] bg-black"
+            ref={scannerRef}
+          />
 
           {!isScanning && (
-            <div className="absolute inset-0 flex items-center justify-center bg-[var(--color-secondary)]/90">
-              <button
-                onClick={startScanner}
-                className="bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] text-white px-8 py-4 rounded-xl font-bold flex items-center gap-2 shadow-[var(--shadow-gold)] transition-all"
-              >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
-                Start Camera
-              </button>
+            <div className="absolute inset-0 flex items-center justify-center bg-black/92 backdrop-blur-sm">
+              <div className="text-center px-4">
+                <div className="w-16 h-16 sm:w-20 sm:h-20 border border-gold/20 flex items-center justify-center mx-auto mb-5 animate-gold-pulse">
+                  <svg
+                    className="w-7 h-7 sm:w-8 sm:h-8 text-gold"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={1}
+                      d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"
+                    />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={1}
+                      d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"
+                    />
+                  </svg>
+                </div>
+
+                <button onClick={startScanner} className="btn-primary">
+                  INITIATE SCANNER
+                </button>
+              </div>
             </div>
           )}
 
-          {/* Scan Frame Overlay */}
           {isScanning && (
             <div className="absolute inset-0 pointer-events-none">
-              <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/20" />
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-56 h-56 border-2 border-[var(--color-primary)]/40 rounded-2xl">
-                <div className="absolute top-0 left-0 w-5 h-5 border-t-3 border-l-3 border-[var(--color-primary)]" />
-                <div className="absolute top-0 right-0 w-5 h-5 border-t-3 border-r-3 border-[var(--color-primary)]" />
-                <div className="absolute bottom-0 left-0 w-5 h-5 border-b-3 border-l-3 border-[var(--color-primary)]" />
-                <div className="absolute bottom-0 right-0 w-5 h-5 border-b-3 border-r-3 border-[var(--color-primary)]" />
+              <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/50" />
+
+              <div className="absolute top-1/2 left-1/2 w-52 h-52 sm:w-60 sm:h-60 -translate-x-1/2 -translate-y-1/2">
+                <div className="absolute -top-1 -left-1 w-8 h-8 border-t border-l border-gold" />
+                <div className="absolute -top-1 -right-1 w-8 h-8 border-t border-r border-gold" />
+                <div className="absolute -bottom-1 -left-1 w-8 h-8 border-b border-l border-gold" />
+                <div className="absolute -bottom-1 -right-1 w-8 h-8 border-b border-r border-gold" />
+
+                <div className="absolute top-1/2 left-1/2 w-4 h-4 -translate-x-1/2 -translate-y-1/2">
+                  <div className="absolute top-1/2 left-0 right-0 h-px bg-gold/50" />
+                  <div className="absolute left-1/2 top-0 bottom-0 w-px bg-gold/50" />
+                </div>
               </div>
-              <p className="absolute bottom-6 left-0 right-0 text-center text-[var(--color-primary)] text-sm font-medium animate-pulse">
-                {scanMode === 'tshirt' ? 'Scan T-Shirt QR Code' : 'Scan Location QR Sticker'}
-              </p>
+
+              <div className="absolute bottom-6 left-0 right-0 text-center">
+                <p className="label-gold animate-pulse text-[10px]">
+                  {scanMode === 'tshirt'
+                    ? 'SCAN ARTIFACT CODE'
+                    : 'SCAN BEACON CODE'}
+                </p>
+              </div>
             </div>
           )}
-        </div>
+        </section>
 
         {/* Manual Entry */}
-        <div className="mt-6">
-          <p className="text-[var(--color-muted)] text-xs text-center mb-3 uppercase tracking-wider font-semibold">Or Enter Manually</p>
+        <section className="mb-6 animate-fadeUp">
+          <div className="flex items-center gap-4 mb-4">
+            <div className="flex-1 h-px bg-gradient-to-r from-transparent via-gold/15 to-transparent" />
+            <span className="label-gold text-[9px] sm:text-[10px]">
+              OR ENTER MANUALLY
+            </span>
+            <div className="flex-1 h-px bg-gradient-to-r from-transparent via-gold/15 to-transparent" />
+          </div>
+
           <ManualEntryForm mode={scanMode} />
-        </div>
+        </section>
 
         {/* Instructions */}
-        <div className="mt-6 bg-[var(--color-surface)] rounded-2xl p-5 border border-[var(--color-border)] shadow-sm">
-          <h3 className="font-bold text-[var(--color-text)] mb-3 flex items-center gap-2">
-            <span className="text-[var(--color-primary)]">ℹ️</span>
-            {scanMode === 'tshirt' ? 'T-Shirt QR Instructions' : 'Location QR Instructions'}
-          </h3>
-          <ul className="text-[var(--color-muted)] text-sm space-y-2">
+        <section className="border border-gold/15 bg-[#050505] p-4 sm:p-5 animate-fadeUp">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-8 h-8 border border-gold/20 flex items-center justify-center">
+              <span className="text-gold text-xs">∞</span>
+            </div>
+
+            <h3 className="heading-card text-sm">
+              {scanMode === 'tshirt' ? 'ARTIFACT PROTOCOL' : 'BEACON PROTOCOL'}
+            </h3>
+          </div>
+
+          <ul className="space-y-3">
             {scanMode === 'tshirt' ? (
               <>
-                <li className="flex items-start gap-2">
-                  <span className="text-[var(--color-primary)]">•</span>
-                  Find the QR sticker inside your T-shirt box
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-[var(--color-primary)]">•</span>
-                  Scan to activate your treasure hunt
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-[var(--color-primary)]">•</span>
-                  One QR = One user only (anti-sharing)
-                </li>
+                <Instruction text="Locate the QR sigil inside your artifact packaging" />
+                <Instruction text="Scan to activate your treasure hunt sequence" />
+                <Instruction text="One sigil = One wanderer anti-replication protocol" />
               </>
             ) : (
               <>
-                <li className="flex items-start gap-2">
-                  <span className="text-[var(--color-primary)]">•</span>
-                  Go to the location shown in your clue
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-[var(--color-primary)]">•</span>
-                  Find the QR sticker at the location
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-[var(--color-primary)]">•</span>
-                  Must be within 100 meters (GPS check)
-                </li>
+                <Instruction text="Navigate to the coordinates revealed in your clue" />
+                <Instruction text="Locate the beacon QR at the destination" />
+                <Instruction text="Must be within 100 meters with GPS verification" />
               </>
             )}
           </ul>
-        </div>
-      </div>
+        </section>
+      </main>
     </div>
-  );
-};
+  )
+}
+
+function Instruction({ text }) {
+  return (
+    <li className="flex items-start gap-3 text-muted text-xs sm:text-sm">
+      <span className="text-gold mt-1 text-xs">◆</span>
+      <span>{text}</span>
+    </li>
+  )
+}
 
 const ManualEntryForm = ({ mode }) => {
-  const navigate = useNavigate();
-  const [code, setCode] = useState('');
-  const { setProgress, setLoading, unlockLevel } = useHuntStore();
+  const navigate = useNavigate()
+  const [code, setCode] = useState('')
+  const { setProgress, setLoading, unlockLevel } = useHuntStore()
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!code.trim()) return;
+    e.preventDefault()
+    if (!code.trim()) return
 
-    setLoading(true);
+    setLoading(true)
+
     try {
       if (mode === 'tshirt') {
-        const result = await huntService.activateQR(code.trim());
+        const result = await huntService.activateQR(code.trim())
+
         if (result.success) {
-          setProgress(result.progress);
-          toast.success('🎉 Hunt activated!');
-          navigate('/hunt/dashboard');
+          setProgress(result.progress)
+          toast.success('🎉 Hunt activated!')
+          navigate('/hunt/dashboard')
         }
       } else {
         const coords = await new Promise((resolve, reject) => {
           navigator.geolocation.getCurrentPosition(
-            (pos) => resolve({ lat: pos.coords.latitude, long: pos.coords.longitude }),
+            (pos) =>
+              resolve({
+                lat: pos.coords.latitude,
+                long: pos.coords.longitude,
+              }),
             reject,
             { enableHighAccuracy: true }
-          );
-        });
+          )
+        })
 
-        const result = await huntService.verifyLocation(code.trim(), coords.lat, coords.long);
+        const result = await huntService.verifyLocation(
+          code.trim(),
+          coords.lat,
+          coords.long
+        )
+
         if (result.success) {
-          unlockLevel(result.progress.current_level, result.reward);
-          setProgress(result.progress);
-          toast.success('🎊 Level completed!');
-          navigate('/hunt/dashboard', { state: { showReward: true, reward: result.reward }});
+          unlockLevel(result.progress.current_level, result.reward)
+          setProgress(result.progress)
+          toast.success('🎊 Level completed!')
+          navigate('/hunt/dashboard', {
+            state: { showReward: true, reward: result.reward },
+          })
         }
       }
     } catch (error) {
-      toast.error(error.message);
+      toast.error(error.message || 'Scan failed')
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   return (
-    <form onSubmit={handleSubmit} className="flex gap-2">
+    <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3">
       <input
         type="text"
         value={code}
         onChange={(e) => setCode(e.target.value)}
-        placeholder={mode === 'tshirt' ? 'Enter T-shirt code (th-xxx)' : 'Enter location code (loc-xxx)'}
-        className="flex-1 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-xl px-4 py-3 text-sm text-[var(--color-text)] placeholder-[var(--color-muted-light)] focus:outline-none focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/20 transition-all"
+        placeholder={
+          mode === 'tshirt'
+            ? 'Enter artifact code (th-xxx)'
+            : 'Enter beacon code (loc-xxx)'
+        }
+        className="input-gold flex-1 px-4 py-3 text-sm"
       />
-      <button
-        type="submit"
-        className="bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] text-white px-5 py-3 rounded-xl font-semibold text-sm transition-all shadow-sm"
-      >
+
+      <button type="submit" className="btn-primary btn-mobile-full">
         Submit
       </button>
     </form>
-  );
-};
+  )
+}
 
-export default QRScanner;
+export default QRScanner

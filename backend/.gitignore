@@ -18,3 +18,5 @@ env/
 *.egg-info/
 dist/
 build/
+backend/apps/utils/service_account.json
+**/service_account*.json

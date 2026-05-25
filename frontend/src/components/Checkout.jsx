@@ -78,22 +78,49 @@ export default function Checkout() {
     }
   }, [cart?.subtotal, qrCoupon, step])
 
-  const applyCoupon = async () => {
-    if (!couponCode) return
-    setApplyCouponLoading(true)
-    try {
-      const { data } = await api.post('/coupons/validate/', {
-        code: couponCode,
-        subtotal: cart?.subtotal,
-      })
-      setCouponData(data)
-      toast.success(data.message)
-    } catch (err) {
-      toast.error(err.response?.data?.code?.[0] || 'Invalid coupon')
-    } finally {
-      setApplyCouponLoading(false)
-    }
+ const applyCoupon = async () => {
+  if (!couponCode) return
+  setApplyCouponLoading(true)
+  
+  try {
+    const subtotalValue = parseFloat(cart?.subtotal || 0)
+    
+    const { data } = await api.post('/coupons/validate/', {
+      code: couponCode,
+      subtotal: subtotalValue,
+    })
+    
+    setCouponData(data)
+    toast.success(data.message)
+  } catch (err) {
+    setCouponData(null)
+    toast.error(err.response?.data?.code?.[0] || 'Invalid coupon')
+  } finally {
+    setApplyCouponLoading(false)
   }
+}
+
+const applyQRCoupon = async () => {
+  if (!qrCoupon || !cart?.subtotal) return
+  
+  setApplyCouponLoading(true)
+  try {
+    const subtotalValue = parseFloat(cart?.subtotal || 0)
+    
+    const { data } = await api.post('/coupons/validate/', {
+      code: qrCoupon.code,
+      subtotal: subtotalValue,
+    })
+    
+    setCouponData(data)
+    toast.success(`QR Discount applied! You save ₹${data.discount}`)
+  } catch (err) {
+    console.error('QR coupon apply failed:', err)
+    setQrCoupon(null)
+  } finally {
+    setApplyCouponLoading(false)
+  }
+}
 
   // ... rest of existing functions (placeOrder, payNow) ...
 

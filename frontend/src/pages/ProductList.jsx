@@ -1,498 +1,192 @@
-// import { useEffect, useState, useCallback, useRef } from 'react'
-// import { useSearchParams } from 'react-router-dom'
-// import { SlidersHorizontal, ChevronDown, ChevronUp, X, Grid3X3, LayoutGrid, LayoutList, Search } from 'lucide-react'
-// import api from '../services/api'
-// import ProductCard from '../components/ProductCard'
-
-// const PRICE_RANGES = [
-//   { label: 'Under ₹500',       min: 0,    max: 500 },
-//   { label: '₹500 – ₹1000',    min: 500,  max: 1000 },
-//   { label: '₹1000 – ₹2000',   min: 1000, max: 2000 },
-//   { label: 'Above ₹2000',      min: 2000, max: '' },
-// ]
-
-// const SORT_OPTIONS = [
-//   { label: 'Featured',         value: '-is_featured' },
-//   { label: 'Latest',           value: '-created_at' },
-//   { label: 'Price: Low–High',  value: 'price' },
-//   { label: 'Price: High–Low',  value: '-price' },
-//   { label: 'Top Rated',        value: '-rating_avg' },
-// ]
-
-// const EXTRA_FILTERS = [
-//   { title: 'SIZE',             options: ['S', 'M', 'L', 'XL', 'XXL'] },
-//   { title: 'COLOR',            options: ['Lilac', 'Navy', 'Royal Blue', 'Sky Blue', 'Aqua Blue'] },
-//   { title: 'FABRIC',           options: ['Textured', '100% Cotton'] },
-//   { title: 'CHARACTER',        options: ['Spiderman', 'Thor', 'Marvel', 'Disney'] },
-//   { title: 'PATTERN',          options: ['Printed', 'Textured', 'Puff Print'] },
-//   { title: 'PATTERN COVERAGE', options: ['Back', 'Front', 'All Over'] },
-//   { title: 'PRODUCT TYPE',     options: ['T-shirt', 'Oversized Tshirt'] },
-// ]
-
-// function FilterSection({ title, children, defaultOpen = true }) {
-//   const [open, setOpen] = useState(defaultOpen)
-//   return (
-//     <div className="border-b border-[var(--color-border)] last:border-0">
-//       <button
-//         onClick={() => setOpen(!open)}
-//         className="w-full flex justify-between items-center bg-transparent border-none cursor-pointer text-sm font-semibold text-[var(--color-text)] hover:text-[var(--color-primary)] transition-colors py-4"
-//       >
-//         <span className="text-xs font-bold tracking-wider uppercase">{title}</span>
-//         {open ? <ChevronUp size={16} className="text-[var(--color-muted)]" /> : <ChevronDown size={16} className="text-[var(--color-muted)]" />}
-//       </button>
-//       {open && (
-//         <div className="animate-fadeIn pb-4">
-//           {children}
-//         </div>
-//       )}
-//     </div>
-//   )
-// }
-
-// export default function ProductList() {
-//   const [products, setProducts] = useState([])
-//   const [categories, setCategories] = useState([])
-//   const [loading, setLoading] = useState(true)
-//   const [count, setCount] = useState(0)
-//   const [gridCols, setGridCols] = useState(3)
-//   const [sortOpen, setSortOpen] = useState(false)
-//   const [filterOpen, setFilterOpen] = useState(false)
-//   const filterRef = useRef(null)
-//   const [searchParams] = useSearchParams()
-
-//   const [filters, setFilters] = useState({
-//     category: searchParams.get('category_slug') || searchParams.get('category') || '',
-//     min_price: '',
-//     max_price: '',
-//     ordering: searchParams.get('ordering') || '-created_at',
-//     in_stock: '',
-//     search: searchParams.get('q') || '',
-//   })
-
-//   const [extraFilters, setExtraFilters] = useState({})
-//   const [activeSort, setActiveSort] = useState('Latest')
-
-//   const selectedCats = filters.category ? [filters.category] : []
-//   const activeFilterCount = selectedCats.length +
-//     (filters.min_price || filters.max_price ? 1 : 0) +
-//     (filters.in_stock ? 1 : 0) +
-//     Object.values(extraFilters).filter(Boolean).length
-
-//   // Click outside to close filter dropdown
-//   useEffect(() => {
-//     function handleClickOutside(e) {
-//       if (filterRef.current && !filterRef.current.contains(e.target)) {
-//         setFilterOpen(false)
-//       }
-//     }
-//     if (filterOpen) {
-//       document.addEventListener('mousedown', handleClickOutside)
-//       return () => document.removeEventListener('mousedown', handleClickOutside)
-//     }
-//   }, [filterOpen])
-
-//   useEffect(() => {
-//     api.get('/products/categories/').then(r => setCategories(r.data.results || r.data))
-//   }, [])
-
-//   const fetchProducts = useCallback(async () => {
-//     setLoading(true)
-//     try {
-//       const params = {}
-//       if (filters.category) params.category_slug = filters.category
-//       if (filters.min_price) params.min_price = filters.min_price
-//       if (filters.max_price) params.max_price = filters.max_price
-//       if (filters.ordering) params.ordering = filters.ordering
-//       if (filters.in_stock) params.in_stock = filters.in_stock
-//       if (filters.search) params.search = filters.search
-//       const { data } = await api.get('/products/', { params })
-//       setProducts(data.results || data)
-//       setCount(data.count || (data.results || data).length)
-//     } catch (err) {
-//       console.error(err)
-//     } finally {
-//       setLoading(false)
-//     }
-//   }, [filters])
-
-//   useEffect(() => { fetchProducts() }, [fetchProducts])
-
-//   const updateFilter = (key, value) => setFilters(p => ({ ...p, [key]: value }))
-
-//   const clearFilters = () => {
-//     setFilters({
-//       category: '', min_price: '', max_price: '',
-//       ordering: '-created_at', in_stock: '', search: '',
-//     })
-//     setExtraFilters({})
-//   }
-
-//   const applyPriceRange = (range) => {
-//     setFilters(p => ({ ...p, min_price: range.min, max_price: range.max }))
-//   }
-
-//   const applySort = (opt) => {
-//     setActiveSort(opt.label)
-//     updateFilter('ordering', opt.value)
-//     setSortOpen(false)
-//   }
-
-//   const toggleExtraFilter = (section, option) => {
-//     setExtraFilters(prev => {
-//       const key = `${section}-${option}`
-//       return { ...prev, [key]: !prev[key] }
-//     })
-//   }
-
-//   const gridClass = gridCols === 2 ? 'grid-cols-2' : gridCols === 3 ? 'grid-cols-3' : 'grid-cols-4'
-
-//   return (
-//     <div className="min-h-screen bg-[var(--color-bg)] pb-16">
-
-//       {/* Header bar */}
-//       <div className="border-b border-[var(--color-border)] bg-[var(--color-surface)] sticky top-0 z-20 shadow-sm">
-//         <div className="page-container py-4">
-//           <div className="flex items-center justify-between gap-4">
-//             <div className="flex items-center gap-4">
-
-//               {/* Filter Dropdown Button */}
-//               <div className="relative" ref={filterRef}>
-//                 <button
-//                   onClick={() => setFilterOpen(!filterOpen)}
-//                   className="flex items-center gap-2 bg-[var(--color-secondary)] text-[var(--color-text-inverse)] rounded-xl text-xs font-semibold hover:bg-[var(--color-secondary-light)] transition-colors border-none cursor-pointer px-4 py-2.5"
-//                 >
-//                   <SlidersHorizontal size={15} />
-//                   Filters
-//                   {activeFilterCount > 0 && (
-//                     <span className="rounded-full bg-[var(--color-primary)] text-white text-[10px] font-bold flex items-center justify-center w-5 h-5">
-//                       {activeFilterCount}
-//                     </span>
-//                   )}
-//                   <ChevronDown size={14} className={`transition-transform ${filterOpen ? 'rotate-180' : ''}`} />
-//                 </button>
-
-//                 {/* Filter Dropdown Panel */}
-//                 {filterOpen && (
-//                   <div
-//                     className="absolute left-0 top-full bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl shadow-2xl z-50 overflow-y-auto mt-2"
-//                     style={{ width: '320px', maxHeight: '70vh', padding: '24px' }}
-//                   >
-//                     <div className="flex items-center justify-between mb-5">
-//                       <div className="flex items-center gap-2">
-//                         <SlidersHorizontal size={20} className="text-[var(--color-primary)]" />
-//                         <h2 className="text-lg font-bold text-[var(--color-text)]">Filters</h2>
-//                       </div>
-//                       <div className="flex items-center gap-3">
-//                         {activeFilterCount > 0 && (
-//                           <button
-//                             onClick={clearFilters}
-//                             className="text-xs font-medium text-[var(--color-danger)] hover:text-[var(--color-danger)] transition-colors bg-transparent border-none cursor-pointer"
-//                           >
-//                             Clear all
-//                           </button>
-//                         )}
-//                         <button
-//                           onClick={() => setFilterOpen(false)}
-//                           className="w-8 h-8 rounded-lg bg-[var(--color-bg-alt)] flex items-center justify-center hover:bg-[var(--color-border-light)] transition-colors border-none cursor-pointer"
-//                         >
-//                           <X size={18} className="text-[var(--color-text)]" />
-//                         </button>
-//                       </div>
-//                     </div>
-
-//                     <FilterContent
-//                       categories={categories}
-//                       filters={filters}
-//                       updateFilter={updateFilter}
-//                       applyPriceRange={applyPriceRange}
-//                       extraFilters={extraFilters}
-//                       toggleExtraFilter={toggleExtraFilter}
-//                     />
-//                   </div>
-//                 )}
-//               </div>
-
-//               <span className="text-xs text-[var(--color-muted)] font-medium">
-//                 {count} Products
-//               </span>
-//             </div>
-
-//             <div className="flex items-center gap-3">
-//               {/* Grid toggle */}
-//               <div className="hidden sm:flex border border-[var(--color-border)] rounded-xl overflow-hidden bg-[var(--color-surface)]">
-//                 {[
-//                   { n: 2, icon: <LayoutList size={14} /> },
-//                   { n: 3, icon: <Grid3X3 size={14} /> },
-//                   { n: 4, icon: <LayoutGrid size={14} /> },
-//                 ].map(({ n, icon }) => (
-//                   <button
-//                     key={n}
-//                     onClick={() => setGridCols(n)}
-//                     className={`border-none cursor-pointer text-xs font-semibold transition-all flex items-center justify-center ${
-//                       gridCols === n
-//                         ? 'bg-[var(--color-secondary)] text-[var(--color-text-inverse)]'
-//                         : 'bg-[var(--color-surface)] text-[var(--color-muted)] hover:text-[var(--color-text)]'
-//                     }`}
-//                     style={{ padding: '10px 14px' }}
-//                   >
-//                     {icon}
-//                   </button>
-//                 ))}
-//               </div>
-
-//               {/* Sort */}
-//               <div className="relative">
-//                 <button
-//                   onClick={() => setSortOpen(!sortOpen)}
-//                   className="flex items-center gap-2 border border-[var(--color-border)] rounded-xl bg-[var(--color-surface)] cursor-pointer text-xs font-semibold text-[var(--color-text)] whitespace-nowrap hover:border-[var(--color-primary)] transition-colors px-4 py-2.5"
-//                 >
-//                   SORT BY: {activeSort}
-//                   <ChevronDown size={14} />
-//                 </button>
-//                 {sortOpen && (
-//                   <div
-//                     className="absolute right-0 top-full bg-[var(--color-surface)] border border-[var(--color-border)] rounded-xl shadow-lg z-50 overflow-hidden mt-2"
-//                     style={{ minWidth: '192px', padding: '4px 0' }}
-//                   >
-//                     {SORT_OPTIONS.map(opt => (
-//                       <button
-//                         key={opt.value}
-//                         onClick={() => applySort(opt)}
-//                         className={`block w-full text-left border-none cursor-pointer text-xs transition-colors px-4 py-3 ${
-//                           activeSort === opt.label
-//                             ? 'bg-[var(--color-primary-light)] font-bold text-[var(--color-primary-dark)]'
-//                             : 'bg-[var(--color-surface)] font-normal text-[var(--color-text)] hover:bg-[var(--color-bg-alt)]'
-//                         }`}
-//                       >
-//                         {opt.label}
-//                       </button>
-//                     ))}
-//                   </div>
-//                 )}
-//               </div>
-//             </div>
-//           </div>
-//         </div>
-//       </div>
-
-//       {/* Products */}
-//       <div className="page-container py-6">
-//         {loading ? (
-//           <div className={`grid ${gridClass} gap-5`}>
-//             {[...Array(6)].map((_, i) => (
-//               <div key={i} className="flex flex-col gap-3">
-//                 <div
-//                   className="rounded-xl bg-gradient-to-r from-[var(--color-bg-alt)] via-[var(--color-border-light)] to-[var(--color-bg-alt)] bg-[length:200%_100%] animate-shimmer"
-//                   style={{ aspectRatio: '3/4' }}
-//                 />
-//                 <div className="h-3.5 bg-[var(--color-bg-alt)] rounded w-4/5" />
-//                 <div className="h-4 bg-[var(--color-bg-alt)] rounded w-1/2" />
-//               </div>
-//             ))}
-//           </div>
-//         ) : products.length === 0 ? (
-//           <div className="text-center py-24 px-6">
-//             <div className="w-16 h-16 rounded-full bg-[var(--color-bg-alt)] flex items-center justify-center mx-auto mb-4">
-//               <Search size={28} className="text-[var(--color-muted)]" />
-//             </div>
-//             <h3 className="text-lg font-bold text-[var(--color-text)] mb-2">No products found</h3>
-//             <p className="text-sm text-[var(--color-muted)] mb-6">Try adjusting your filters or search query</p>
-//             <button
-//               onClick={clearFilters}
-//               className="bg-[var(--color-secondary)] text-[var(--color-text-inverse)] rounded-xl text-sm font-semibold cursor-pointer hover:bg-[var(--color-secondary-light)] transition-colors border-none px-8 py-3"
-//             >
-//               Clear Filters
-//             </button>
-//           </div>
-//         ) : (
-//           <div className={`grid ${gridClass} gap-5`}>
-//             {products.map((p, i) => (
-//               <ProductCard key={p.id} product={p} index={i} />
-//             ))}
-//           </div>
-//         )}
-//       </div>
-
-//       <style>{`
-//         @keyframes shimmer {
-//           0% { background-position: -200% 0; }
-//           100% { background-position: 200% 0; }
-//         }
-//         @keyframes fadeIn {
-//           from { opacity: 0; }
-//           to { opacity: 1; }
-//         }
-//         .animate-shimmer {
-//           animation: shimmer 1.5s infinite;
-//         }
-//         .animate-fadeIn {
-//           animation: fadeIn 0.2s ease;
-//         }
-//       `}</style>
-//     </div>
-//   )
-// }
-
-// /* ─── Shared Filter Content ─── */
-// function FilterContent({ categories, filters, updateFilter, applyPriceRange, extraFilters, toggleExtraFilter }) {
-//   return (
-//     <div className="flex flex-col gap-1">
-
-//       {/* Category */}
-//       <FilterSection title="Category">
-//         <div className="flex flex-col gap-2.5">
-//           <label className="flex items-center cursor-pointer gap-2.5">
-//             <input
-//               type="radio"
-//               name="cat"
-//               value=""
-//               checked={filters.category === ''}
-//               onChange={() => updateFilter('category', '')}
-//               className="accent-[var(--color-primary)] w-4 h-4"
-//             />
-//             <span className="text-xs text-[var(--color-text)]">All Categories</span>
-//           </label>
-//           {categories.map(cat => (
-//             <label key={cat.id} className="flex items-center cursor-pointer gap-2.5">
-//               <input
-//                 type="radio"
-//                 name="cat"
-//                 value={cat.slug}
-//                 checked={filters.category === cat.slug}
-//                 onChange={() => updateFilter('category', cat.slug)}
-//                 className="accent-[var(--color-primary)] w-4 h-4"
-//               />
-//               <span className="text-xs text-[var(--color-text)]">{cat.name}</span>
-//             </label>
-//           ))}
-//         </div>
-//       </FilterSection>
-
-//       {/* Price */}
-//       <FilterSection title="Price Range">
-//         <div className="flex flex-col gap-2.5">
-//           {PRICE_RANGES.map(range => (
-//             <label key={range.label} className="flex items-center cursor-pointer gap-2.5">
-//               <input
-//                 type="radio"
-//                 name="price"
-//                 checked={filters.min_price == range.min && filters.max_price == range.max}
-//                 onChange={() => applyPriceRange(range)}
-//                 className="accent-[var(--color-primary)] w-4 h-4"
-//               />
-//               <span className="text-xs text-[var(--color-text)]">{range.label}</span>
-//             </label>
-//           ))}
-//           <div className="flex gap-2 mt-1">
-//             <input
-//               type="number"
-//               placeholder="Min"
-//               value={filters.min_price}
-//               onChange={e => updateFilter('min_price', e.target.value)}
-//               className="w-full bg-[var(--color-bg-alt)] border border-[var(--color-border)] rounded-lg text-xs text-[var(--color-text)] outline-none focus:border-[var(--color-primary)] px-3 py-2.5 placeholder:text-[var(--color-muted-light)]"
-//             />
-//             <input
-//               type="number"
-//               placeholder="Max"
-//               value={filters.max_price}
-//               onChange={e => updateFilter('max_price', e.target.value)}
-//               className="w-full bg-[var(--color-bg-alt)] border border-[var(--color-border)] rounded-lg text-xs text-[var(--color-text)] outline-none focus:border-[var(--color-primary)] px-3 py-2.5 placeholder:text-[var(--color-muted-light)]"
-//             />
-//           </div>
-//         </div>
-//       </FilterSection>
-
-//       {/* Extra Filters */}
-//       {EXTRA_FILTERS.map(section => (
-//         <FilterSection key={section.title} title={section.title}>
-//           <div className="flex flex-col gap-2">
-//             {section.options.map(option => {
-//               const key = `${section.title}-${option}`
-//               return (
-//                 <label
-//                   key={option}
-//                   className="flex items-center justify-between cursor-pointer text-xs text-[var(--color-text)] py-1"
-//                 >
-//                   <span>{option}</span>
-//                   <input
-//                     type="checkbox"
-//                     checked={!!extraFilters[key]}
-//                     onChange={() => toggleExtraFilter(section.title, option)}
-//                     className="accent-[var(--color-primary)] w-4 h-4"
-//                   />
-//                 </label>
-//               )
-//             })}
-//           </div>
-//         </FilterSection>
-//       ))}
-
-//       {/* Stock */}
-//       <FilterSection title="Availability">
-//         <label className="flex items-center cursor-pointer gap-2.5">
-//           <input
-//             type="checkbox"
-//             checked={filters.in_stock === 'true'}
-//             onChange={e => updateFilter('in_stock', e.target.checked ? 'true' : '')}
-//             className="accent-[var(--color-primary)] w-4 h-4"
-//           />
-//           <span className="text-xs text-[var(--color-text)]">In Stock Only</span>
-//         </label>
-//       </FilterSection>
-
-//     </div>
-//   )
-// }
-
-
-
-import { useEffect, useState, useCallback, useRef } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { SlidersHorizontal, ChevronDown, ChevronUp, X, Grid3X3, LayoutGrid, LayoutList, Search } from 'lucide-react'
+import {
+  SlidersHorizontal,
+  ChevronDown,
+  ChevronUp,
+  X,
+  Grid3X3,
+  LayoutGrid,
+  LayoutList,
+  Search,
+  Loader2,
+} from 'lucide-react'
 import api from '../services/api'
 import ProductCard from '../components/ProductCard'
 
 const PRICE_RANGES = [
-  { label: 'Under ₹500',       min: 0,    max: 500 },
-  { label: '₹500 – ₹1000',    min: 500,  max: 1000 },
-  { label: '₹1000 – ₹2000',   min: 1000, max: 2000 },
-  { label: 'Above ₹2000',      min: 2000, max: '' },
+  { label: 'Under ₹500', min: 0, max: 500 },
+  { label: '₹500 – ₹1000', min: 500, max: 1000 },
+  { label: '₹1000 – ₹2000', min: 1000, max: 2000 },
+  { label: 'Above ₹2000', min: 2000, max: '' },
 ]
 
 const SORT_OPTIONS = [
-  { label: 'Featured',         value: '-is_featured' },
-  { label: 'Latest',           value: '-created_at' },
-  { label: 'Price: Low–High',  value: 'price' },
-  { label: 'Price: High–Low',  value: '-price' },
-  { label: 'Top Rated',        value: '-rating_avg' },
+  { label: 'Featured', value: '-is_featured' },
+  { label: 'Latest', value: '-created_at' },
+  { label: 'Price: Low–High', value: 'price' },
+  { label: 'Price: High–Low', value: '-price' },
+  { label: 'Top Rated', value: '-rating_avg' },
 ]
 
 const EXTRA_FILTERS = [
-  { title: 'SIZE',             options: ['S', 'M', 'L', 'XL', 'XXL'] },
-  { title: 'COLOR',            options: ['Lilac', 'Navy', 'Royal Blue', 'Sky Blue', 'Aqua Blue'] },
-  { title: 'FABRIC',           options: ['Textured', '100% Cotton'] },
-  { title: 'CHARACTER',        options: ['Spiderman', 'Thor', 'Marvel', 'Disney'] },
-  { title: 'PATTERN',          options: ['Printed', 'Textured', 'Puff Print'] },
+  { title: 'SIZE', options: ['S', 'M', 'L', 'XL', 'XXL'] },
+  { title: 'COLOR', options: ['Lilac', 'Navy', 'Royal Blue', 'Sky Blue', 'Aqua Blue'] },
+  { title: 'FABRIC', options: ['Textured', '100% Cotton'] },
+  { title: 'CHARACTER', options: ['Spiderman', 'Thor', 'Marvel', 'Disney'] },
+  { title: 'PATTERN', options: ['Printed', 'Textured', 'Puff Print'] },
   { title: 'PATTERN COVERAGE', options: ['Back', 'Front', 'All Over'] },
-  { title: 'PRODUCT TYPE',     options: ['T-shirt', 'Oversized Tshirt'] },
+  { title: 'PRODUCT TYPE', options: ['T-shirt', 'Oversized Tshirt'] },
 ]
 
 function FilterSection({ title, children, defaultOpen = true }) {
   const [open, setOpen] = useState(defaultOpen)
+
   return (
-    <div className="border-b border-[var(--color-border)] last:border-0">
+    <div className="border-b border-gold/10 last:border-b-0">
       <button
+        type="button"
         onClick={() => setOpen(!open)}
-        className="w-full flex justify-between items-center bg-transparent border-none cursor-pointer text-xs sm:text-sm font-semibold text-[var(--color-text)] hover:text-[var(--color-primary)] transition-colors py-3 sm:py-4"
+        className="w-full flex justify-between items-center bg-transparent border-none cursor-pointer text-white hover:text-gold transition-colors py-4"
       >
-        <span className="text-[10px] sm:text-xs font-bold tracking-wider uppercase">{title}</span>
-        {open ? <ChevronUp size={14} className="sm:w-4 sm:h-4 text-[var(--color-muted)]" /> : <ChevronDown size={14} className="sm:w-4 sm:h-4 text-[var(--color-muted)]" />}
+        <span className="text-xs font-mono tracking-[0.18em] uppercase">
+          {title}
+        </span>
+
+        {open ? (
+          <ChevronUp size={15} className="text-gold" />
+        ) : (
+          <ChevronDown size={15} className="text-muted" />
+        )}
       </button>
-      {open && (
-        <div className="animate-fadeIn pb-3 sm:pb-4">
-          {children}
+
+      {open && <div className="animate-fadeIn pb-4">{children}</div>}
+    </div>
+  )
+}
+
+function OptionButton({ active, children, onClick }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`w-full text-left flex items-center justify-between gap-3 border px-3 py-2.5 transition-all duration-300 ${
+        active
+          ? 'bg-gold/10 border-gold/45 text-gold'
+          : 'bg-black border-gold/10 text-muted hover:text-white hover:border-gold/30'
+      }`}
+    >
+      <span className="text-xs font-mono tracking-wider leading-relaxed">
+        {children}
+      </span>
+
+      <span
+        className={`w-3.5 h-3.5 border shrink-0 flex items-center justify-center ${
+          active ? 'border-gold bg-gold' : 'border-gold/25 bg-black'
+        }`}
+      >
+        {active && <span className="w-1.5 h-1.5 bg-black block" />}
+      </span>
+    </button>
+  )
+}
+
+function FilterContent({
+  categories,
+  filters,
+  updateFilter,
+  applyPriceRange,
+  extraFilters,
+  toggleExtraFilter,
+}) {
+  return (
+    <div className="flex flex-col">
+      <FilterSection title="Category">
+        <div className="flex flex-col gap-2">
+          <OptionButton
+            active={filters.category === ''}
+            onClick={() => updateFilter('category', '')}
+          >
+            All Categories
+          </OptionButton>
+
+          {categories.map((category) => (
+            <OptionButton
+              key={category.id}
+              active={filters.category === category.slug}
+              onClick={() => updateFilter('category', category.slug)}
+            >
+              {category.name}
+            </OptionButton>
+          ))}
         </div>
-      )}
+      </FilterSection>
+
+      <FilterSection title="Price Range">
+        <div className="flex flex-col gap-2">
+          {PRICE_RANGES.map((range) => (
+            <OptionButton
+              key={range.label}
+              active={
+                String(filters.min_price) === String(range.min) &&
+                String(filters.max_price) === String(range.max)
+              }
+              onClick={() => applyPriceRange(range)}
+            >
+              {range.label}
+            </OptionButton>
+          ))}
+
+          <div className="grid grid-cols-2 gap-2 mt-2">
+            <input
+              type="number"
+              placeholder="Min"
+              value={filters.min_price}
+              onChange={(event) => updateFilter('min_price', event.target.value)}
+              className="bg-black border border-gold/15 text-white placeholder:text-muted/50 text-xs font-mono tracking-wider outline-none px-3 py-3 focus:border-gold/60 focus:shadow-[0_0_0_3px_rgba(212,175,55,0.12)]"
+            />
+
+            <input
+              type="number"
+              placeholder="Max"
+              value={filters.max_price}
+              onChange={(event) => updateFilter('max_price', event.target.value)}
+              className="bg-black border border-gold/15 text-white placeholder:text-muted/50 text-xs font-mono tracking-wider outline-none px-3 py-3 focus:border-gold/60 focus:shadow-[0_0_0_3px_rgba(212,175,55,0.12)]"
+            />
+          </div>
+        </div>
+      </FilterSection>
+
+      {EXTRA_FILTERS.map((section) => (
+        <FilterSection key={section.title} title={section.title} defaultOpen={false}>
+          <div className="flex flex-col gap-2">
+            {section.options.map((option) => {
+              const key = `${section.title}-${option}`
+
+              return (
+                <OptionButton
+                  key={option}
+                  active={Boolean(extraFilters[key])}
+                  onClick={() => toggleExtraFilter(section.title, option)}
+                >
+                  {option}
+                </OptionButton>
+              )
+            })}
+          </div>
+        </FilterSection>
+      ))}
+
+      <FilterSection title="Availability">
+        <OptionButton
+          active={filters.in_stock === 'true'}
+          onClick={() =>
+            updateFilter('in_stock', filters.in_stock === 'true' ? '' : 'true')
+          }
+        >
+          In Stock Only
+        </OptionButton>
+      </FilterSection>
     </div>
   )
 }
@@ -502,11 +196,14 @@ export default function ProductList() {
   const [categories, setCategories] = useState([])
   const [loading, setLoading] = useState(true)
   const [count, setCount] = useState(0)
-  const [gridCols, setGridCols] = useState(2)  // Default 2 cols for mobile
+
+  const [gridCols, setGridCols] = useState(3)
   const [sortOpen, setSortOpen] = useState(false)
   const [filterOpen, setFilterOpen] = useState(false)
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false)
+
   const filterRef = useRef(null)
+  const sortRef = useRef(null)
   const [searchParams] = useSearchParams()
 
   const [filters, setFilters] = useState({
@@ -519,158 +216,237 @@ export default function ProductList() {
   })
 
   const [extraFilters, setExtraFilters] = useState({})
-  const [activeSort, setActiveSort] = useState('Latest')
 
-  const selectedCats = filters.category ? [filters.category] : []
-  const activeFilterCount = selectedCats.length +
+  const activeSort = useMemo(() => {
+    return SORT_OPTIONS.find((option) => option.value === filters.ordering)?.label || 'Latest'
+  }, [filters.ordering])
+
+  const activeFilterCount =
+    (filters.category ? 1 : 0) +
     (filters.min_price || filters.max_price ? 1 : 0) +
     (filters.in_stock ? 1 : 0) +
     Object.values(extraFilters).filter(Boolean).length
 
-  // Responsive grid cols based on screen
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth >= 1024) setGridCols(3)
-      else if (window.innerWidth >= 640) setGridCols(3)
+      if (window.innerWidth >= 1280) setGridCols(4)
+      else if (window.innerWidth >= 768) setGridCols(3)
       else setGridCols(2)
     }
+
     handleResize()
     window.addEventListener('resize', handleResize)
+
     return () => window.removeEventListener('resize', handleResize)
   }, [])
 
-  // Click outside to close filter dropdown
   useEffect(() => {
-    function handleClickOutside(e) {
-      if (filterRef.current && !filterRef.current.contains(e.target)) {
+    const handleClickOutside = (event) => {
+      if (filterRef.current && !filterRef.current.contains(event.target)) {
         setFilterOpen(false)
       }
+
+      if (sortRef.current && !sortRef.current.contains(event.target)) {
+        setSortOpen(false)
+      }
     }
-    if (filterOpen) {
-      document.addEventListener('mousedown', handleClickOutside)
-      return () => document.removeEventListener('mousedown', handleClickOutside)
-    }
-  }, [filterOpen])
+
+    document.addEventListener('mousedown', handleClickOutside)
+
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
 
   useEffect(() => {
-    api.get('/products/categories/').then(r => setCategories(r.data.results || r.data))
+    let mounted = true
+
+    api
+      .get('/products/categories/')
+      .then((res) => {
+        if (mounted) setCategories(res.data.results || res.data || [])
+      })
+      .catch(() => {
+        if (mounted) setCategories([])
+      })
+
+    return () => {
+      mounted = false
+    }
   }, [])
 
   const fetchProducts = useCallback(async () => {
     setLoading(true)
+
     try {
       const params = {}
+
       if (filters.category) params.category_slug = filters.category
       if (filters.min_price) params.min_price = filters.min_price
       if (filters.max_price) params.max_price = filters.max_price
       if (filters.ordering) params.ordering = filters.ordering
       if (filters.in_stock) params.in_stock = filters.in_stock
       if (filters.search) params.search = filters.search
+
       const { data } = await api.get('/products/', { params })
-      setProducts(data.results || data)
-      setCount(data.count || (data.results || data).length)
-    } catch (err) {
-      console.error(err)
+      const list = data.results || data || []
+
+      setProducts(list)
+      setCount(data.count || list.length)
+    } catch (error) {
+      console.error(error)
+      setProducts([])
+      setCount(0)
     } finally {
       setLoading(false)
     }
   }, [filters])
 
-  useEffect(() => { fetchProducts() }, [fetchProducts])
+  useEffect(() => {
+    fetchProducts()
+  }, [fetchProducts])
 
-  const updateFilter = (key, value) => setFilters(p => ({ ...p, [key]: value }))
+  const updateFilter = (key, value) => {
+    setFilters((prev) => ({
+      ...prev,
+      [key]: value,
+    }))
+  }
 
   const clearFilters = () => {
     setFilters({
-      category: '', min_price: '', max_price: '',
-      ordering: '-created_at', in_stock: '', search: '',
+      category: '',
+      min_price: '',
+      max_price: '',
+      ordering: '-created_at',
+      in_stock: '',
+      search: '',
     })
+
     setExtraFilters({})
+    setFilterOpen(false)
+    setMobileFilterOpen(false)
   }
 
   const applyPriceRange = (range) => {
-    setFilters(p => ({ ...p, min_price: range.min, max_price: range.max }))
+    setFilters((prev) => ({
+      ...prev,
+      min_price: range.min,
+      max_price: range.max,
+    }))
   }
 
-  const applySort = (opt) => {
-    setActiveSort(opt.label)
-    updateFilter('ordering', opt.value)
+  const applySort = (option) => {
+    updateFilter('ordering', option.value)
     setSortOpen(false)
   }
 
   const toggleExtraFilter = (section, option) => {
-    setExtraFilters(prev => {
+    setExtraFilters((prev) => {
       const key = `${section}-${option}`
-      return { ...prev, [key]: !prev[key] }
+
+      return {
+        ...prev,
+        [key]: !prev[key],
+      }
     })
   }
 
-  const gridClass = gridCols === 2 ? 'grid-cols-2' : gridCols === 3 ? 'grid-cols-2 sm:grid-cols-3' : 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-4'
+  const gridClass =
+    gridCols === 2
+      ? 'grid-cols-2'
+      : gridCols === 3
+        ? 'grid-cols-2 sm:grid-cols-3'
+        : 'grid-cols-2 sm:grid-cols-3 xl:grid-cols-4'
 
   return (
-    <div className="min-h-screen bg-[var(--color-bg)] pb-10 sm:pb-16">
+    <div className="min-h-screen bg-black pt-[76px] sm:pt-[88px] lg:pt-[96px] pb-14 overflow-x-hidden">
+      {/* Header */}
+      <section className="border-b border-gold/10 bg-[#050505]">
+        <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+          <p className="label-gold mb-3">Artifact Archive</p>
 
-      {/* Header bar */}
-      <div className="border-b border-[var(--color-border)] bg-[var(--color-surface)] sticky top-0 z-20 shadow-sm">
-        <div className="page-container py-3 sm:py-4">
-          <div className="flex items-center justify-between gap-2 sm:gap-4">
-            <div className="flex items-center gap-2 sm:gap-4">
+          <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-5">
+            <div>
+              <h1 className="font-display text-2xl sm:text-3xl lg:text-5xl text-white tracking-[0.12em] leading-tight">
+                SHOP <span className="text-gradient-gold">ALL</span>
+              </h1>
 
-              {/* Mobile Filter Button */}
-              <button
-                onClick={() => setMobileFilterOpen(true)}
-                className="sm:hidden flex items-center gap-1.5 bg-[var(--color-secondary)] text-[var(--color-text-inverse)] rounded-xl text-[11px] font-semibold hover:bg-[var(--color-secondary-light)] transition-colors border-none cursor-pointer px-3 py-2"
-              >
-                <SlidersHorizontal size={13} />
-                Filters
-                {activeFilterCount > 0 && (
-                  <span className="rounded-full bg-[var(--color-primary)] text-white text-[9px] font-bold flex items-center justify-center w-4 h-4">
-                    {activeFilterCount}
-                  </span>
-                )}
-              </button>
+              <p className="text-xs sm:text-sm text-muted font-mono tracking-wider leading-relaxed mt-3 max-w-2xl">
+                Explore all Transfinity artifacts. Filter by category, price, stock,
+                and arc-specific traits.
+              </p>
+            </div>
 
-              {/* Desktop Filter Dropdown Button */}
-              <div className="hidden sm:block relative" ref={filterRef}>
+            <div className="relative w-full lg:w-[320px]">
+              <Search
+                size={15}
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-muted pointer-events-none"
+              />
+
+              <input
+                value={filters.search}
+                onChange={(event) => updateFilter('search', event.target.value)}
+                placeholder="Search artifacts..."
+                className="w-full bg-black border border-gold/15 text-white placeholder:text-muted/50 text-sm font-mono tracking-wider outline-none pl-10 pr-4 py-3.5 focus:border-gold/60 focus:shadow-[0_0_0_3px_rgba(212,175,55,0.12)]"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Toolbar */}
+      <section className="sticky top-[76px] sm:top-[88px] lg:top-[96px] z-30 border-b border-gold/10 bg-black/90 backdrop-blur-md">
+        <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-3 min-w-0">
+              {/* Desktop filter */}
+              <div className="relative hidden md:block" ref={filterRef}>
                 <button
+                  type="button"
                   onClick={() => setFilterOpen(!filterOpen)}
-                  className="flex items-center gap-2 bg-[var(--color-secondary)] text-[var(--color-text-inverse)] rounded-xl text-xs font-semibold hover:bg-[var(--color-secondary-light)] transition-colors border-none cursor-pointer px-4 py-2.5"
+                  className="inline-flex items-center gap-2 bg-gold text-black text-xs font-semibold tracking-wider uppercase px-4 py-3 hover:bg-gold-light transition-all"
                 >
                   <SlidersHorizontal size={15} />
                   Filters
+
                   {activeFilterCount > 0 && (
-                    <span className="rounded-full bg-[var(--color-primary)] text-white text-[10px] font-bold flex items-center justify-center w-5 h-5">
+                    <span className="w-5 h-5 bg-black text-gold text-[10px] flex items-center justify-center">
                       {activeFilterCount}
                     </span>
                   )}
-                  <ChevronDown size={14} className={`transition-transform ${filterOpen ? 'rotate-180' : ''}`} />
+
+                  <ChevronDown
+                    size={14}
+                    className={`transition-transform ${filterOpen ? 'rotate-180' : ''}`}
+                  />
                 </button>
 
-                {/* Desktop Filter Dropdown Panel */}
                 {filterOpen && (
-                  <div
-                    className="absolute left-0 top-full bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl shadow-2xl z-50 overflow-y-auto mt-2"
-                    style={{ width: '320px', maxHeight: '70vh', padding: '24px' }}
-                  >
-                    <div className="flex items-center justify-between mb-5">
+                  <div className="absolute left-0 top-full mt-2 w-[340px] max-h-[72vh] overflow-y-auto bg-[#0A0A0A] border border-gold/20 shadow-[0_20px_80px_rgba(0,0,0,0.65)] z-50 p-5">
+                    <div className="flex items-center justify-between gap-4 mb-5">
                       <div className="flex items-center gap-2">
-                        <SlidersHorizontal size={20} className="text-[var(--color-primary)]" />
-                        <h2 className="text-lg font-bold text-[var(--color-text)]">Filters</h2>
+                        <SlidersHorizontal size={18} className="text-gold" />
+                        <h2 className="font-display text-lg text-white tracking-[0.12em]">
+                          FILTERS
+                        </h2>
                       </div>
+
                       <div className="flex items-center gap-3">
                         {activeFilterCount > 0 && (
                           <button
+                            type="button"
                             onClick={clearFilters}
-                            className="text-xs font-medium text-[var(--color-danger)] hover:text-[var(--color-danger)] transition-colors bg-transparent border-none cursor-pointer"
+                            className="text-[10px] font-mono tracking-wider uppercase text-red-400 hover:text-red-300 bg-transparent border-none cursor-pointer"
                           >
-                            Clear all
+                            Clear
                           </button>
                         )}
+
                         <button
+                          type="button"
                           onClick={() => setFilterOpen(false)}
-                          className="w-8 h-8 rounded-lg bg-[var(--color-bg-alt)] flex items-center justify-center hover:bg-[var(--color-border-light)] transition-colors border-none cursor-pointer"
+                          className="w-8 h-8 bg-black border border-gold/15 flex items-center justify-center text-gold hover:bg-gold/10 transition-all"
                         >
-                          <X size={18} className="text-[var(--color-text)]" />
+                          <X size={16} />
                         </button>
                       </div>
                     </div>
@@ -687,59 +463,75 @@ export default function ProductList() {
                 )}
               </div>
 
-              <span className="text-[10px] sm:text-xs text-[var(--color-muted)] font-medium">
+              {/* Mobile filter */}
+              <button
+                type="button"
+                onClick={() => setMobileFilterOpen(true)}
+                className="md:hidden inline-flex items-center gap-2 bg-gold text-black text-xs font-semibold tracking-wider uppercase px-4 py-3"
+              >
+                <SlidersHorizontal size={15} />
+                Filters
+                {activeFilterCount > 0 && (
+                  <span className="w-5 h-5 bg-black text-gold text-[10px] flex items-center justify-center">
+                    {activeFilterCount}
+                  </span>
+                )}
+              </button>
+
+              <span className="text-[10px] sm:text-xs text-muted font-mono tracking-wider uppercase truncate">
                 {count} Products
               </span>
             </div>
 
             <div className="flex items-center gap-2 sm:gap-3">
-              {/* Grid toggle - Desktop */}
-              <div className="hidden sm:flex border border-[var(--color-border)] rounded-xl overflow-hidden bg-[var(--color-surface)]">
+              {/* Grid toggle */}
+              <div className="hidden sm:flex border border-gold/15 bg-[#0A0A0A] overflow-hidden">
                 {[
-                  { n: 2, icon: <LayoutList size={14} /> },
-                  { n: 3, icon: <Grid3X3 size={14} /> },
-                  { n: 4, icon: <LayoutGrid size={14} /> },
-                ].map(({ n, icon }) => (
+                  { n: 2, icon: LayoutList },
+                  { n: 3, icon: Grid3X3 },
+                  { n: 4, icon: LayoutGrid },
+                ].map(({ n, icon: Icon }) => (
                   <button
                     key={n}
+                    type="button"
                     onClick={() => setGridCols(n)}
-                    className={`border-none cursor-pointer text-xs font-semibold transition-all flex items-center justify-center ${
+                    className={`w-10 h-10 flex items-center justify-center transition-all ${
                       gridCols === n
-                        ? 'bg-[var(--color-secondary)] text-[var(--color-text-inverse)]'
-                        : 'bg-[var(--color-surface)] text-[var(--color-muted)] hover:text-[var(--color-text)]'
+                        ? 'bg-gold text-black'
+                        : 'bg-transparent text-muted hover:text-gold hover:bg-gold/5'
                     }`}
-                    style={{ padding: '10px 14px' }}
+                    aria-label={`Grid ${n}`}
                   >
-                    {icon}
+                    <Icon size={15} />
                   </button>
                 ))}
               </div>
 
               {/* Sort */}
-              <div className="relative">
+              <div className="relative" ref={sortRef}>
                 <button
+                  type="button"
                   onClick={() => setSortOpen(!sortOpen)}
-                  className="flex items-center gap-1.5 sm:gap-2 border border-[var(--color-border)] rounded-xl bg-[var(--color-surface)] cursor-pointer text-[11px] sm:text-xs font-semibold text-[var(--color-text)] whitespace-nowrap hover:border-[var(--color-primary)] transition-colors px-3 sm:px-4 py-2 sm:py-2.5"
+                  className="inline-flex items-center gap-2 border border-gold/15 bg-[#0A0A0A] text-white text-[10px] sm:text-xs font-mono tracking-wider uppercase px-3 sm:px-4 py-3 hover:border-gold/45 transition-all whitespace-nowrap"
                 >
-                  <span className="hidden sm:inline">SORT BY:</span> {activeSort}
-                  <ChevronDown size={13} className="sm:w-[14px] sm:h-[14px]" />
+                  <span className="hidden sm:inline">Sort By:</span> {activeSort}
+                  <ChevronDown size={14} />
                 </button>
+
                 {sortOpen && (
-                  <div
-                    className="absolute right-0 top-full bg-[var(--color-surface)] border border-[var(--color-border)] rounded-xl shadow-lg z-50 overflow-hidden mt-2"
-                    style={{ minWidth: '180px', padding: '4px 0' }}
-                  >
-                    {SORT_OPTIONS.map(opt => (
+                  <div className="absolute right-0 top-full mt-2 min-w-[210px] bg-[#0A0A0A] border border-gold/20 shadow-[0_20px_80px_rgba(0,0,0,0.65)] z-50 py-2">
+                    {SORT_OPTIONS.map((option) => (
                       <button
-                        key={opt.value}
-                        onClick={() => applySort(opt)}
-                        className={`block w-full text-left border-none cursor-pointer text-xs transition-colors px-4 py-3 ${
-                          activeSort === opt.label
-                            ? 'bg-[var(--color-primary-light)] font-bold text-[var(--color-primary-dark)]'
-                            : 'bg-[var(--color-surface)] font-normal text-[var(--color-text)] hover:bg-[var(--color-bg-alt)]'
+                        key={option.value}
+                        type="button"
+                        onClick={() => applySort(option)}
+                        className={`block w-full text-left border-none cursor-pointer text-xs font-mono tracking-wider px-4 py-3 transition-all ${
+                          filters.ordering === option.value
+                            ? 'bg-gold/10 text-gold'
+                            : 'bg-transparent text-muted hover:bg-gold/5 hover:text-white'
                         }`}
                       >
-                        {opt.label}
+                        {option.label}
                       </button>
                     ))}
                   </div>
@@ -748,234 +540,108 @@ export default function ProductList() {
             </div>
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* Mobile Filter Sheet (Slide from bottom) */}
+      {/* Products */}
+      <main className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+        {loading ? (
+          <div className={`grid ${gridClass} gap-3 sm:gap-5 lg:gap-6`}>
+            {[1, 2, 3, 4, 5, 6, 7, 8].map((item) => (
+              <div key={item} className="flex flex-col gap-3">
+                <div className="skeleton-dark aspect-product border border-gold/10" />
+                <div className="h-3 skeleton-dark w-4/5" />
+                <div className="h-4 skeleton-dark w-1/2" />
+              </div>
+            ))}
+          </div>
+        ) : products.length === 0 ? (
+          <div className="text-center py-20 sm:py-24 px-4">
+            <div className="w-16 h-16 border border-gold/20 bg-[#0A0A0A] flex items-center justify-center mx-auto mb-5">
+              <Search size={28} className="text-gold/60" />
+            </div>
+
+            <p className="label-gold mb-3">No Signal</p>
+
+            <h2 className="font-display text-xl sm:text-2xl text-white tracking-[0.12em] mb-3">
+              NO PRODUCTS <span className="text-gradient-gold">FOUND</span>
+            </h2>
+
+            <p className="text-xs sm:text-sm text-muted font-mono tracking-wider leading-relaxed mb-6">
+              Try adjusting your filters or search query.
+            </p>
+
+            <button
+              type="button"
+              onClick={clearFilters}
+              className="btn-primary inline-flex items-center justify-center gap-2"
+            >
+              CLEAR FILTERS
+            </button>
+          </div>
+        ) : (
+          <div className={`grid ${gridClass} gap-3 sm:gap-5 lg:gap-6`}>
+            {products.map((product, index) => (
+              <ProductCard key={product.id} product={product} index={index} />
+            ))}
+          </div>
+        )}
+      </main>
+
+      {/* Mobile Filter Drawer */}
       {mobileFilterOpen && (
-        <div className="fixed inset-0 z-50 sm:hidden">
-          <div 
-            className="absolute inset-0 bg-black/50 backdrop-blur-sm" 
+        <div className="fixed inset-0 z-50 md:hidden">
+          <div
+            className="absolute inset-0 bg-black/70"
             onClick={() => setMobileFilterOpen(false)}
           />
-          <div className="absolute bottom-0 left-0 right-0 bg-[var(--color-surface)] rounded-t-2xl border-t border-[var(--color-border)] shadow-2xl max-h-[85vh] overflow-y-auto animate-slideUp">
-            <div className="sticky top-0 bg-[var(--color-surface)] z-10 px-4 pt-4 pb-2 border-b border-[var(--color-border)]">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <SlidersHorizontal size={18} className="text-[var(--color-primary)]" />
-                  <h2 className="text-base font-bold text-[var(--color-text)]">Filters</h2>
-                </div>
-                <div className="flex items-center gap-3">
-                  {activeFilterCount > 0 && (
-                    <button
-                      onClick={clearFilters}
-                      className="text-xs font-medium text-[var(--color-danger)] bg-transparent border-none cursor-pointer"
-                    >
-                      Clear all
-                    </button>
-                  )}
-                  <button
-                    onClick={() => setMobileFilterOpen(false)}
-                    className="w-8 h-8 rounded-lg bg-[var(--color-bg-alt)] flex items-center justify-center border-none cursor-pointer"
-                  >
-                    <X size={18} className="text-[var(--color-text)]" />
-                  </button>
-                </div>
+
+          <div className="absolute right-0 top-0 bottom-0 w-[88%] max-w-sm bg-[#0A0A0A] border-l border-gold/20 p-5 overflow-y-auto animate-slideUp">
+            <div className="flex items-center justify-between gap-4 mb-5">
+              <div className="flex items-center gap-2">
+                <SlidersHorizontal size={18} className="text-gold" />
+                <h2 className="font-display text-lg text-white tracking-[0.12em]">
+                  FILTERS
+                </h2>
               </div>
-            </div>
-            <div className="p-4 pb-8">
-              <FilterContent
-                categories={categories}
-                filters={filters}
-                updateFilter={updateFilter}
-                applyPriceRange={applyPriceRange}
-                extraFilters={extraFilters}
-                toggleExtraFilter={toggleExtraFilter}
-              />
-            </div>
-            <div className="sticky bottom-0 bg-[var(--color-surface)] border-t border-[var(--color-border)] p-4">
+
               <button
+                type="button"
                 onClick={() => setMobileFilterOpen(false)}
-                className="w-full h-11 rounded-xl bg-[var(--color-secondary)] text-[var(--color-text-inverse)] text-sm font-bold tracking-wide uppercase border-none cursor-pointer"
+                className="w-9 h-9 bg-black border border-gold/15 flex items-center justify-center text-gold"
               >
-                Show {count} Products
+                <X size={17} />
+              </button>
+            </div>
+
+            <FilterContent
+              categories={categories}
+              filters={filters}
+              updateFilter={updateFilter}
+              applyPriceRange={applyPriceRange}
+              extraFilters={extraFilters}
+              toggleExtraFilter={toggleExtraFilter}
+            />
+
+            <div className="sticky bottom-0 bg-[#0A0A0A] pt-4 mt-4 border-t border-gold/10 grid grid-cols-2 gap-3">
+              <button
+                type="button"
+                onClick={clearFilters}
+                className="btn-outline !px-4 !py-3"
+              >
+                CLEAR
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setMobileFilterOpen(false)}
+                className="btn-primary !px-4 !py-3"
+              >
+                APPLY
               </button>
             </div>
           </div>
         </div>
       )}
-
-      {/* Products */}
-      <div className="page-container py-4 sm:py-6">
-        {loading ? (
-          <div className={`grid ${gridClass} gap-3 sm:gap-5`}>
-            {[...Array(6)].map((_, i) => (
-              <div key={i} className="flex flex-col gap-2 sm:gap-3">
-                <div
-                  className="rounded-xl bg-gradient-to-r from-[var(--color-bg-alt)] via-[var(--color-border-light)] to-[var(--color-bg-alt)] bg-[length:200%_100%] animate-shimmer"
-                  style={{ aspectRatio: '3/4' }}
-                />
-                <div className="h-3 sm:h-3.5 bg-[var(--color-bg-alt)] rounded w-4/5" />
-                <div className="h-3.5 sm:h-4 bg-[var(--color-bg-alt)] rounded w-1/2" />
-              </div>
-            ))}
-          </div>
-        ) : products.length === 0 ? (
-          <div className="text-center py-16 sm:py-24 px-4 sm:px-6">
-            <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-[var(--color-bg-alt)] flex items-center justify-center mx-auto mb-4">
-              <Search size={24} className="sm:w-7 sm:h-7 text-[var(--color-muted)]" />
-            </div>
-            <h3 className="text-base sm:text-lg font-bold text-[var(--color-text)] mb-2">No products found</h3>
-            <p className="text-xs sm:text-sm text-[var(--color-muted)] mb-6">Try adjusting your filters or search query</p>
-            <button
-              onClick={clearFilters}
-              className="bg-[var(--color-secondary)] text-[var(--color-text-inverse)] rounded-xl text-sm font-semibold cursor-pointer hover:bg-[var(--color-secondary-light)] transition-colors border-none px-6 sm:px-8 py-2.5 sm:py-3"
-            >
-              Clear Filters
-            </button>
-          </div>
-        ) : (
-          <div className={`grid ${gridClass} gap-3 sm:gap-5`}>
-            {products.map((p, i) => (
-              <ProductCard key={p.id} product={p} index={i} />
-            ))}
-          </div>
-        )}
-      </div>
-
-      <style>{`
-        @keyframes shimmer {
-          0% { background-position: -200% 0; }
-          100% { background-position: 200% 0; }
-        }
-        @keyframes fadeIn {
-          from { opacity: 0; }
-          to { opacity: 1; }
-        }
-        @keyframes slideUp {
-          from { transform: translateY(100%); }
-          to { transform: translateY(0); }
-        }
-        .animate-shimmer {
-          animation: shimmer 1.5s infinite;
-        }
-        .animate-fadeIn {
-          animation: fadeIn 0.2s ease;
-        }
-        .animate-slideUp {
-          animation: slideUp 0.3s ease;
-        }
-      `}</style>
-    </div>
-  )
-}
-
-/* ─── Shared Filter Content ─── */
-function FilterContent({ categories, filters, updateFilter, applyPriceRange, extraFilters, toggleExtraFilter }) {
-  return (
-    <div className="flex flex-col gap-1">
-
-      {/* Category */}
-      <FilterSection title="Category">
-        <div className="flex flex-col gap-2 sm:gap-2.5">
-          <label className="flex items-center cursor-pointer gap-2 sm:gap-2.5">
-            <input
-              type="radio"
-              name="cat"
-              value=""
-              checked={filters.category === ''}
-              onChange={() => updateFilter('category', '')}
-              className="accent-[var(--color-primary)] w-4 h-4"
-            />
-            <span className="text-xs sm:text-xs text-[var(--color-text)]">All Categories</span>
-          </label>
-          {categories.map(cat => (
-            <label key={cat.id} className="flex items-center cursor-pointer gap-2 sm:gap-2.5">
-              <input
-                type="radio"
-                name="cat"
-                value={cat.slug}
-                checked={filters.category === cat.slug}
-                onChange={() => updateFilter('category', cat.slug)}
-                className="accent-[var(--color-primary)] w-4 h-4"
-              />
-              <span className="text-xs sm:text-xs text-[var(--color-text)]">{cat.name}</span>
-            </label>
-          ))}
-        </div>
-      </FilterSection>
-
-      {/* Price */}
-      <FilterSection title="Price Range">
-        <div className="flex flex-col gap-2 sm:gap-2.5">
-          {PRICE_RANGES.map(range => (
-            <label key={range.label} className="flex items-center cursor-pointer gap-2 sm:gap-2.5">
-              <input
-                type="radio"
-                name="price"
-                checked={filters.min_price == range.min && filters.max_price == range.max}
-                onChange={() => applyPriceRange(range)}
-                className="accent-[var(--color-primary)] w-4 h-4"
-              />
-              <span className="text-xs sm:text-xs text-[var(--color-text)]">{range.label}</span>
-            </label>
-          ))}
-          <div className="flex gap-2 mt-1">
-            <input
-              type="number"
-              placeholder="Min"
-              value={filters.min_price}
-              onChange={e => updateFilter('min_price', e.target.value)}
-              className="w-full bg-[var(--color-bg-alt)] border border-[var(--color-border)] rounded-lg text-xs text-[var(--color-text)] outline-none focus:border-[var(--color-primary)] px-3 py-2 sm:py-2.5 placeholder:text-[var(--color-muted-light)]"
-            />
-            <input
-              type="number"
-              placeholder="Max"
-              value={filters.max_price}
-              onChange={e => updateFilter('max_price', e.target.value)}
-              className="w-full bg-[var(--color-bg-alt)] border border-[var(--color-border)] rounded-lg text-xs text-[var(--color-text)] outline-none focus:border-[var(--color-primary)] px-3 py-2 sm:py-2.5 placeholder:text-[var(--color-muted-light)]"
-            />
-          </div>
-        </div>
-      </FilterSection>
-
-      {/* Extra Filters */}
-      {EXTRA_FILTERS.map(section => (
-        <FilterSection key={section.title} title={section.title}>
-          <div className="flex flex-col gap-1.5 sm:gap-2">
-            {section.options.map(option => {
-              const key = `${section.title}-${option}`
-              return (
-                <label
-                  key={option}
-                  className="flex items-center justify-between cursor-pointer text-xs text-[var(--color-text)] py-0.5 sm:py-1"
-                >
-                  <span>{option}</span>
-                  <input
-                    type="checkbox"
-                    checked={!!extraFilters[key]}
-                    onChange={() => toggleExtraFilter(section.title, option)}
-                    className="accent-[var(--color-primary)] w-4 h-4"
-                  />
-                </label>
-              )
-            })}
-          </div>
-        </FilterSection>
-      ))}
-
-      {/* Stock */}
-      <FilterSection title="Availability">
-        <label className="flex items-center cursor-pointer gap-2 sm:gap-2.5">
-          <input
-            type="checkbox"
-            checked={filters.in_stock === 'true'}
-            onChange={e => updateFilter('in_stock', e.target.checked ? 'true' : '')}
-            className="accent-[var(--color-primary)] w-4 h-4"
-          />
-          <span className="text-xs sm:text-xs text-[var(--color-text)]">In Stock Only</span>
-        </label>
-      </FilterSection>
-
     </div>
   )
 }

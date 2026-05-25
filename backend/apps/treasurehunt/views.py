@@ -657,7 +657,7 @@ from django.core.cache import cache
 from django.db.models import Count, Sum
 from django.utils import timezone
 from django.db import transaction
-
+from django.conf import settings
 from .models import (
     Arc, ShipPath, Treasure, TreasureClaim,
     FounderProgress, CommunityUnlockProgress, PurchaseLog,
@@ -669,7 +669,7 @@ from .serializers import (
     ArcSerializer, ArcDetailSerializer, ShipPathSerializer,
     FounderProgressSerializer, TreasureSerializer,
     CommunityProgressSerializer, PurchaseLogSerializer,
-    QRActivateSerializer,
+    QRActivateSerializer,HuntLocationSerializer
 )
 from .permissions import IsAdminOrReadOnly
 
@@ -1225,19 +1225,23 @@ class QRActivateView(generics.GenericAPIView):
             qr_code.activated_at = timezone.now()
             qr_code.save()
 
-            UserHuntProgress.objects.create(
+            progress = UserHuntProgress.objects.create(  # ✅ once, save the reference
                 user=user,
                 tshirt_qr=qr_code,
                 current_level=1,
                 last_unlocked_at=timezone.now()
             )
-            HuntLeaderboard.objects.create(user=user, score=0)
+
+            HuntLeaderboard.objects.get_or_create(
+                user=user,
+                defaults={"score": 0, "progress": progress}  # ✅ use same progress object
+            )
 
         return Response({
             'success': True,
             'message': 'Treasure Hunt activated! Level 1 unlocked.',
         }, status=201)
-
+        
 
 class HuntProgressView(generics.RetrieveAPIView):
     permission_classes = [permissions.IsAuthenticated]
@@ -1273,3 +1277,96 @@ class LeaderboardView(generics.ListAPIView):
                 'score': l.score,
             })
         return Response(data)
+
+
+
+
+@api_view(['GET'])
+@permission_classes([permissions.IsAuthenticated, IsAdminOrReadOnly])
+def admin_dashboard_stats(request):
+    return Response({
+        'active_hunters': UserHuntProgress.objects.count(),
+        'completed_hunts': UserHuntProgress.objects.filter(current_level__gte=5).count(),
+        'total_qr': TShirtQRCode.objects.count(),
+        'rewards_given': HuntReward.objects.count(),
+        'level_progress': [UserHuntProgress.objects.filter(current_level=i).count() for i in range(1,6)],
+        'top_hunters': [],
+        'recent_activations': [],
+    })
+
+
+@api_view(['GET'])
+@permission_classes([permissions.IsAuthenticated, IsAdminOrReadOnly])
+def admin_progress_list(request):
+    progress = UserHuntProgress.objects.select_related('user', 'tshirt_qr').all()
+    data = [{
+        'id': str(p.id),
+        'username': getattr(p.user, 'username', p.user.email),
+        'current_level': p.current_level,
+        'started_at': p.started_at,
+    } for p in progress]
+    return Response({'count': len(data), 'results': data})
+
+
+class HuntLocationListCreateView(generics.ListCreateAPIView):
+    queryset = HuntLocation.objects.all()
+    serializer_class = HuntLocationSerializer
+    permission_classes = [permissions.IsAuthenticated, IsAdminOrReadOnly]
+
+
+class HuntLocationDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = HuntLocation.objects.all()
+    serializer_class = HuntLocationSerializer
+    permission_classes = [permissions.IsAuthenticated, IsAdminOrReadOnly]
+
+
+@api_view(['POST'])
+@permission_classes([permissions.IsAuthenticated, IsAdminOrReadOnly])
+def generate_qr_batch(request):
+    order_ids = request.data.get('order_ids', [])
+    if not order_ids:
+        return Response({'error': 'No order IDs provided.'}, status=400)
+    
+    from orders.models import Order
+    generated = []
+    for order_id in order_ids:
+        try:
+            order = Order.objects.get(id=order_id)
+            if hasattr(order, 'tshirt_qr'):
+                generated.append({
+                    'order_id': str(order_id),
+                    'status': 'already_exists',
+                    'qr_secret': order.tshirt_qr.secret_hash
+                })
+                continue
+            
+            from .utils import generate_unique_qr_secret
+            secret = generate_unique_qr_secret()
+            qr = TShirtQRCode.objects.create(order=order, secret_hash=secret)
+            generated.append({
+                'order_id': str(order_id),
+                'status': 'created',
+                'qr_secret': secret,
+                'qr_url': f"{settings.FRONTEND_URL}/scan?code={secret}"
+            })
+        except Order.DoesNotExist:
+            generated.append({'order_id': str(order_id), 'status': 'order_not_found'})
+        except Exception as e:
+            generated.append({'order_id': str(order_id), 'status': 'error', 'message': str(e)})
+    
+    return Response({'generated': generated, 'total': len(generated)})
+
+
+@api_view(['GET'])
+@permission_classes([permissions.AllowAny])
+def check_qr_status(request, secret_hash):
+    try:
+        qr = TShirtQRCode.objects.get(secret_hash=secret_hash)
+        return Response({
+            'exists': True,
+            'is_activated': qr.is_activated,
+            'activated_by': getattr(qr.activated_by, 'username', None),
+            'created_at': qr.created_at
+        })
+    except TShirtQRCode.DoesNotExist:
+        return Response({'exists': False}, status=404)

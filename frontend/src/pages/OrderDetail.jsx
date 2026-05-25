@@ -1,299 +1,400 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { ArrowLeft, Package, MapPin, Truck, CreditCard, CheckCircle2, Clock, ShieldCheck } from 'lucide-react'
+import {
+  ArrowLeft,
+  Package,
+  MapPin,
+  Truck,
+  CreditCard,
+  CheckCircle2,
+  Clock,
+  ShieldCheck,
+  Loader2,
+} from 'lucide-react'
 import api from '../services/api'
 
 const STATUS_CONFIG = {
-  pending:    { label: 'Pending',    bg: 'var(--color-primary-light)', text: 'var(--color-primary-dark)', border: 'var(--color-primary)', icon: Clock },
-  confirmed:  { label: 'Confirmed',  bg: 'var(--color-info-bg)', text: 'var(--color-info)', border: 'var(--color-info)', icon: CheckCircle2 },
-  processing: { label: 'Processing', bg: 'var(--color-primary-light)', text: 'var(--color-primary)', border: 'var(--color-primary)', icon: Package },
-  shipped:    { label: 'Shipped',    bg: 'var(--color-info-bg)', text: 'var(--color-info)', border: 'var(--color-info)', icon: Truck },
-  delivered:  { label: 'Delivered',  bg: 'var(--color-success-bg)', text: 'var(--color-success)', border: 'var(--color-success)', icon: CheckCircle2 },
-  cancelled:  { label: 'Cancelled',  bg: 'var(--color-danger-bg)', text: 'var(--color-danger)', border: 'var(--color-danger)', icon: Clock },
-  refunded:   { label: 'Refunded',   bg: 'var(--color-bg-alt)', text: 'var(--color-text)', border: 'var(--color-border)', icon: CreditCard },
+  pending: {
+    label: 'Pending',
+    tone: 'text-gold border-gold/30 bg-gold/10',
+    icon: Clock,
+  },
+  confirmed: {
+    label: 'Confirmed',
+    tone: 'text-gold border-gold/30 bg-gold/10',
+    icon: CheckCircle2,
+  },
+  processing: {
+    label: 'Processing',
+    tone: 'text-gold border-gold/30 bg-gold/10',
+    icon: Package,
+  },
+  shipped: {
+    label: 'Shipped',
+    tone: 'text-gold border-gold/30 bg-gold/10',
+    icon: Truck,
+  },
+  delivered: {
+    label: 'Delivered',
+    tone: 'text-gold border-gold/40 bg-gold/10',
+    icon: CheckCircle2,
+  },
+  cancelled: {
+    label: 'Cancelled',
+    tone: 'text-red-400 border-red-400/30 bg-red-400/10',
+    icon: Clock,
+  },
+  refunded: {
+    label: 'Refunded',
+    tone: 'text-muted border-gold/20 bg-black',
+    icon: CreditCard,
+  },
 }
 
 const STATUS_STEPS = [
-  { key: 'pending',    label: 'Order Placed',    icon: Clock },
-  { key: 'confirmed',  label: 'Confirmed',       icon: CheckCircle2 },
-  { key: 'processing', label: 'Processing',      icon: Package },
-  { key: 'shipped',    label: 'Shipped',         icon: Truck },
-  { key: 'delivered',  label: 'Delivered',       icon: CheckCircle2 },
+  { key: 'pending', label: 'Order Placed', icon: Clock },
+  { key: 'confirmed', label: 'Confirmed', icon: CheckCircle2 },
+  { key: 'processing', label: 'Processing', icon: Package },
+  { key: 'shipped', label: 'Shipped', icon: Truck },
+  { key: 'delivered', label: 'Delivered', icon: CheckCircle2 },
 ]
 
-// Helper for image URL
 const getImageUrl = (imageData) => {
   if (!imageData) return null
+
   const imagePath = typeof imageData === 'object' ? imageData.image : imageData
   if (!imagePath) return null
   if (imagePath.startsWith('http')) return imagePath
+
   return `http://localhost:8000${imagePath.startsWith('/') ? '' : '/'}${imagePath}`
 }
 
 export default function OrderDetail() {
   const { id } = useParams()
   const navigate = useNavigate()
+
   const [order, setOrder] = useState(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    setLoading(true)
-    api.get(`/orders/${id}/`)
-      .then(r => setOrder(r.data))
-      .catch(() => navigate('/orders'))
-      .finally(() => setLoading(false))
-  }, [id])
+    let mounted = true
 
-  if (loading) return (
-    <div className="min-h-screen bg-[var(--color-bg)] flex items-center justify-center">
-      <div className="w-6 h-6 sm:w-8 sm:h-8 border-2 border-[var(--color-primary)] border-t-transparent rounded-full animate-spin" />
-    </div>
-  )
+    setLoading(true)
+
+    api
+      .get(`/orders/${id}/`)
+      .then((res) => {
+        if (mounted) setOrder(res.data)
+      })
+      .catch(() => navigate('/orders'))
+      .finally(() => {
+        if (mounted) setLoading(false)
+      })
+
+    return () => {
+      mounted = false
+    }
+  }, [id, navigate])
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-black pt-[76px] sm:pt-[88px] lg:pt-[96px] flex items-center justify-center">
+        <Loader2 size={28} className="text-gold animate-spin" />
+      </div>
+    )
+  }
 
   if (!order) return null
 
-  const stepIndex = STATUS_STEPS.findIndex(s => s.key === order.status)
+  const stepIndex = STATUS_STEPS.findIndex((step) => step.key === order.status)
   const currentStep = stepIndex >= 0 ? stepIndex : 0
-  const cfg = STATUS_CONFIG[order.status] || STATUS_CONFIG.pending
-  const StatusIcon = cfg.icon
+  const status = STATUS_CONFIG[order.status] || STATUS_CONFIG.pending
+  const StatusIcon = status.icon
 
   return (
-    <div className="min-h-screen bg-[var(--color-bg)] pb-8 sm:pb-12">
-
-      {/* Header Bar */}
-      <div className="sticky top-0 z-10 bg-[var(--color-surface)] border-b border-[var(--color-border)] shadow-sm">
-        <div className="page-container py-3 sm:py-4 flex items-center gap-2 sm:gap-3">
+    <div className="min-h-screen bg-black pt-[76px] sm:pt-[88px] lg:pt-[96px] pb-10 sm:pb-14 overflow-x-hidden">
+      {/* Top Bar */}
+      <section className="border-b border-gold/10 bg-[#050505]">
+        <div className="w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-5">
           <button
+            type="button"
             onClick={() => navigate('/orders')}
-            className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm font-semibold text-[var(--color-text)] hover:text-[var(--color-primary)] transition-colors bg-transparent border-none cursor-pointer"
+            className="inline-flex items-center gap-2 text-xs sm:text-sm font-mono tracking-wider uppercase text-muted hover:text-gold transition-colors bg-transparent border-none cursor-pointer"
           >
-            <ArrowLeft size={16} className="sm:w-[18px] sm:h-[18px]" />
+            <ArrowLeft size={16} />
             My Orders
           </button>
         </div>
-      </div>
+      </section>
 
-      <div className="page-container py-4 sm:py-6 lg:py-8 space-y-4 sm:space-y-5">
+      <main className="w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-10">
+        {/* Header */}
+        <section className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-6 sm:mb-8">
+          <div className="min-w-0">
+            <p className="label-gold mb-2">Order Details</p>
 
-        {/* Order Info Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-3">
-          <div>
-            <p className="text-[10px] sm:text-[11px] font-bold tracking-[0.2em] uppercase text-[var(--color-primary)] mb-1">
-              Order Details
-            </p>
-            <h1 className="text-lg sm:text-xl lg:text-2xl font-bold text-[var(--color-text)]">
-              Order <span className="font-mono text-[var(--color-muted)]">#{order.id?.slice(0, 8).toUpperCase()}</span>
+            <h1 className="font-display text-xl sm:text-2xl lg:text-4xl text-white tracking-[0.12em] leading-tight">
+              ORDER{' '}
+              <span className="text-gradient-gold">
+                #{order.id?.slice(0, 8).toUpperCase()}
+              </span>
             </h1>
-            <p className="text-[10px] sm:text-xs text-[var(--color-muted)] mt-0.5 sm:mt-1">
-              Placed on {new Date(order.created_at).toLocaleDateString('en-IN', {
-                day: 'numeric', month: 'long', year: 'numeric'
+
+            <p className="text-xs sm:text-sm text-muted font-mono tracking-wider mt-2">
+              Placed on{' '}
+              {new Date(order.created_at).toLocaleDateString('en-IN', {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric',
               })}
             </p>
           </div>
-          <span 
-            className="inline-flex items-center gap-1 sm:gap-1.5 text-[10px] sm:text-xs px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full font-bold border w-fit"
-            style={{
-              backgroundColor: cfg.bg,
-              color: cfg.text,
-              borderColor: cfg.border
-            }}
-          >
-            <StatusIcon size={10} className="sm:w-3 sm:h-3" />
-            {cfg.label}
-          </span>
-        </div>
 
-        {/* Progress Tracker */}
+          <span
+            className={`inline-flex items-center gap-2 w-fit text-[10px] sm:text-xs font-mono tracking-wider uppercase border px-3 py-2 ${status.tone}`}
+          >
+            <StatusIcon size={14} />
+            {status.label}
+          </span>
+        </section>
+
+        <div className="divider-gold mb-6 sm:mb-8" />
+
+        {/* Progress */}
         {order.status !== 'cancelled' && order.status !== 'refunded' && (
-          <div className="bg-[var(--color-surface)] rounded-xl sm:rounded-2xl border border-[var(--color-border)] shadow-sm p-4 sm:p-5 lg:p-6">
-            <h3 className="text-[10px] sm:text-xs font-bold tracking-wide uppercase text-[var(--color-text)] mb-4 sm:mb-5">
-              Order Progress
-            </h3>
-            <div className="flex items-start justify-between relative">
-              {/* Progress Line Background */}
-              <div className="absolute top-2.5 sm:top-3 left-0 right-0 h-0.5 mx-2 sm:mx-4 bg-[var(--color-border)]" />
-              {/* Progress Line Fill */}
+          <section className="bg-[#0A0A0A] border border-gold/15 p-4 sm:p-6 lg:p-7 mb-5 sm:mb-6">
+            <h2 className="font-display text-sm sm:text-base text-white tracking-[0.12em] mb-5">
+              ORDER PROGRESS
+            </h2>
+
+            <div className="relative">
+              <div className="absolute top-4 left-0 right-0 h-px bg-gold/15" />
+
               <div
-                className="absolute top-2.5 sm:top-3 left-0 h-0.5 mx-2 sm:mx-4 transition-all duration-500 ease-out bg-[var(--color-primary)]"
-                style={{ width: `${(currentStep / (STATUS_STEPS.length - 1)) * 100}%` }}
+                className="absolute top-4 left-0 h-px bg-gold transition-all duration-700"
+                style={{
+                  width: `${(currentStep / (STATUS_STEPS.length - 1)) * 100}%`,
+                }}
               />
 
-              {STATUS_STEPS.map((s, i) => {
-                const StepIcon = s.icon
-                const isDone = i <= currentStep
-                const isCurrent = i === currentStep
+              <div className="relative z-10 flex items-start justify-between">
+                {STATUS_STEPS.map((step, index) => {
+                  const StepIcon = step.icon
+                  const isDone = index <= currentStep
+                  const isCurrent = index === currentStep
 
-                return (
-                  <div key={s.key} className="relative flex flex-col items-center z-10 flex-1">
-                    <div
-                      className={`w-5 h-5 sm:w-6 sm:h-6 lg:w-7 lg:h-7 rounded-full flex items-center justify-center border-2 transition-all duration-300 ${isCurrent ? 'ring-2 ring-offset-1 sm:ring-offset-2 ring-[var(--color-primary)] ring-offset-[var(--color-surface)]' : ''}`}
-                      style={{
-                        backgroundColor: isDone ? 'var(--color-primary)' : 'var(--color-surface)',
-                        borderColor: isDone ? 'var(--color-primary)' : 'var(--color-border-light)',
-                        color: isDone ? 'var(--color-text-inverse)' : 'var(--color-muted-light)',
-                      }}
-                    >
-                      <StepIcon size={10} className="sm:w-3 sm:h-3" strokeWidth={2.5} />
+                  return (
+                    <div key={step.key} className="flex flex-col items-center flex-1">
+                      <div
+                        className={`w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center border transition-all duration-300 ${
+                          isDone
+                            ? 'bg-gold text-black border-gold'
+                            : 'bg-black text-muted border-gold/20'
+                        } ${isCurrent ? 'shadow-[0_0_28px_rgba(212,175,55,0.3)]' : ''}`}
+                      >
+                        <StepIcon size={15} />
+                      </div>
+
+                      <span
+                        className={`text-[9px] sm:text-[10px] font-mono tracking-wider uppercase text-center leading-tight mt-2 ${
+                          isDone ? 'text-gold' : 'text-muted'
+                        }`}
+                      >
+                        {step.label}
+                      </span>
                     </div>
-                    <span className={`text-[9px] sm:text-[10px] font-semibold mt-1.5 sm:mt-2 text-center leading-tight ${isDone ? 'text-[var(--color-text)]' : 'text-[var(--color-muted)]'}`}>
-                      {s.label}
-                    </span>
-                  </div>
-                )
-              })}
+                  )
+                })}
+              </div>
             </div>
-          </div>
+          </section>
         )}
 
-        {/* Items Ordered */}
-        <div className="bg-[var(--color-surface)] rounded-xl sm:rounded-2xl border border-[var(--color-border)] shadow-sm overflow-hidden">
-          <div className="px-4 sm:px-5 py-3 sm:py-4 border-b border-[var(--color-border)]">
-            <h3 className="text-[10px] sm:text-xs font-bold tracking-wide uppercase text-[var(--color-text)]">
-              Items Ordered ({order.items?.length || 0})
-            </h3>
+        {/* Items */}
+        <section className="bg-[#0A0A0A] border border-gold/15 overflow-hidden mb-5 sm:mb-6">
+          <div className="px-4 sm:px-5 py-4 border-b border-gold/10">
+            <h2 className="font-display text-sm sm:text-base text-white tracking-[0.12em]">
+              ITEMS ORDERED ({order.items?.length || 0})
+            </h2>
           </div>
+
           <div>
-            {order.items?.map((item, idx) => (
-              <div
-                key={item.id}
-                className={`flex items-center gap-3 sm:gap-4 px-4 sm:px-5 py-3 sm:py-4 ${idx < (order.items?.length || 0) - 1 ? 'border-b border-[var(--color-border)]' : ''}`}
-              >
-                {/* Product Image */}
-                <div className="w-12 h-14 sm:w-14 sm:h-16 lg:w-16 lg:h-20 rounded-lg flex items-center justify-center overflow-hidden flex-shrink-0 bg-[var(--color-bg-alt)] border border-[var(--color-border)]">
-                  {getImageUrl(item.product?.primary_image) ? (
-                    <img
-                      src={getImageUrl(item.product?.primary_image)}
-                      alt={item.product_name}
-                      className="w-full h-full object-cover"
-                      onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex' }}
-                    />
-                  ) : null}
-                  <div className={`w-full h-full items-center justify-center ${getImageUrl(item.product?.primary_image) ? 'hidden' : 'flex'}`}>
-                    <Package size={16} className="sm:w-5 sm:h-5 text-[var(--color-muted)]" />
+            {order.items?.map((item, index) => {
+              const imageUrl = getImageUrl(item.product?.primary_image)
+
+              return (
+                <div
+                  key={item.id}
+                  className={`flex items-center gap-3 sm:gap-4 px-4 sm:px-5 py-4 ${
+                    index < (order.items?.length || 0) - 1
+                      ? 'border-b border-gold/10'
+                      : ''
+                  }`}
+                >
+                  <div className="w-14 h-16 sm:w-16 sm:h-20 bg-black border border-gold/10 overflow-hidden flex items-center justify-center shrink-0">
+                    {imageUrl ? (
+                      <img
+                        src={imageUrl}
+                        alt={item.product_name}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          e.currentTarget.style.display = 'none'
+                        }}
+                      />
+                    ) : (
+                      <Package size={18} className="text-muted" />
+                    )}
                   </div>
-                </div>
 
-                {/* Product Info */}
-                <div className="flex-1 min-w-0">
-                  <p className="text-xs sm:text-sm font-semibold truncate text-[var(--color-text)]">
-                    {item.product_name}
-                  </p>
-                  {item.size && (
-                    <p className="text-[10px] sm:text-xs mt-0.5 text-[var(--color-muted)]">Size: {item.size}</p>
-                  )}
-                  <p className="text-[10px] sm:text-xs mt-0.5 sm:mt-1 text-[var(--color-muted)]">
-                    Qty {item.quantity} × ₹{Number(item.unit_price).toLocaleString('en-IN')}
-                  </p>
-                </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs sm:text-sm font-display text-white tracking-wider truncate">
+                      {item.product_name}
+                    </p>
 
-                {/* Line Total */}
-                <span className="text-xs sm:text-sm font-bold whitespace-nowrap text-[var(--color-text)]">
-                  ₹{Number(item.line_total).toLocaleString('en-IN')}
-                </span>
-              </div>
-            ))}
+                    {item.size && (
+                      <p className="text-[10px] sm:text-xs text-muted font-mono mt-1">
+                        Size: {item.size}
+                      </p>
+                    )}
+
+                    <p className="text-[10px] sm:text-xs text-muted font-mono mt-1">
+                      Qty {item.quantity} × ₹{Number(item.unit_price).toLocaleString('en-IN')}
+                    </p>
+                  </div>
+
+                  <span className="price-tag text-xs sm:text-sm whitespace-nowrap">
+                    ₹{Number(item.line_total).toLocaleString('en-IN')}
+                  </span>
+                </div>
+              )
+            })}
           </div>
-        </div>
+        </section>
 
-        {/* Address + Summary Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
-
-          {/* Delivery Address */}
-          <div className="bg-[var(--color-surface)] rounded-xl sm:rounded-2xl border border-[var(--color-border)] shadow-sm p-4 sm:p-5">
-            <div className="flex items-center gap-2 sm:gap-2.5 mb-3 sm:mb-4">
-              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[var(--color-primary-light)] flex items-center justify-center">
-                <MapPin size={14} className="sm:w-4 sm:h-4 text-[var(--color-primary)]" />
+        {/* Address + Summary */}
+        <section className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5 mb-5 sm:mb-6">
+          <div className="bg-[#0A0A0A] border border-gold/15 p-4 sm:p-5">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-9 h-9 border border-gold/20 bg-gold/10 flex items-center justify-center shrink-0">
+                <MapPin size={16} className="text-gold" />
               </div>
-              <h3 className="text-[10px] sm:text-xs font-bold tracking-wide uppercase text-[var(--color-text)]">
-                Delivery Address
+
+              <h3 className="font-display text-sm text-white tracking-[0.12em]">
+                DELIVERY ADDRESS
               </h3>
             </div>
-            <div className="space-y-0.5 sm:space-y-1">
-              <p className="text-xs sm:text-sm font-bold text-[var(--color-text)]">{order.address?.full_name}</p>
-              <p className="text-[10px] sm:text-xs leading-relaxed text-[var(--color-muted)]">
-                {order.address?.line1}
-                {order.address?.line2 && `, ${order.address?.line2}`}
+
+            <div className="space-y-1">
+              <p className="text-sm font-mono text-white tracking-wider">
+                {order.address?.full_name}
               </p>
-              <p className="text-[10px] sm:text-xs text-[var(--color-muted)]">
+
+              <p className="text-xs sm:text-sm text-muted font-mono leading-relaxed break-words">
+                {order.address?.line1}
+                {order.address?.line2 && `, ${order.address.line2}`}
+              </p>
+
+              <p className="text-xs sm:text-sm text-muted font-mono leading-relaxed break-words">
                 {order.address?.city}, {order.address?.state} — {order.address?.pincode}
               </p>
-              <p className="text-[10px] sm:text-xs text-[var(--color-muted)] mt-1.5 sm:mt-2">
-                📞 {order.address?.phone}
+
+              <p className="text-xs text-muted font-mono mt-2">
+                {order.address?.phone}
               </p>
             </div>
           </div>
 
-          {/* Price Summary */}
-          <div className="bg-[var(--color-surface)] rounded-xl sm:rounded-2xl border border-[var(--color-border)] shadow-sm p-4 sm:p-5">
-            <div className="flex items-center gap-2 sm:gap-2.5 mb-3 sm:mb-4">
-              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[var(--color-primary-light)] flex items-center justify-center">
-                <CreditCard size={14} className="sm:w-4 sm:h-4 text-[var(--color-primary)]" />
+          <div className="bg-[#0A0A0A] border border-gold/15 p-4 sm:p-5">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-9 h-9 border border-gold/20 bg-gold/10 flex items-center justify-center shrink-0">
+                <CreditCard size={16} className="text-gold" />
               </div>
-              <h3 className="text-[10px] sm:text-xs font-bold tracking-wide uppercase text-[var(--color-text)]">
-                Price Summary
+
+              <h3 className="font-display text-sm text-white tracking-[0.12em]">
+                PRICE SUMMARY
               </h3>
             </div>
-            <div className="space-y-2 sm:space-y-2.5">
-              <div className="flex justify-between text-[10px] sm:text-xs">
-                <span className="text-[var(--color-muted)]">Subtotal</span>
-                <span className="font-medium text-[var(--color-text)]">₹{Number(order.subtotal).toLocaleString('en-IN')}</span>
-              </div>
-              {parseFloat(order.discount) > 0 && (
-                <div className="flex justify-between text-[10px] sm:text-xs">
-                  <span className="text-[var(--color-success)]">Discount</span>
-                  <span className="font-medium text-[var(--color-success)]">−₹{Number(order.discount).toLocaleString('en-IN')}</span>
-                </div>
-              )}
-              <div className="flex justify-between text-[10px] sm:text-xs">
-                <span className="text-[var(--color-muted)]">Delivery</span>
-                <span className={`font-medium ${parseFloat(order.delivery_fee) === 0 ? 'text-[var(--color-success)]' : 'text-[var(--color-text)]'}`}>
-                  {parseFloat(order.delivery_fee) === 0 ? 'FREE' : `₹${Number(order.delivery_fee).toLocaleString('en-IN')}`}
+
+            <div className="space-y-3">
+              <div className="flex justify-between text-xs sm:text-sm">
+                <span className="text-muted font-mono">Subtotal</span>
+                <span className="text-white font-mono">
+                  ₹{Number(order.subtotal).toLocaleString('en-IN')}
                 </span>
               </div>
-              <div className="border-t border-[var(--color-border)] my-1.5 sm:my-2" />
-              <div className="flex justify-between">
-                <span className="text-xs sm:text-sm font-bold text-[var(--color-text)]">Total</span>
-                <span className="text-xs sm:text-sm font-bold text-[var(--color-text)]">₹{Number(order.total).toLocaleString('en-IN')}</span>
+
+              {parseFloat(order.discount) > 0 && (
+                <div className="flex justify-between text-xs sm:text-sm">
+                  <span className="text-gold font-mono">Discount</span>
+                  <span className="text-gold font-mono">
+                    −₹{Number(order.discount).toLocaleString('en-IN')}
+                  </span>
+                </div>
+              )}
+
+              <div className="flex justify-between text-xs sm:text-sm">
+                <span className="text-muted font-mono">Delivery</span>
+                <span className="text-white font-mono">
+                  {parseFloat(order.delivery_fee) === 0
+                    ? 'FREE'
+                    : `₹${Number(order.delivery_fee).toLocaleString('en-IN')}`}
+                </span>
               </div>
-              <p className="text-[9px] sm:text-[10px] text-right text-[var(--color-muted)]">
+
+              <div className="divider-gold my-3" />
+
+              <div className="flex justify-between items-end">
+                <span className="text-sm font-mono text-white uppercase tracking-wider">
+                  Total
+                </span>
+                <span className="font-display text-2xl text-gradient-gold">
+                  ₹{Number(order.total).toLocaleString('en-IN')}
+                </span>
+              </div>
+
+              <p className="text-[10px] text-right text-muted font-mono">
                 Inclusive of all taxes
               </p>
             </div>
           </div>
+        </section>
 
-        </div>
-
-        {/* Payment Method */}
+        {/* Payment */}
         {order.payment_method && (
-          <div className="bg-[var(--color-surface)] rounded-xl sm:rounded-2xl border border-[var(--color-border)] shadow-sm p-4 sm:p-5">
-            <div className="flex items-center gap-2 sm:gap-2.5 mb-2.5 sm:mb-3">
-              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[var(--color-primary-light)] flex items-center justify-center">
-                <ShieldCheck size={14} className="sm:w-4 sm:h-4 text-[var(--color-primary)]" />
+          <section className="bg-[#0A0A0A] border border-gold/15 p-4 sm:p-5">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-9 h-9 border border-gold/20 bg-gold/10 flex items-center justify-center shrink-0">
+                <ShieldCheck size={16} className="text-gold" />
               </div>
-              <h3 className="text-[10px] sm:text-xs font-bold tracking-wide uppercase text-[var(--color-text)]">
-                Payment Method
+
+              <h3 className="font-display text-sm text-white tracking-[0.12em]">
+                PAYMENT METHOD
               </h3>
             </div>
-            <div className="flex items-center gap-2.5 sm:gap-3">
-              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center bg-[var(--color-bg-alt)] border border-[var(--color-border)]">
-                <CreditCard size={16} className="sm:w-[18px] sm:h-[18px] text-[var(--color-text)]" />
+
+            <div className="flex items-center gap-3 bg-black border border-gold/10 p-3">
+              <div className="w-10 h-10 border border-gold/10 flex items-center justify-center shrink-0">
+                <CreditCard size={18} className="text-gold" />
               </div>
+
               <div className="min-w-0">
-                <p className="text-xs sm:text-sm font-semibold text-[var(--color-text)] capitalize truncate">
+                <p className="text-xs sm:text-sm font-mono text-white capitalize truncate">
                   {order.payment_method.replace('_', ' ')}
                 </p>
-                <p className="text-[10px] sm:text-xs text-[var(--color-muted)]">
-                  {order.payment_status === 'paid' ? 'Payment completed' : 'Payment pending'}
+                <p className="text-[10px] sm:text-xs text-muted font-mono mt-0.5">
+                  {order.payment_status === 'paid'
+                    ? 'Payment completed'
+                    : 'Payment pending'}
                 </p>
               </div>
-              <span className="ml-auto text-[9px] sm:text-[10px] font-bold px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full bg-[var(--color-success-bg)] text-[var(--color-success)]">
+
+              <span className="ml-auto text-[9px] sm:text-[10px] font-mono tracking-wider uppercase px-2.5 py-1 border border-gold/20 text-gold bg-gold/10">
                 {order.payment_status === 'paid' ? 'PAID' : 'PENDING'}
               </span>
             </div>
-          </div>
+          </section>
         )}
-
-      </div>
+      </main>
     </div>
   )
 }

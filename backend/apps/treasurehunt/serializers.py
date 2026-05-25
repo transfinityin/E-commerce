@@ -548,16 +548,15 @@ class PurchaseLogSerializer(serializers.ModelSerializer):
 class QRActivateSerializer(serializers.Serializer):
     code = serializers.CharField(max_length=64, required=True)
 
-
 class HuntLocationSerializer(serializers.ModelSerializer):
     class Meta:
         model = HuntLocation
         fields = [
-            'id', 'level', 'name', 'clue_text_tamil',
-            'clue_text_english', 'geo_lat', 'geo_long',
-            'geo_radius_meters', 'is_active'
+            'id', 'level', 'name', 'clue_text_tamil', 'clue_text_english',
+            'hint_image_url', 'geo_lat', 'geo_long', 'geo_radius_meters',
+            'location_qr_secret', 'is_active', 'created_at'
         ]
-
+        read_only_fields = ['id', 'created_at']
 
 class UserHuntProgressSerializer(serializers.ModelSerializer):
     class Meta:

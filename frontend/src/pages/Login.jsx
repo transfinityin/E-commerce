@@ -3,7 +3,7 @@ import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Link, useNavigate } from 'react-router-dom'
 import { toast } from 'react-hot-toast'
-import { Mail, Lock, ArrowRight, Eye, EyeOff, Star } from 'lucide-react'
+import { Mail, Lock, ArrowRight, Eye, EyeOff } from 'lucide-react'
 import { useState } from 'react'
 import useAuthStore from '../store/authStore'
 import SocialAuth from './SocialAuth'
@@ -32,160 +32,179 @@ export default function Login() {
   }
 
   return (
-    <div className="grid min-h-[calc(100vh-80px)] sm:min-h-[calc(100vh-100px)] lg:min-h-[calc(100vh-136px)] lg:grid-cols-2">
-
-      {/* LEFT PANEL - Desktop only */}
-      <div className="hidden lg:flex relative flex-col justify-center items-start overflow-hidden bg-[var(--color-secondary)] text-white px-10 xl:px-14 py-12 xl:py-16">
-        {/* Decorative circles */}
-        <div className="absolute w-[400px] h-[400px] xl:w-[480px] xl:h-[480px] -top-[180px] -right-[160px] rounded-full border border-[var(--color-primary)]/10 pointer-events-none" />
-        <div className="absolute w-[480px] h-[480px] xl:w-[560px] xl:h-[560px] -bottom-[220px] -left-[180px] rounded-full border border-[var(--color-primary)]/10 pointer-events-none" />
-
-        <div className="relative z-10 w-full max-w-md">
-
-          <Link to="/" className="font-[Playfair_Display] text-2xl xl:text-3xl font-bold text-white no-underline block mb-8 xl:mb-12">
-            Trans<span className="text-[var(--color-primary)]">Finity</span>
-          </Link>
-
-          <h2 className="font-[Playfair_Display] text-3xl xl:text-4xl 2xl:text-5xl font-bold text-white leading-tight mb-4 xl:mb-5">
-            Welcome<br />
-            <span className="text-[var(--color-primary)] italic">back.</span>
-          </h2>
-
-          <p className="text-sm text-white/45 leading-relaxed max-w-xs">
-            Sign in to access your curated collection, track orders, and enjoy exclusive member benefits.
-          </p>
-
-          {/* Testimonial Card */}
-          <div className="bg-white/5 border border-white/[0.08] rounded-2xl mt-10 xl:mt-14 p-5 xl:p-6">
-            <p className="text-white/60 text-sm leading-relaxed mb-4">
-              "Absolutely love the curation. Every product feels premium and the delivery was lightning fast."
-            </p>
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-full bg-[var(--color-primary)] flex items-center justify-center font-[Playfair_Display] text-[15px] font-bold text-white shrink-0">
-                P
-              </div>
-              <div>
-                <p className="text-xs font-semibold text-white">Priya S.</p>
-                <p className="text-xs text-white/35">Verified Customer</p>
-              </div>
-              <div className="ml-auto flex gap-0.5">
-                {[1,2,3,4,5].map(i => (
-                  <Star key={i} size={12} className="text-[var(--color-primary)] fill-[var(--color-primary)]" />
-                ))}
-              </div>
-            </div>
-          </div>
-
-        </div>
+    <div className="min-h-screen bg-[var(--color-bg)] relative overflow-hidden">
+      
+      {/* Starfield Background Image */}
+      <div 
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-60 pointer-events-none"
+        style={{ 
+          backgroundImage: 'url(https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?w=1920&q=80)',
+        }}
+      ></div>
+      
+      {/* Dark Overlay */}
+      <div className="absolute inset-0 bg-[var(--color-bg)]/70 pointer-events-none"></div>
+      
+      {/* Gold Dust Particles (CSS only) */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        {[...Array(20)].map((_, i) => (
+          <div 
+            key={i}
+            className="absolute w-1 h-1 bg-[var(--color-gold)] rounded-full animate-twinkle opacity-30"
+            style={{
+              top: `${Math.random() * 100}%`,
+              left: `${Math.random() * 100}%`,
+              animationDelay: `${Math.random() * 3}s`,
+              animationDuration: `${2 + Math.random() * 3}s`,
+            }}
+          ></div>
+        ))}
       </div>
 
-      {/* RIGHT PANEL */}
-      <div className="flex flex-col justify-center items-center bg-[var(--color-bg)] px-4 sm:px-6 py-8 sm:py-10 lg:px-8 xl:px-10 min-h-full">
-        {/* Mobile Logo */}
-        <Link to="/" className="lg:hidden font-[Playfair_Display] text-xl sm:text-2xl font-bold text-[var(--color-text)] no-underline block mb-6 sm:mb-8">
-          Trans<span className="text-[var(--color-primary)]">Finity</span>
-        </Link>
+      {/* Main Content */}
+     <div className="relative z-10 min-h-screen flex flex-col items-center justify-center px-4 sm:px-6 py-8 sm:py-12 lg:py-16">
 
-        <div className="w-full max-w-sm sm:max-w-md animate-fadeUp">
+        {/* Header Title */}
+        <div className="text-center mb-7 sm:mb-10 animate-fadeUp">
+  <p className="label-gold mb-3">Account Access</p>
 
-          <p className="text-[10px] sm:text-[11px] font-bold tracking-[0.2em] uppercase text-[var(--color-primary)] mb-1.5 sm:mb-2">
-            Member Access
-          </p>
-          <h1 className="font-[Playfair_Display] text-2xl sm:text-3xl md:text-4xl font-bold text-[var(--color-text)] mb-1.5 sm:mb-2">
-            Sign In
-          </h1>
+  <h1 className="font-display text-[2rem] sm:text-4xl md:text-5xl text-white tracking-[0.12em] sm:tracking-[0.15em] leading-tight mb-3">
+    WELCOME BACK,<br />
+    <span className="text-gradient-gold">WANDERER</span>
+  </h1>
 
-          <p className="text-xs sm:text-sm text-[var(--color-muted)] mb-6 sm:mb-8 lg:mb-9">
-            Don't have an account?{' '}
-            <Link to="/register" className="text-[var(--color-primary)] no-underline font-medium hover:text-[var(--color-primary-dark)] transition-colors">
-              Create one
-            </Link>
-          </p>
+  <p className="text-sm sm:text-base text-muted tracking-wide font-mono">
+    Your arc continues.
+  </p>
+</div>
 
-          <SocialAuth className="pb-6 sm:pb-8 lg:pb-10" mode="login" />
+        {/* Login Card */}
+        <div className="w-full max-w-sm sm:max-w-md animate-fadeUp" style={{ animationDelay: '0.2s' }}>
+          
+          {/* Form Container */}
+         <div className="bg-[#0A0A0A]/90 backdrop-blur-md border border-gold/20 p-5 sm:p-8 md:p-10 relative shadow-[0_20px_80px_rgba(0,0,0,0.55)] overflow-hidden">
+            
+            {/* Corner Accent */}
+            <div className="absolute top-0 left-0 w-12 h-px bg-[var(--color-gold)]"></div>
+            <div className="absolute top-0 left-0 w-px h-12 bg-[var(--color-gold)]"></div>
 
-          <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-3.5 sm:gap-4 lg:gap-5">
+            <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5 sm:gap-6">
 
-            {/* Email */}
-            <div className="flex flex-col gap-1.5 sm:gap-2">
-              <label className="text-xs sm:text-[13px] font-semibold text-[var(--color-text)] tracking-wide">
-                Email address
-              </label>
-              <div className="relative">
-                <span className="absolute left-3 sm:left-3.5 top-1/2 -translate-y-1/2 text-[var(--color-muted)] pointer-events-none">
-                  <Mail size={14} className="sm:w-4 sm:h-4" />
-                </span>
+              {/* Email */}
+              <div className="flex flex-col gap-2">
+                <label className="label-gold text-[10px] sm:text-xs">
+                  EMAIL
+                </label>
                 <input
                   {...register('email')}
                   type="email"
-                  placeholder="you@example.com"
-                  className={`w-full bg-[var(--color-surface)] border-[1.5px] border-[var(--color-border)] rounded-xl text-sm text-[var(--color-text)] transition-all duration-300 focus:border-[var(--color-text)] focus:shadow-[0_0_0_3px_rgba(13,13,13,0.06)] outline-none pl-10 sm:pl-11 pr-4 h-11 sm:h-12 placeholder:text-[var(--color-muted-light)] ${errors.email ? '!border-[var(--color-danger)]' : ''}`}
+                  placeholder="signal@transfinity.shop"
+                 className={`input-gold w-full text-sm sm:text-[15px] text-white placeholder:text-muted/50 bg-transparent ${errors.email ? '!border-[var(--color-danger)]' : ''}`}
+                  style={{ background: 'transparent' }}
                 />
+                {errors.email && <span className="text-[var(--color-danger)] text-xs mt-1">{errors.email.message}</span>}
               </div>
-              {errors.email && <span className="text-[var(--color-danger)] text-xs">{errors.email.message}</span>}
+
+              {/* Password */}
+              <div className="flex flex-col gap-2">
+                <div className="flex justify-between items-center">
+                  <label className="label-gold text-[10px] sm:text-xs">
+                    PASSPHRASE
+                  </label>
+                  <Link 
+                    to="/forgot-password" 
+                    className="text-[10px] sm:text-xs text-[var(--color-muted)] hover:text-[var(--color-gold)] transition-colors duration-300 tracking-wide"
+                  >
+                    Forgot?
+                  </Link>
+                </div>
+                <div className="relative">
+                  <input
+                    {...register('password')}
+                    type={showPass ? 'text' : 'password'}
+                    placeholder="••••••••"
+                    className={`input-gold w-full text-sm sm:text-[15px] text-white placeholder:text-muted/50 bg-transparent ${errors.password ? '!border-[var(--color-danger)]' : ''}`}
+                    style={{ background: 'transparent' }}
+                  />
+                  <button
+                    type="button"
+                    className="absolute right-0 top-1/2 -translate-y-1/2 w-9 h-9 flex items-center justify-center bg-transparent border-none cursor-pointer text-muted hover:text-gold active:scale-95 transition-all duration-300"
+                    onClick={() => setShowPass(!showPass)}
+                    aria-label={showPass ? 'Hide password' : 'Show password'}
+                  >
+                    {showPass ? <EyeOff size={16} /> : <Eye size={16} />}
+                  </button>
+                </div>
+                {errors.password && <span className="text-[var(--color-danger)] text-xs mt-1">{errors.password.message}</span>}
+              </div>
+
+              {/* Submit Button */}
+              <button
+  type="submit"
+  disabled={isSubmitting}
+  className="btn-primary w-full mt-2 min-h-[48px]"
+>
+                {isSubmitting ? (
+                  <>
+                    <span className="w-4 h-4 border-2 border-black/30 border-t-black rounded-full animate-spin" />
+                    <span className="text-xs tracking-[0.2em]">ENTERING...</span>
+                  </>
+                ) : (
+                  <>
+                    <span className="text-xs tracking-[0.2em]">ENTER THE WORLD</span>
+                    <ArrowRight size={16} />
+                  </>
+                )}
+              </button>
+
+            </form>
+
+            {/* Divider */}
+            <div className="flex items-center gap-3 my-6 sm:my-8">
+              <div className="h-px flex-1 bg-[var(--color-border)]"></div>
+              <span className="text-[10px] text-[var(--color-muted)] tracking-[0.3em] uppercase">— OR —</span>
+              <div className="h-px flex-1 bg-[var(--color-border)]"></div>
             </div>
 
-            {/* Password */}
-            <div className="flex flex-col gap-1.5 sm:gap-2">
-              <div className="flex justify-between items-center">
-                <label className="text-xs sm:text-[13px] font-semibold text-[var(--color-text)] tracking-wide">
-                  Password
-                </label>
-                <Link to="/forgot-password" className="text-[11px] sm:text-xs text-[var(--color-muted)] no-underline hover:text-[var(--color-text)] transition-colors">
-                  Forgot password?
-                </Link>
-              </div>
-              <div className="relative">
-                <span className="absolute left-3 sm:left-3.5 top-1/2 -translate-y-1/2 text-[var(--color-muted)] pointer-events-none">
-                  <Lock size={14} className="sm:w-4 sm:h-4" />
-                </span>
-                <input
-                  {...register('password')}
-                  type={showPass ? 'text' : 'password'}
-                  placeholder="••••••••"
-                  className={`w-full bg-[var(--color-surface)] border-[1.5px] border-[var(--color-border)] rounded-xl text-sm text-[var(--color-text)] transition-all duration-300 focus:border-[var(--color-text)] focus:shadow-[0_0_0_3px_rgba(13,13,13,0.06)] outline-none pl-10 sm:pl-11 pr-10 sm:pr-11 h-11 sm:h-12 placeholder:text-[var(--color-muted-light)] ${errors.password ? '!border-[var(--color-danger)]' : ''}`}
-                />
-                <button
-                  type="button"
-                  className="absolute right-3 sm:right-3.5 top-1/2 -translate-y-1/2 bg-transparent border-none cursor-pointer text-[var(--color-muted)] flex items-center transition-colors duration-300 hover:text-[var(--color-text)]"
-                  onClick={() => setShowPass(!showPass)}
-                  aria-label={showPass ? 'Hide password' : 'Show password'}
-                >
-                  {showPass ? <EyeOff size={14} className="sm:w-4 sm:h-4" /> : <Eye size={14} className="sm:w-4 sm:h-4" />}
-                </button>
-              </div>
-              {errors.password && <span className="text-[var(--color-danger)] text-xs">{errors.password.message}</span>}
-            </div>
+            {/* Social Auth - Outline Style */}
+            <SocialAuth 
+              className="w-full" 
+              mode="login" 
+              buttonClass="btn-outline w-full"
+            />
 
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="w-full bg-[var(--color-btn)] hover:bg-[var(--color-btn-hover)] text-[var(--color-btn-text)] border-none rounded-xl text-sm sm:text-[15px] font-semibold cursor-pointer flex items-center justify-center gap-2 sm:gap-2.5 transition-all duration-300 hover:-translate-y-px hover:shadow-lg active:translate-y-0 disabled:bg-[var(--color-muted)] disabled:cursor-not-allowed h-12 sm:h-[50px] mt-1 sm:mt-2"
-            >
-              {isSubmitting ? (
-                <>
-                  <span className="w-4 h-4 sm:w-[18px] sm:h-[18px] border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  Signing in...
-                </>
-              ) : (
-                <>Sign In <ArrowRight size={16} className="sm:w-[18px] sm:h-[18px]" /></>
-              )}
-            </button>
+          </div>
 
-          </form>
+          {/* Bottom Links */}
+          <div className="mt-6 sm:mt-8 text-center">
+  <p className="text-xs sm:text-sm text-muted font-mono tracking-wider leading-relaxed">
+    <Link
+      to="/register"
+      className="text-gold hover:text-gold-light transition-colors duration-300"
+    >
+      Create account
+    </Link>
+    <span className="mx-2 text-gold/25">·</span>
+    <Link
+      to="/forgot-password"
+      className="text-gold hover:text-gold-light transition-colors duration-300"
+    >
+      Forgot passphrase
+    </Link>
+  </p>
+</div>
 
         </div>
+
+        {/* Footer */}
+        <div className="mt-8 sm:mt-12 text-center">
+          <p className="text-[10px] text-[var(--color-muted)] tracking-[0.2em] uppercase">
+            Protected by Transfinity Systems // Year 2104
+          </p>
+        </div>
+
       </div>
 
-      <style>{`
-        @keyframes fadeUp {
-          from { opacity: 0; transform: translateY(16px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        .animate-fadeUp {
-          animation: fadeUp 0.45s ease both;
-        }
-      `}</style>
     </div>
   )
 }

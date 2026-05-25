@@ -36,7 +36,9 @@ urlpatterns = [
     # path('api/auth/social/google/', GoogleLogin.as_view(), name='google_login'),
     path('accounts/', include('allauth.urls')),  # OAuth redirects
     # ✅ THIS MUST EXIST - connects /api/ to treasurehunt URLs
-    path('api/', include('apps.treasurehunt.urls')),
+    # path('api/', include('apps.treasurehunt.urls')),
+    path('api/hunt/', include('apps.treasurehunt.urls')),
+
     path('api/core/', include('apps.core.urls')),
  
 ]

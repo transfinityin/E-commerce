@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { toast } from 'react-hot-toast'
-import { Plus, Pencil, Trash2, MapPin, Home, LocateFixed, Loader2, X, Check } from 'lucide-react'
+import { Plus, Pencil, Trash2, MapPin, Home, LocateFixed, Loader2, X, Check, Infinity } from 'lucide-react'
 import api from '../services/api'
 
 // ─── Leaflet loader (CDN, no npm install needed) ──────────────────────────────
@@ -31,44 +31,47 @@ function loadLeaflet() {
 
 // ─── Reverse geocode (Nominatim) ──────────────────────────────────────────────
 async function reverseGeocode(lat, lng) {
-  const res  = await fetch(
-    `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&addressdetails=1`,
+  const res = await fetch(
+    `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&addressdetails=1&namedetails=1&extratags=1&zoom=18`,
     { headers: { 'Accept-Language': 'en' } }
   )
   const data = await res.json()
-  const a    = data.address || {}
+  const a = data.address || {}
 
-  // India: city_district / state_district better than county (county often has "Tirupur, Tamil Nadu" combined)
-  const rawCity = a.city || a.city_district || a.town || a.village || a.state_district || a.municipality || ''
-  // Split "Tirupur, Tamil Nadu" → take only "Tirupur"
-  const city = rawCity.includes(',') ? rawCity.split(',')[0].trim() : rawCity
+  const houseNo = a.house_number || ''
+  const road    = a.road || a.pedestrian || a.footway || a.path || a.street || ''
+  const line1   = [houseNo, road].filter(Boolean).join(', ')
+  const line2   = a.suburb || a.neighbourhood || a.quarter || a.residential || a.hamlet || a.locality || ''
+  const rawCity = a.city || a.town || a.city_district || a.district || a.county || a.state_district || a.municipality || a.village || ''
+  const city    = rawCity.includes(',') ? rawCity.split(',')[0].trim() : rawCity
+  const state   = a.state || ''
 
-  // State: Nominatim returns "Tamil Nadu" correctly in a.state for India
-  const state = a.state || ''
-
-  return {
-    line1:     [a.house_number, a.road].filter(Boolean).join(', '),
-    line2:     a.suburb || a.neighbourhood || a.quarter || '',
-    city,
-    state,
-    pincode:   a.postcode || '',
-    latitude:  lat,
-    longitude: lng,
+  let pincode = a.postcode || ''
+  if (!pincode) {
+    try {
+      const res2 = await fetch(
+        `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&addressdetails=1&zoom=10`,
+        { headers: { 'Accept-Language': 'en' } }
+      )
+      const data2 = await res2.json()
+      pincode = data2.address?.postcode || ''
+    } catch { /* ignore */ }
   }
+
+  return { line1, line2, city, state, pincode, latitude: lat, longitude: lng }
 }
 
 // ─── Map Picker Modal ─────────────────────────────────────────────────────────
 function MapPickerModal({ initialLat, initialLng, onConfirm, onClose }) {
-  const mapRef       = useRef(null)   // div element
-  const leafletMap   = useRef(null)   // L.Map instance
-  const markerRef    = useRef(null)   // L.Marker instance
+  const mapRef       = useRef(null)
+  const leafletMap   = useRef(null)
+  const markerRef    = useRef(null)
   const pickedLatLng = useRef({ lat: initialLat || 20.5937, lng: initialLng || 78.9629 })
 
   const [geocoding, setGeocoding]   = useState(false)
   const [locating,  setLocating]    = useState(false)
   const [previewAddr, setPreviewAddr] = useState(null)
 
-  // Reverse geocode + show preview
   const updatePreview = async (lat, lng) => {
     setGeocoding(true)
     setPreviewAddr(null)
@@ -82,7 +85,6 @@ function MapPickerModal({ initialLat, initialLng, onConfirm, onClose }) {
     }
   }
 
-  // Init map after mount
   useEffect(() => {
     let destroyed = false
     loadLeaflet().then(L => {
@@ -96,13 +98,12 @@ function MapPickerModal({ initialLat, initialLng, onConfirm, onClose }) {
         maxZoom: 19,
       }).addTo(map)
 
-      // Custom red pin icon
       const icon = L.divIcon({
         className: '',
         html: `<div style="width:32px;height:40px;position:relative;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.35))">
           <svg viewBox="0 0 32 40" xmlns="http://www.w3.org/2000/svg">
-            <path d="M16 0C9.37 0 4 5.37 4 12c0 9 12 28 12 28s12-19 12-28C28 5.37 22.63 0 16 0z" fill="#e53e3e"/>
-            <circle cx="16" cy="12" r="5" fill="white"/>
+            <path d="M16 0C9.37 0 4 5.37 4 12c0 9 12 28 12 28s12-19 12-28C28 5.37 22.63 0 16 0z" fill="#D4AF37"/>
+            <circle cx="16" cy="12" r="5" fill="black"/>
           </svg>
         </div>`,
         iconSize:   [32, 40],
@@ -112,14 +113,12 @@ function MapPickerModal({ initialLat, initialLng, onConfirm, onClose }) {
       const marker = L.marker([lat, lng], { draggable: true, icon }).addTo(map)
       markerRef.current = marker
 
-      // Drag end → update preview
       marker.on('dragend', () => {
         const p = marker.getLatLng()
         pickedLatLng.current = { lat: p.lat, lng: p.lng }
         updatePreview(p.lat, p.lng)
       })
 
-      // Click on map → move marker + update preview
       map.on('click', e => {
         const { lat: clat, lng: clng } = e.latlng
         marker.setLatLng([clat, clng])
@@ -140,7 +139,6 @@ function MapPickerModal({ initialLat, initialLng, onConfirm, onClose }) {
     }
   }, [])
 
-  // Use current GPS location
   const handleUseMyLocation = () => {
     if (!navigator.geolocation) { toast.error('Geolocation not supported'); return }
     setLocating(true)
@@ -162,7 +160,6 @@ function MapPickerModal({ initialLat, initialLng, onConfirm, onClose }) {
     )
   }
 
-  // Confirm → send address up
   const handleConfirm = () => {
     if (previewAddr) onConfirm(previewAddr)
     else {
@@ -172,94 +169,73 @@ function MapPickerModal({ initialLat, initialLng, onConfirm, onClose }) {
   }
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4"
-      style={{ background: 'rgba(0,0,0,0.65)', backdropFilter: 'blur(4px)' }}
-    >
-      <div
-        className="relative bg-[var(--color-surface)] rounded-2xl shadow-2xl w-full overflow-hidden flex flex-col"
-        style={{ maxWidth: 640, maxHeight: '92vh' }}
-      >
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/80 backdrop-blur-sm">
+      <div className="relative bg-[#0A0A0A] border border-gold/20 shadow-[0_8px_40px_rgba(0,0,0,0.8)] w-full overflow-hidden flex flex-col"
+        style={{ maxWidth: 640, maxHeight: '92vh' }}>
+
+        {/* Gold accent top */}
+        <div className="h-[2px] bg-gradient-to-r from-transparent via-gold/60 to-transparent" />
+
         {/* Modal Header */}
-        <div className="flex items-center justify-between px-4 sm:px-5 py-3 sm:py-4 border-b border-[var(--color-border)] shrink-0">
+        <div className="flex items-center justify-between px-4 sm:px-5 py-3 sm:py-4 border-b border-gold/10 shrink-0">
           <div className="flex items-center gap-2">
-            <MapPin size={18} className="text-[var(--color-primary)]" />
-            <h3 className="text-sm sm:text-base font-bold text-[var(--color-text)]">Pick Delivery Location</h3>
+            <MapPin size={18} className="text-gold" />
+            <h3 className="text-sm sm:text-base font-display tracking-wider text-white">PICK LOCATION</h3>
           </div>
-          <button
-            onClick={onClose}
-            className="w-8 h-8 rounded-lg bg-[var(--color-bg-alt)] hover:bg-[var(--color-border)] text-[var(--color-muted)] flex items-center justify-center transition-all"
-          >
+          <button onClick={onClose}
+            className="w-8 h-8 border border-gold/20 flex items-center justify-center text-muted hover:text-gold hover:border-gold/50 transition-all duration-300">
             <X size={15} />
           </button>
         </div>
 
         {/* Map container */}
-        <div className="relative" style={{ height: 340, minHeight: 260 }}>
+        <div className="relative h-[300px] sm:h-[340px] md:h-[380px] min-h-[260px]">
           <div ref={mapRef} style={{ width: '100%', height: '100%' }} />
 
-          {/* Use My Location button — floats over map */}
-          <button
-            type="button"
-            onClick={handleUseMyLocation}
-            disabled={locating}
-            className="absolute bottom-3 right-3 z-[999] flex items-center gap-1.5 bg-white text-[var(--color-primary)] border border-[var(--color-primary)] rounded-xl text-xs font-semibold px-3 py-2 shadow-lg hover:bg-[var(--color-primary)] hover:text-white transition-all disabled:opacity-60"
-            style={{ zIndex: 999 }}
-          >
-            {locating
-              ? <><Loader2 size={13} className="animate-spin" /> Detecting…</>
-              : <><LocateFixed size={13} /> Use My Location</>
+          <button type="button" onClick={handleUseMyLocation} disabled={locating}
+            className="absolute bottom-3 right-3 z-[999] flex items-center gap-1.5 bg-black border border-gold/30 text-gold text-xs font-mono tracking-wider uppercase px-3 py-2 hover:bg-gold/10 hover:border-gold/50 transition-all duration-300 disabled:opacity-50">
+            {locating ? <><Loader2 size={13} className="animate-spin" /> DETECTING…</>
+              : <><LocateFixed size={13} /> USE GPS</>
             }
           </button>
 
-          {/* Crosshair hint */}
-          <div
-            className="absolute top-2 left-1/2 -translate-x-1/2 bg-black/60 text-white text-[10px] sm:text-xs px-2.5 py-1 rounded-full pointer-events-none"
-            style={{ zIndex: 998 }}
-          >
-            Tap map or drag pin to adjust
+          <div className="absolute top-2 left-1/2 -translate-x-1/2 bg-black/70 text-gold/60 text-[10px] font-mono tracking-wider px-3 py-1 pointer-events-none border border-gold/10">
+            TAP MAP OR DRAG PIN
           </div>
         </div>
 
         {/* Address Preview */}
-        <div className="px-4 sm:px-5 py-3 border-t border-[var(--color-border)] shrink-0" style={{ minHeight: 64 }}>
+        <div className="px-4 sm:px-5 py-3 border-t border-gold/10 shrink-0" style={{ minHeight: 64 }}>
           {geocoding ? (
-            <div className="flex items-center gap-2 text-xs text-[var(--color-muted)]">
-              <Loader2 size={13} className="animate-spin text-[var(--color-primary)]" />
-              Fetching address…
+            <div className="flex items-center gap-2 text-xs text-muted font-mono">
+              <Loader2 size={13} className="animate-spin text-gold" />
+              FETCHING COORDINATES…
             </div>
           ) : previewAddr ? (
             <div>
-              <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-primary)] mb-0.5">Detected Address</p>
-              <p className="text-xs sm:text-sm text-[var(--color-text)] font-medium leading-snug">
+              <p className="text-[10px] font-mono tracking-[0.3em] uppercase text-gold/60 mb-1">Detected Signal</p>
+              <p className="text-xs sm:text-sm text-white font-medium leading-snug">
                 {[previewAddr.line1, previewAddr.line2].filter(Boolean).join(', ')}
               </p>
-              <p className="text-xs text-[var(--color-muted)]">
+              <p className="text-xs text-muted font-mono">
                 {[previewAddr.city, previewAddr.state, previewAddr.pincode].filter(Boolean).join(', ')}
               </p>
             </div>
           ) : (
-            <p className="text-xs text-[var(--color-muted)] italic">Move the pin to see address details</p>
+            <p className="text-xs text-muted font-mono italic">Move the pin to decode coordinates</p>
           )}
         </div>
 
         {/* Footer Actions */}
-        <div className="flex gap-2 px-4 sm:px-5 py-3 sm:py-4 border-t border-[var(--color-border)] shrink-0">
-          <button
-            type="button"
-            onClick={onClose}
-            className="flex-1 rounded-xl border border-[var(--color-border)] text-[var(--color-muted)] text-xs sm:text-sm font-semibold py-2.5 hover:bg-[var(--color-bg-alt)] transition-all"
-          >
-            Cancel
+        <div className="flex gap-2 px-4 sm:px-5 py-3 sm:py-4 border-t border-gold/10 shrink-0">
+          <button type="button" onClick={onClose}
+            className="flex-1 text-center text-xs sm:text-sm font-mono tracking-wider uppercase text-muted border border-gold/20 py-2.5 hover:bg-gold/5 hover:text-gold transition-all duration-300">
+            ABORT
           </button>
-          <button
-            type="button"
-            onClick={handleConfirm}
-            disabled={geocoding}
-            className="flex-1 flex items-center justify-center gap-1.5 bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] text-white rounded-xl text-xs sm:text-sm font-semibold py-2.5 shadow-md transition-all disabled:opacity-60"
-          >
+          <button type="button" onClick={handleConfirm} disabled={geocoding}
+            className="flex-1 flex items-center justify-center gap-1.5 bg-gold text-black text-xs sm:text-sm font-semibold tracking-wider uppercase py-2.5 hover:bg-gold-light transition-all duration-300 disabled:opacity-50">
             <Check size={14} />
-            Use This Location
+            CONFIRM LOCATION
           </button>
         </div>
       </div>
@@ -297,24 +273,24 @@ export default function Addresses() {
     try {
       if (editing) {
         await api.patch(`/auth/addresses/${editing}/`, form)
-        toast.success('Address updated!')
+        toast.success('Coordinates updated!')
       } else {
         await api.post('/auth/addresses/', form)
-        toast.success('Address added!')
+        toast.success('New signal locked!')
       }
       setShowForm(false); setEditing(null); setForm(EMPTY); load()
-    } catch {
-       console.error('FULL ERROR:', err)
-    const msg = err.response?.data || err.message || 'Unknown error'
-    toast.error(`Save failed: ${JSON.stringify(msg)}`)
+    } catch (err) {
+      console.error('FULL ERROR:', err)
+      const msg = err.response?.data || err.message || 'Unknown error'
+      toast.error(`Transmission failed: ${JSON.stringify(msg)}`)
     }
   }
 
   const handleDelete = async (id) => {
-    if (!confirm('Delete this address?')) return
+    if (!confirm('Delete this coordinate?')) return
     try {
       await api.delete(`/auth/addresses/${id}/`)
-      toast.success('Deleted'); load()
+      toast.success('Signal deleted'); load()
     } catch {
       toast.error('Failed to delete')
     }
@@ -333,7 +309,6 @@ export default function Addresses() {
     setShowForm(true)
   }
 
-  // Called when user confirms map selection
   const handleMapConfirm = (addr) => {
     setForm(p => ({
       ...p,
@@ -346,142 +321,156 @@ export default function Addresses() {
       longitude: addr.longitude,
     }))
     setShowMapPicker(false)
-    toast.success('Location applied! Please verify the fields below.')
+    toast.success('Location locked! Verify fields below.')
   }
 
-  const inputCls = "w-full rounded-xl text-xs sm:text-sm bg-[var(--color-bg-alt)] border border-[var(--color-border)] text-[var(--color-text)] px-3 sm:px-4 py-2.5 sm:py-3 outline-none focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary-light)] transition-all placeholder:text-[var(--color-muted-light)]"
-  const labelCls = "block text-xs sm:text-sm font-semibold text-[var(--color-text)] mb-1 sm:mb-1.5"
+  const inputCls =
+  "w-full bg-black/70 border border-gold/20 text-white text-sm sm:text-[15px] px-4 py-3.5 outline-none focus:border-gold/60 focus:bg-black focus:shadow-[0_0_0_3px_rgba(212,175,55,0.12)] transition-all duration-300 placeholder:text-muted/40 font-mono tracking-wider"
+
+const labelCls =
+  "block text-[10px] sm:text-[11px] font-mono tracking-[0.22em] uppercase text-gold/70 mb-2"
 
   return (
-    <div className="min-h-screen bg-[var(--color-bg)]">
+    <div className="min-h-screen bg-black pt-[76px] sm:pt-[88px] lg:pt-[96px] overflow-x-hidden">
       <div className="page-container py-6 sm:py-8 lg:py-12">
 
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 mb-6 sm:mb-8">
-          <div>
-            <p className="text-[10px] sm:text-[11px] font-bold tracking-[0.2em] uppercase text-[var(--color-primary)] mb-1.5 sm:mb-2">
-              Saved Locations
-            </p>
-            <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-[var(--color-text)] mb-1 sm:mb-2">
-              My Addresses
-            </h1>
-            <p className="text-xs sm:text-sm text-[var(--color-muted)]">
-              Manage your delivery addresses for faster checkout.
-            </p>
-          </div>
-          <button
-            onClick={() => { setShowForm(true); setEditing(null); setForm(EMPTY) }}
-            className="inline-flex items-center justify-center gap-1.5 sm:gap-2 bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] text-white rounded-xl text-xs sm:text-sm font-semibold transition-all duration-300 px-4 sm:px-5 py-2.5 sm:py-3 shadow-md hover:shadow-lg hover:-translate-y-0.5 w-full sm:w-auto"
-          >
-            <Plus size={14} className="sm:w-4 sm:h-4" strokeWidth={2.5} />
-            Add New Address
-          </button>
-        </div>
+        <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-5 sm:gap-6 mb-7 sm:mb-9 lg:mb-12">
+  <div className="max-w-2xl">
+    <p className="label-gold mb-2 sm:mb-3">Saved Coordinates</p>
+
+    <h1 className="font-display text-[1.65rem] sm:text-3xl md:text-4xl lg:text-5xl text-white tracking-[0.12em] sm:tracking-wider leading-tight mb-2">
+      MY <span className="text-gradient-gold">LOCATIONS</span>
+    </h1>
+
+    <p className="text-muted text-xs sm:text-sm md:text-base font-mono tracking-wider leading-relaxed">
+      Manage delivery coordinates for faster transmission.
+    </p>
+  </div>
+
+  <button
+    onClick={() => { setShowForm(true); setEditing(null); setForm(EMPTY) }}
+    className="btn-primary inline-flex items-center justify-center gap-2 w-full sm:w-fit"
+  >
+    <Plus size={14} strokeWidth={2.5} />
+    NEW COORDINATE
+  </button>
+</div>
 
         {/* ── Form Card ── */}
         {showForm && (
-          <div className="bg-[var(--color-surface)] rounded-xl sm:rounded-2xl border border-[var(--color-border)] shadow-md p-4 sm:p-6 lg:p-8 mb-4 sm:mb-6 animate-fadeIn">
-            <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
-              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[var(--color-primary-light)] flex items-center justify-center">
-                <Home size={16} className="sm:w-[18px] sm:h-[18px] text-[var(--color-primary)]" />
+         <div className="relative bg-[#0A0A0A] border border-gold/15 p-4 sm:p-6 lg:p-8 mb-7 sm:mb-9 lg:mb-12 animate-fadeIn shadow-[0_20px_80px_rgba(0,0,0,0.45)] overflow-hidden">
+            {/* Gold accent top */}
+            <div className="h-[2px] bg-gradient-to-r from-transparent via-gold/40 to-transparent mb-6 sm:mb-8" />
+
+            <div className="flex items-center gap-3 sm:gap-4 mb-6 sm:mb-8">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 border border-gold/20 flex items-center justify-center">
+                <Home size={18} className="sm:w-5 sm:h-5 text-gold" />
               </div>
-              <h2 className="text-base sm:text-lg font-bold text-[var(--color-text)]">
-                {editing ? 'Edit Address' : 'Add New Address'}
-              </h2>
+              <div>
+                <h2 className="font-display text-base sm:text-lg text-white tracking-wider">
+                  {editing ? 'EDIT COORDINATE' : 'NEW COORDINATE'}
+                </h2>
+                <p className="text-[10px] sm:text-xs font-mono tracking-wider text-muted mt-1">
+                  {editing ? 'Update signal parameters' : 'Lock new delivery location'}
+                </p>
+              </div>
             </div>
 
             <form onSubmit={handleSubmit}>
               {/* ── Pick on Map Banner ── */}
-              <div className="flex items-center justify-between gap-3 rounded-xl border border-[var(--color-primary)] bg-[var(--color-primary-light)] px-4 py-3 mb-5">
-                <div>
-                  <p className="text-xs sm:text-sm font-semibold text-[var(--color-primary-dark)]">
-                    Pick location on map
-                  </p>
-                  <p className="text-[10px] sm:text-xs text-[var(--color-muted)] mt-0.5">
-                    Tap the map, drag the pin, or use your current location.
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setShowMapPicker(true)}
-                  className="flex items-center gap-1.5 shrink-0 bg-[var(--color-primary)] text-white rounded-lg text-xs sm:text-sm font-semibold px-3 sm:px-4 py-2 transition-all hover:bg-[var(--color-primary-dark)] shadow-sm"
-                >
-                  <MapPin size={13} />
-                  Open Map
-                </button>
-              </div>
+             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-gold/5 border border-gold/20 p-4 sm:p-5 mb-6 sm:mb-8">
+  <div className="min-w-0">
+    <p className="text-xs sm:text-sm font-display tracking-wider text-gold">
+      GEO-LOCATE SIGNAL
+    </p>
+    <p className="text-[10px] sm:text-xs text-muted font-mono tracking-wider mt-1 leading-relaxed">
+      Tap map, drag pin, or use GPS coordinates.
+    </p>
+  </div>
+
+  <button
+    type="button"
+    onClick={() => setShowMapPicker(true)}
+    className="w-full sm:w-auto shrink-0 flex items-center justify-center gap-1.5 bg-gold text-black text-xs sm:text-sm font-semibold tracking-wider uppercase px-4 py-3 hover:bg-gold-light active:scale-[0.98] transition-all duration-300"
+  >
+    <MapPin size={13} />
+    OPEN MAP
+  </button>
+</div>
 
               {/* Show saved coords if picked */}
               {form.latitude && form.longitude && (
-                <div className="flex items-center gap-2 mb-4 px-3 py-2 rounded-xl bg-green-50 border border-green-200 text-green-700 text-xs">
-                  <Check size={13} className="shrink-0" />
-                  Location pinned: {Number(form.latitude).toFixed(5)}, {Number(form.longitude).toFixed(5)}
+                <div className="flex items-center gap-2 mb-6 p-3 sm:p-4 bg-gold/5 border border-gold/20">
+                  <Check size={13} className="text-gold shrink-0" />
+                  <p className="text-xs text-gold font-mono tracking-wider">
+                    PINNED: {Number(form.latitude).toFixed(5)}, {Number(form.longitude).toFixed(5)}
+                  </p>
                 </div>
               )}
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 mb-3 sm:mb-4">
-
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-5">
                 <div className="md:col-span-2">
-                  <label className={labelCls}>Full Name</label>
+                  <label className={labelCls}>Signal Receiver</label>
                   <input value={form.full_name} onChange={e => setForm(p => ({ ...p, full_name: e.target.value }))}
-                    required className={inputCls} placeholder="Enter your full name" />
+                    required className={inputCls} placeholder="Enter receiver name" />
                 </div>
 
                 <div>
-                  <label className={labelCls}>Phone Number</label>
+                  <label className={labelCls}>Transmission Channel</label>
                   <input value={form.phone} onChange={e => setForm(p => ({ ...p, phone: e.target.value }))}
                     required className={inputCls} placeholder="+91 98765 43210" />
                 </div>
 
                 <div className="md:col-span-2">
-                  <label className={labelCls}>Address Line 1</label>
+                  <label className={labelCls}>Coordinate Line 1</label>
                   <input value={form.line1} onChange={e => setForm(p => ({ ...p, line1: e.target.value }))}
-                    required className={inputCls} placeholder="Street address, apartment, suite, etc." />
+                    required className={inputCls} placeholder="Street address, apartment, suite" />
                 </div>
 
                 <div className="md:col-span-2">
                   <label className={labelCls}>
-                    Address Line 2 <span className="text-[var(--color-muted)] font-normal">(Optional)</span>
+                    Coordinate Line 2 <span className="text-muted font-normal">(Optional)</span>
                   </label>
                   <input value={form.line2} onChange={e => setForm(p => ({ ...p, line2: e.target.value }))}
-                    className={inputCls} placeholder="Landmark, building name, etc." />
+                    className={inputCls} placeholder="Landmark, building name" />
                 </div>
 
                 <div>
-                  <label className={labelCls}>City</label>
+                  <label className={labelCls}>Sector</label>
                   <input value={form.city} onChange={e => setForm(p => ({ ...p, city: e.target.value }))}
                     required className={inputCls} placeholder="City name" />
                 </div>
 
                 <div>
-                  <label className={labelCls}>State</label>
+                  <label className={labelCls}>Zone</label>
                   <input value={form.state} onChange={e => setForm(p => ({ ...p, state: e.target.value }))}
                     required className={inputCls} placeholder="State" />
                 </div>
 
                 <div>
-                  <label className={labelCls}>Pincode</label>
+                  <label className={labelCls}>Access Code</label>
                   <input value={form.pincode} onChange={e => setForm(p => ({ ...p, pincode: e.target.value }))}
                     required className={inputCls} placeholder="6-digit pincode" />
                 </div>
               </div>
 
-              <label className="flex items-center gap-2 sm:gap-3 cursor-pointer text-xs sm:text-sm text-[var(--color-text)] mb-4 sm:mb-6">
+              <label className="flex items-center gap-3 cursor-pointer text-xs sm:text-sm text-white mb-6 sm:mb-8">
                 <input type="checkbox" checked={form.is_default}
                   onChange={e => setForm(p => ({ ...p, is_default: e.target.checked }))}
-                  className="w-3.5 h-3.5 sm:w-4 sm:h-4 rounded border-[var(--color-border)] text-[var(--color-primary)] focus:ring-[var(--color-primary)] accent-[var(--color-primary)]"
+                  className="w-4 h-4 border border-gold/20 bg-black text-gold accent-gold focus:ring-gold/20"
                 />
-                <span className="font-medium">Set as default address</span>
+                <span className="font-mono tracking-wider uppercase">Set as primary coordinate</span>
               </label>
 
-              <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                 <button type="submit"
-                  className="inline-flex items-center justify-center gap-1.5 sm:gap-2 bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] text-white rounded-xl text-xs sm:text-sm font-semibold transition-all duration-300 px-5 sm:px-6 py-2.5 sm:py-3 shadow-md hover:shadow-lg w-full sm:w-auto">
-                  {editing ? 'Update Address' : 'Save Address'}
+                  className="btn-primary flex items-center justify-center gap-2 py-3 sm:py-3.5 w-full sm:w-auto">
+                  {editing ? 'UPDATE SIGNAL' : 'LOCK COORDINATE'}
                 </button>
                 <button type="button" onClick={() => setShowForm(false)}
-                  className="inline-flex items-center justify-center gap-1.5 sm:gap-2 bg-[var(--color-surface)] hover:bg-[var(--color-bg-alt)] text-[var(--color-text)] border border-[var(--color-border)] rounded-xl text-xs sm:text-sm font-semibold transition-all duration-300 px-5 sm:px-6 py-2.5 sm:py-3 w-full sm:w-auto">
-                  Cancel
+                  className="btn-outline flex items-center justify-center gap-2 py-3 sm:py-3.5 w-full sm:w-auto">
+                  ABORT
                 </button>
               </div>
             </form>
@@ -492,13 +481,13 @@ export default function Addresses() {
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
             {[1, 2, 3].map(i => (
-              <div key={i} className="bg-[var(--color-surface)] rounded-xl sm:rounded-2xl border border-[var(--color-border)] p-4 sm:p-5 animate-pulse">
+              <div key={i} className="bg-[#0A0A0A] border border-gold/10 p-4 sm:p-5 animate-pulse">
                 <div className="flex gap-3 sm:gap-4">
-                  <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[var(--color-bg-alt)] shrink-0" />
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 border border-gold/10 shrink-0" />
                   <div className="flex-1 space-y-2">
-                    <div className="h-3 sm:h-4 bg-[var(--color-bg-alt)] rounded w-1/3" />
-                    <div className="h-2.5 sm:h-3 bg-[var(--color-bg-alt)] rounded w-3/4" />
-                    <div className="h-2.5 sm:h-3 bg-[var(--color-bg-alt)] rounded w-1/2" />
+                    <div className="h-3 sm:h-4 bg-gold/5 w-1/3" />
+                    <div className="h-2.5 sm:h-3 bg-gold/5 w-3/4" />
+                    <div className="h-2.5 sm:h-3 bg-gold/5 w-1/2" />
                   </div>
                 </div>
               </div>
@@ -506,18 +495,19 @@ export default function Addresses() {
           </div>
         ) : addresses.length === 0 && !showForm ? (
           /* Empty State */
-          <div className="flex flex-col items-center text-center bg-[var(--color-surface)] rounded-xl sm:rounded-2xl border border-[var(--color-border)] shadow-sm py-12 sm:py-16 lg:py-20 px-4 sm:px-6">
-            <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-[var(--color-primary-light)] flex items-center justify-center mb-4 sm:mb-5">
-              <MapPin size={22} className="sm:w-7 sm:h-7 text-[var(--color-primary)]" />
+          <div className="flex flex-col items-center text-center bg-[#0A0A0A] border border-gold/10 py-16 sm:py-20 lg:py-24 px-4 sm:px-6">
+            <div className="w-16 h-16 sm:w-20 sm:h-20 border border-gold/20 flex items-center justify-center mb-6 sm:mb-8">
+              <MapPin size={28} className="sm:w-8 sm:h-8 text-gold/40" />
             </div>
-            <h3 className="text-base sm:text-lg font-bold text-[var(--color-text)] mb-1.5 sm:mb-2">No addresses saved yet</h3>
-            <p className="text-xs sm:text-sm text-[var(--color-muted)] max-w-sm mb-5 sm:mb-6">
-              Add your delivery address to make checkout faster and more convenient.
+            <p className="label-gold mb-3 sm:mb-4">No Signals Detected</p>
+            <h3 className="font-display text-lg sm:text-xl text-white tracking-wider mb-2 sm:mb-3">NO COORDINATES</h3>
+            <p className="text-muted text-xs sm:text-sm max-w-sm mb-6 sm:mb-8 font-mono tracking-wider">
+              Add your delivery coordinates to enable faster transmission protocols.
             </p>
             <button onClick={() => { setShowForm(true); setEditing(null); setForm(EMPTY) }}
-              className="inline-flex items-center gap-1.5 sm:gap-2 bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] text-white rounded-xl text-xs sm:text-sm font-semibold transition-all duration-300 px-5 sm:px-6 py-2.5 sm:py-3 shadow-md hover:shadow-lg">
-              <Plus size={14} className="sm:w-4 sm:h-4" />
-              Add Your First Address
+              className="btn-primary inline-flex items-center gap-2">
+              <Plus size={14} />
+              LOCK FIRST COORDINATE
             </button>
           </div>
         ) : (
@@ -525,38 +515,38 @@ export default function Addresses() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
             {addresses.map((addr, index) => (
               <div key={addr.id}
-                className="group bg-[var(--color-surface)] rounded-xl sm:rounded-2xl border border-[var(--color-border)] shadow-sm hover:shadow-md transition-all duration-300 p-4 sm:p-5 animate-fadeUp"
+                className="group bg-[#0A0A0A] border border-gold/10 hover:border-gold/35 transition-all duration-500 p-4 sm:p-5 lg:p-6 animate-fadeUp hover:shadow-[0_16px_50px_rgba(212,175,55,0.08)]"
                 style={{ animationDelay: `${index * 0.07}s` }}
               >
                 <div className="flex gap-3 sm:gap-4">
-                  <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-[var(--color-primary-light)] flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-300">
-                    <MapPin size={16} className="sm:w-5 sm:h-5 text-[var(--color-primary)]" />
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 border border-gold/20 flex items-center justify-center shrink-0 group-hover:border-gold/40 transition-all duration-300">
+                    <MapPin size={16} className="sm:w-5 sm:h-5 text-gold/60 group-hover:text-gold transition-colors duration-300" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center flex-wrap gap-1.5 sm:gap-2 mb-1">
-                      <p className="text-xs sm:text-sm font-bold text-[var(--color-text)] truncate">{addr.full_name}</p>
+                    <div className="flex items-center flex-wrap gap-2 sm:gap-3 mb-1 sm:mb-2">
+                      <p className="text-sm sm:text-[15px] font-display text-white tracking-wider truncate">{addr.full_name}</p>
                       {addr.is_default && (
-                        <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider rounded-full px-2 sm:px-2.5 py-0.5 bg-[var(--color-primary-light)] text-[var(--color-primary-dark)] border border-[var(--color-primary)]">
-                          Default
+                        <span className="text-[9px] sm:text-[10px] font-mono tracking-[0.2em] uppercase bg-gold/10 border border-gold/20 text-gold px-2 sm:px-2.5 py-0.5">
+                          PRIMARY
                         </span>
                       )}
                     </div>
-                    <p className="text-xs sm:text-sm text-[var(--color-muted)] mb-0.5 truncate">
+                    <p className="text-xs sm:text-sm text-muted mb-0.5 truncate font-mono tracking-wider">
                       {addr.line1}{addr.line2 ? `, ${addr.line2}` : ''}
                     </p>
-                    <p className="text-xs sm:text-sm text-[var(--color-muted)] mb-0.5 truncate">
+                    <p className="text-xs sm:text-sm text-muted mb-0.5 truncate font-mono tracking-wider">
                       {addr.city}, {addr.state} — {addr.pincode}
                     </p>
-                    <p className="text-xs sm:text-sm text-[var(--color-muted)]">{addr.phone}</p>
+                    <p className="text-xs sm:text-sm text-muted font-mono tracking-wider">{addr.phone}</p>
                   </div>
                 </div>
-                <div className="flex justify-end gap-1.5 sm:gap-2 mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-[var(--color-border)]">
+                <div className="flex justify-end gap-2 sm:gap-3 mt-4 sm:mt-5 pt-3 sm:pt-4 border-t border-gold/10">
                   <button onClick={() => startEdit(addr)}
-                    className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-[var(--color-bg-alt)] hover:bg-[var(--color-border)] text-[var(--color-muted)] hover:text-[var(--color-primary)] flex items-center justify-center transition-all duration-200"
+                    className="w-9 h-9 sm:w-10 sm:h-10 border border-gold/20 flex items-center justify-center text-muted hover:text-gold hover:border-gold/40 hover:bg-gold/5 transition-all duration-300"
                     title="Edit"><Pencil size={13} className="sm:w-[15px] sm:h-[15px]" />
                   </button>
                   <button onClick={() => handleDelete(addr.id)}
-                    className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-[var(--color-danger-bg)] hover:bg-[var(--color-danger)] text-[var(--color-danger)] hover:text-white flex items-center justify-center transition-all duration-200"
+                    className="w-9 h-9 sm:w-10 sm:h-10 border border-red-400/20 flex items-center justify-center text-red-400 hover:text-white hover:bg-red-400/10 hover:border-red-400/40 transition-all duration-300"
                     title="Delete"><Trash2 size={13} className="sm:w-[15px] sm:h-[15px]" />
                   </button>
                 </div>
@@ -575,13 +565,6 @@ export default function Addresses() {
           onClose={() => setShowMapPicker(false)}
         />
       )}
-
-      <style>{`
-        @keyframes fadeIn  { from { opacity:0; transform:translateY(-8px) }  to { opacity:1; transform:translateY(0) } }
-        @keyframes fadeUp  { from { opacity:0; transform:translateY(16px) }  to { opacity:1; transform:translateY(0) } }
-        .animate-fadeIn { animation: fadeIn 0.3s ease forwards; }
-        .animate-fadeUp { animation: fadeUp 0.5s ease forwards; opacity:0; }
-      `}</style>
     </div>
   )
 }

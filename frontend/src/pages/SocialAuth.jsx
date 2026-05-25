@@ -37,10 +37,10 @@ export default function SocialAuth({ mode = 'login', className = '' }) {
   const handleGoogleResponse = async (response) => {
     try {
       const result = await googleLogin(response.credential)
-      toast.success(mode === 'login' ? 'Welcome back!' : 'Account created!')
+      toast.success(mode === 'login' ? 'Welcome back, wanderer.' : 'Identity forged. Welcome to the arc.')
       navigate('/')
     } catch (err) {
-      toast.error(err.response?.data?.error || 'Google login failed. Please try again.')
+      toast.error(err.response?.data?.error || 'Authentication failed. Signal interrupted.')
     }
   }
 
@@ -67,7 +67,7 @@ export default function SocialAuth({ mode = 'login', className = '' }) {
 
   const handleFacebook = () => {
     if (!window.FB) {
-      toast.error('Facebook SDK not loaded yet. Please wait.')
+      toast.error('Signal not established. Please wait.')
       return
     }
 
@@ -88,14 +88,14 @@ export default function SocialAuth({ mode = 'login', className = '' }) {
                 refresh_token: data.refresh,
                 isAuthenticated: true,
               })
-              toast.success('Welcome!')
+              toast.success('Identity verified. Welcome.')
               navigate('/')
             })
             .catch(() => {
-              toast.error('Facebook login failed.')
+              toast.error('Authentication failed.')
             })
         } else {
-          toast.error('Facebook login cancelled.')
+          toast.error('Authentication cancelled.')
         }
       },
       { scope: 'email,public_profile' }
@@ -113,7 +113,7 @@ export default function SocialAuth({ mode = 'login', className = '' }) {
       )
 
       if (!popup) {
-        toast.error('Popup blocked! Please allow popups for this site.')
+        toast.error('Signal blocked. Allow transmissions for this domain.')
         return
       }
 
@@ -130,7 +130,7 @@ export default function SocialAuth({ mode = 'login', className = '' }) {
             refresh_token: payload.refresh,
             isAuthenticated: true,
           })
-          toast.success('Welcome!')
+          toast.success('Identity verified. Welcome.')
           navigate('/')
           window.removeEventListener('message', listener)
         }
@@ -145,32 +145,35 @@ export default function SocialAuth({ mode = 'login', className = '' }) {
         }
       }, 1000)
     } catch {
-      toast.error('Failed to start Twitter login.')
+      toast.error('Failed to initiate authentication sequence.')
     }
   }
 
   return (
-    <div className={`flex flex-col gap-2.5 sm:gap-3 ${className}`}>
+    <div className={`flex flex-col gap-3 sm:gap-4 ${className}`}>
       {/* Divider */}
-      <div className="flex items-center gap-2 sm:gap-3 my-1">
-        <div className="flex-1 h-px bg-[var(--color-border)]" />
-        <span className="text-[10px] sm:text-xs font-medium text-[var(--color-muted)] uppercase tracking-wider">or continue with</span>
-        <div className="flex-1 h-px bg-[var(--color-border)]" />
+      <div className="flex items-center gap-3 my-1">
+        <div className="flex-1 h-px bg-gradient-to-r from-transparent via-[var(--color-border)] to-transparent" />
+        <span className="label-gold text-[10px]">OR CONTINUE WITH</span>
+        <div className="flex-1 h-px bg-gradient-to-r from-transparent via-[var(--color-border)] to-transparent" />
       </div>
 
       {/* Google Button Container */}
-      <div ref={googleBtnRef} className="w-full flex justify-center min-h-[40px] sm:min-h-[44px]" />
+      <div 
+        ref={googleBtnRef} 
+        className="w-full flex justify-center min-h-[44px] sm:min-h-[48px]" 
+      />
 
       {/* Facebook */}
       <button
         type="button"
         onClick={handleFacebook}
-        className="w-full h-11 sm:h-12 rounded-xl bg-[#1877F2] hover:bg-[#166fe5] text-white font-semibold text-xs sm:text-sm flex items-center justify-center gap-2 sm:gap-2.5 transition-all duration-300 hover:-translate-y-px hover:shadow-md active:translate-y-0 cursor-pointer border-none"
+        className="w-full h-12 sm:h-14 bg-[var(--color-surface)] border border-[var(--color-border)] text-white font-semibold text-xs sm:text-sm tracking-[0.1em] uppercase flex items-center justify-center gap-3 transition-all duration-300 hover:border-gold hover:bg-[var(--color-bg-alt)] active:scale-[0.98] cursor-pointer"
       >
-        <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 24 24">
+        <svg className="w-4 h-4 sm:w-5 sm:h-5 text-[#1877F2]" fill="currentColor" viewBox="0 0 24 24">
           <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
         </svg>
-        <span className="hidden sm:inline">{mode === 'login' ? 'Sign in with Facebook' : 'Sign up with Facebook'}</span>
+        <span className="hidden sm:inline">{mode === 'login' ? 'Continue with Facebook' : 'Join with Facebook'}</span>
         <span className="sm:hidden">Facebook</span>
       </button>
 
@@ -178,13 +181,13 @@ export default function SocialAuth({ mode = 'login', className = '' }) {
       <button
         type="button"
         onClick={handleTwitter}
-        className="w-full h-11 sm:h-12 rounded-xl bg-[#0a0a0a] hover:bg-[#1a1a1a] text-white font-semibold text-xs sm:text-sm flex items-center justify-center gap-2 sm:gap-2.5 transition-all duration-300 hover:-translate-y-px hover:shadow-md active:translate-y-0 cursor-pointer border-none"
+        className="w-full h-12 sm:h-14 bg-[var(--color-surface)] border border-[var(--color-border)] text-white font-semibold text-xs sm:text-sm tracking-[0.1em] uppercase flex items-center justify-center gap-3 transition-all duration-300 hover:border-gold hover:bg-[var(--color-bg-alt)] active:scale-[0.98] cursor-pointer"
       >
         <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 24 24">
           <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
         </svg>
-        <span className="hidden sm:inline">{mode === 'login' ? 'Sign in with X' : 'Sign up with X'}</span>
-        <span className="sm:hidden">X (Twitter)</span>
+        <span className="hidden sm:inline">{mode === 'login' ? 'Continue with X' : 'Join with X'}</span>
+        <span className="sm:hidden">X</span>
       </button>
     </div>
   )

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import api from '../services/api'
 import ProductCard from '../components/ProductCard'
-import { ArrowRight, Truck, Shield, RefreshCw, Headphones, Sparkles } from 'lucide-react'
+import { ArrowRight, Truck, Shield, RefreshCw, Headphones, Sparkles, Infinity, MapPin, Eye } from 'lucide-react'
 
 export default function Home() {
   const [featured, setFeatured] = useState([])
@@ -31,181 +31,161 @@ export default function Home() {
   }, [])
 
   return (
-    <div className="bg-[#FAFAF8]">
-      {/* Hero Section */}
-      <section className="bg-[#F5F2EE] text-[#0D0D0D]">
-        <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16 xl:py-20">
-          <div className="flex flex-col items-center text-center space-y-4 sm:space-y-6 animate-[fadeIn_0.5s_ease]">
-            <div className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-white/30 rounded-full">
-              <Sparkles size={14} className="sm:w-4 sm:h-4 text-[#C8A96E]" />
-              <span className="text-xs sm:text-sm font-medium">Premium Shopping Experience</span>
-            </div>
-            
-            <h1 className="font-[Playfair_Display] text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold leading-tight">
-              Discover Amazing Deals
-            </h1>
-            
-            <p className="text-sm sm:text-base lg:text-lg text-[#3A3A3A] max-w-2xl px-2 sm:px-0">
-              Shop thousands of hand-picked products at unbeatable prices. Fast shipping, secure payment, and easy returns guaranteed.
-            </p>
-            
+    <div className="bg-black min-h-screen">
+
+      {/* ==================== HERO SECTION ==================== */}
+      <section className="relative min-h-[90vh] sm:min-h-screen flex items-center justify-center overflow-hidden">
+        {/* Animated starfield background - CSS only */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(212,175,55,0.03)_0%,_transparent_70%)]" />
+        <div className="absolute inset-0 grid-bg opacity-30" />
+
+        {/* Floating particles effect */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          {[...Array(20)].map((_, i) => (
+            <div 
+              key={i}
+              className="absolute w-1 h-1 bg-gold/40 rounded-full animate-twinkle"
+              style={{
+                left: `${Math.random() * 100}%`,
+                top: `${Math.random() * 100}%`,
+                animationDelay: `${Math.random() * 5}s`,
+                animationDuration: `${3 + Math.random() * 4}s`
+              }}
+            />
+          ))}
+        </div>
+
+        <div className="relative z-10 text-center px-4 sm:px-6 max-w-5xl mx-auto">
+          {/* Phase label */}
+          <p className="label-gold mb-4 sm:mb-6 animate-fadeIn">
+            ✦ PHASE 01 · WANDERER ARC ✦
+          </p>
+
+          {/* Main heading */}
+          <h1 className="heading-hero mb-4 sm:mb-6 animate-fadeUp">
+            <span className="text-white">THE </span>
+            <span className="text-gradient-gold">WANDERER</span>
+            <span className="text-white"> ARC</span>
+          </h1>
+
+          {/* Subtitle */}
+          <p className="text-muted text-sm sm:text-base lg:text-lg max-w-2xl mx-auto mb-8 sm:mb-10 leading-relaxed animate-fadeUp" style={{ animationDelay: '0.2s' }}>
+            The first chapter of the Transfinity saga explores the eternal traveler — 
+            those who exist between the lines of reality and the digital frontier.
+          </p>
+
+          {/* CTA Buttons */}
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center animate-fadeUp" style={{ animationDelay: '0.4s' }}>
             <Link to="/products"
-                  className="inline-flex items-center gap-1.5 sm:gap-2 px-4 sm:px-6 lg:px-8 py-2.5 sm:py-3 lg:py-4 bg-white text-[#0D0D0D] rounded-xl sm:rounded-2xl font-bold hover:shadow-[0_12px_40px_rgba(13,13,13,0.12)] transition-all duration-300 hover:scale-105 active:scale-95 text-sm sm:text-base">
-              Explore Collection
-              <ArrowRight size={16} className="sm:w-5 sm:h-5" />
+              className="btn-primary btn-mobile-full inline-flex items-center justify-center gap-2"
+            >
+              ENTER THE ARC
+              <ArrowRight size={16} />
+            </Link>
+            <Link to="/arcs"
+              className="btn-outline btn-mobile-full inline-flex items-center justify-center gap-2"
+            >
+              VIEW ARCHIVES
+              <Eye size={16} />
             </Link>
           </div>
-        </div>
-      </section>
-     
 
-      {/* Treasure Hunt Promo Banner */}
-      <section className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
-        <Link to="/treasure-hunt" 
-              className="block relative overflow-hidden rounded-xl sm:rounded-2xl bg-gradient-to-r from-amber-500 via-yellow-500 to-amber-600 text-white p-4 sm:p-6 lg:p-8 hover:shadow-xl transition-all hover:scale-[1.01]">
-          <div className="relative z-10 flex flex-col sm:flex-row items-center gap-3 sm:gap-4 lg:gap-6">
-            <div className="text-3xl sm:text-4xl lg:text-5xl">🗺️</div>
-            <div className="flex-1 text-center sm:text-left">
-              <h3 className="text-lg sm:text-xl lg:text-2xl font-bold mb-1">
-                🏴‍☠️ Treasure Hunt is LIVE!
-              </h3>
-              <p className="text-xs sm:text-sm lg:text-base text-white/90">
-                Buy any T-Shirt → Collect 12 Mystery Maps → Win ₹1,00,000!
-              </p>
-              <p className="text-[10px] sm:text-xs text-white/70 mt-1">
-                Collect 3+ maps for instant ₹300 rewards
-              </p>
+          {/* Scroll indicator */}
+          <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce hidden sm:block">
+            <div className="w-6 h-10 border border-gold/30 rounded-full flex justify-center pt-2">
+              <div className="w-1 h-2 bg-gold/60 rounded-full animate-pulse" />
             </div>
-            <div className="flex-shrink-0 mt-2 sm:mt-0">
-              <span className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2 sm:py-2.5 bg-white/20 backdrop-blur rounded-lg sm:rounded-xl font-bold text-xs sm:text-sm">
-                Start Hunting
-                <ArrowRight size={14} className="sm:w-4 sm:h-4" />
+          </div>
+        </div>
+
+        {/* Bottom gradient fade */}
+        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-black to-transparent" />
+      </section>
+
+      {/* ==================== ARC PROGRESSION ==================== */}
+      <section className="py-12 sm:py-16 lg:py-20 border-t border-gold/10">
+        <div className="page-container">
+          <div className="flex items-center justify-between mb-8 sm:mb-12">
+            <div className="flex items-center gap-3">
+              <Infinity size={20} className="text-gold" />
+              <span className="font-mono text-[11px] sm:text-xs tracking-[0.3em] uppercase text-gold">
+                Arc Progression
               </span>
             </div>
+            <Link to="/arcs" className="text-[11px] sm:text-xs font-mono tracking-wider uppercase text-muted hover:text-gold transition-colors duration-300 flex items-center gap-1">
+              Full Map <ArrowRight size={12} />
+            </Link>
           </div>
-          {/* Decorative elements */}
-          <div className="absolute top-0 right-0 w-24 h-24 sm:w-32 sm:h-32 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2" />
-          <div className="absolute bottom-0 left-0 w-16 h-16 sm:w-24 sm:h-24 bg-white/10 rounded-full translate-y-1/2 -translate-x-1/2" />
-        </Link>
-      </section>
 
-      {/* Trust Badges Section */}
-      <section className="bg-[#F5F2EE] border-b border-[#E8E4DE] py-6 sm:py-8 lg:py-12">
-        <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
             {[
-              {
-                icon: Truck,
-                title: 'Free Delivery',
-                subtitle: 'Orders above ₹999',
-              },
-              {
-                icon: Shield,
-                title: 'Secure Payment',
-                subtitle: '100% safe & secure',
-              },
-              {
-                icon: RefreshCw,
-                title: 'Easy Returns',
-                subtitle: '30-day return policy',
-              },
-              {
-                icon: Headphones,
-                title: '24/7 Support',
-                subtitle: 'Always here to help',
-              },
-            ].map((feature, idx) => {
-              const IconComp = feature.icon
-              return (
-                <div
-                  key={feature.title}
-                  className="flex items-center gap-2 sm:gap-3 lg:gap-4 p-3 sm:p-4 rounded-xl bg-white border border-[#E8E4DE] hover:shadow-md transition-all duration-300 animate-[fadeUp_0.5s_ease_forwards]"
-                  style={{ animationDelay: `${idx * 50}ms` }}
-                >
-                  <div className="shrink-0 p-1.5 sm:p-2 lg:p-3 rounded-lg bg-[#F2E8D5]">
-                    <IconComp size={20} className="sm:w-6 sm:h-6 text-[#C8A96E]" />
-                  </div>
-                  <div className="min-w-0">
-                    <p className="font-bold text-[#0D0D0D] text-xs sm:text-sm lg:text-base truncate">{feature.title}</p>
-                    <p className="text-[10px] sm:text-xs lg:text-sm text-[#8A8A8A] truncate">{feature.subtitle}</p>
-                  </div>
+              { num: '01', name: 'WANDERER', status: 'UNLOCKED', active: true },
+              { num: '02', name: 'CITADEL', status: 'LOCKED', active: false },
+              { num: '03', name: 'GHOSTING', status: 'LOCKED', active: false },
+              { num: '04', name: 'VOID GATE', status: 'LOCKED', active: false },
+            ].map((arc, idx) => (
+              <div 
+                key={arc.num}
+                className={`relative p-4 sm:p-6 border transition-all duration-500 group cursor-pointer
+                  ${arc.active 
+                    ? 'border-gold/40 bg-gold/5 hover:border-gold/70' 
+                    : 'border-gold/10 bg-transparent hover:border-gold/30'
+                  }
+                `}
+                style={{ animationDelay: `${idx * 100}ms` }}
+              >
+                <div className="flex items-start justify-between mb-3">
+                  <span className={`font-mono text-lg sm:text-xl ${arc.active ? 'text-gold' : 'text-muted'}`}>
+                    {arc.num}
+                  </span>
+                  <span className={`text-[9px] sm:text-[10px] font-mono tracking-wider uppercase
+                    ${arc.active ? 'text-green-400' : 'text-muted'}
+                  `}>
+                    {arc.status}
+                  </span>
                 </div>
-              )
-            })}
+                <h3 className={`font-display text-sm sm:text-base tracking-[0.15em] uppercase mb-1
+                  ${arc.active ? 'text-white' : 'text-muted'}
+                `}>
+                  {arc.name}
+                </h3>
+                <div className={`h-[1px] w-8 transition-all duration-500 group-hover:w-full
+                  ${arc.active ? 'bg-gold/60' : 'bg-gold/20'}
+                `} />
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* Categories Section */}
-      {categories.length > 0 && (
-        <section className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16 xl:py-20">
-          <div className="mb-6 sm:mb-8 lg:mb-12 animate-[fadeUp_0.5s_ease]">
-            <h2 className="font-[Playfair_Display] text-xl sm:text-2xl lg:text-3xl xl:text-4xl font-bold text-[#0D0D0D] mb-1.5 sm:mb-2">
-              Shop by Category
-            </h2>
-            <p className="text-[#8A8A8A] text-xs sm:text-sm lg:text-base">
-              Browse our curated collections
-            </p>
-          </div>
-
-          <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 sm:gap-3 lg:gap-4">
-            {categories.map((cat, idx) => (
-              <Link
-                key={cat.id}
-                to={`/products?category_slug=${cat.slug}`}
-                className="flex flex-col items-center justify-center gap-1.5 sm:gap-2 p-3 sm:p-4 lg:p-6 bg-white rounded-xl sm:rounded-2xl border-2 border-[#E8E4DE] hover:border-[#C8A96E] hover:shadow-lg transition-all duration-300 hover:scale-105 group animate-[fadeUp_0.5s_ease_forwards]"
-                style={{ animationDelay: `${idx * 40}ms` }}
-              >
-                {cat.image ? (
-                  <img
-                    src={cat.image}
-                    alt={cat.name}
-                    className="w-10 h-10 sm:w-12 sm:h-12 lg:w-14 lg:h-14 object-cover rounded-lg group-hover:scale-110 transition-transform duration-300"
-                  />
-                ) : (
-                  <div className="w-10 h-10 sm:w-12 sm:h-12 lg:w-14 lg:h-14 bg-[#F2E8D5] rounded-lg flex items-center justify-center text-lg sm:text-xl">
-                    📦
-                  </div>
-                )}
-                <span className="text-[10px] sm:text-xs lg:text-sm font-bold text-[#0D0D0D] text-center line-clamp-2">
-                  {cat.name}
-                </span>
-              </Link>
-            ))}
-          </div>
-        </section>
-      )}
-
-      {/* Featured Products Section */}
+      {/* ==================== SELECTED ARTIFACTS (FEATURED) ==================== */}
       {featured.length > 0 && (
-        <section className="bg-[#F5F2EE] py-8 sm:py-12 lg:py-16 xl:py-20 border-b border-[#E8E4DE]">
-          <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 mb-6 sm:mb-8 lg:mb-12 animate-[fadeUp_0.5s_ease]">
+        <section className="py-12 sm:py-16 lg:py-20 border-t border-gold/10">
+          <div className="page-container">
+            <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 sm:gap-4 mb-8 sm:mb-12">
               <div>
-                <h2 className="font-[Playfair_Display] text-xl sm:text-2xl lg:text-3xl xl:text-4xl font-bold text-[#0D0D0D]">
-                  Featured Products
+                <p className="label-gold mb-2">Current Manifesto</p>
+                <h2 className="heading-section text-white">
+                  SELECTED <span className="text-gradient-gold">ARTIFACTS</span>
                 </h2>
-                <p className="text-[#8A8A8A] text-xs sm:text-sm mt-1">
-                  Handpicked for you
-                </p>
               </div>
               <Link to="/products?is_featured=true"
-                    className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 text-[#C8A96E] font-bold hover:gap-3 transition-all duration-300 text-xs sm:text-sm lg:text-base">
-                View all
-                <ArrowRight size={16} className="sm:w-[18px] sm:h-[18px]" />
+                className="text-[11px] sm:text-xs font-mono tracking-wider uppercase text-muted hover:text-gold transition-colors duration-300 flex items-center gap-1 shrink-0"
+              >
+                View Full Drop <ArrowRight size={12} />
               </Link>
             </div>
 
             {loading ? (
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3 lg:gap-4">
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
                 {[...Array(8)].map((_, i) => (
-                  <div key={i} className="bg-white rounded-xl sm:rounded-2xl aspect-square animate-pulse" />
+                  <div key={i} className="aspect-product bg-[#0A0A0A] border border-gold/10 animate-pulse" />
                 ))}
               </div>
             ) : (
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3 lg:gap-4">
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
                 {featured.map((p, idx) => (
-                  <div key={p.id} className="animate-[fadeUp_0.5s_ease_forwards]" style={{ animationDelay: `${idx * 40}ms` }}>
+                  <div key={p.id} className="animate-fadeUp" style={{ animationDelay: `${idx * 80}ms` }}>
                     <ProductCard product={p} />
                   </div>
                 ))}
@@ -215,48 +195,169 @@ export default function Home() {
         </section>
       )}
 
-      {/* New Arrivals Section */}
-      {newArrivals.length > 0 && (
-        <section className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16 xl:py-20">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 mb-6 sm:mb-8 lg:mb-12 animate-[fadeUp_0.5s_ease]">
-            <div>
-              <h2 className="font-[Playfair_Display] text-xl sm:text-2xl lg:text-3xl xl:text-4xl font-bold text-[#0D0D0D]">
-                New Arrivals
-              </h2>
-              <p className="text-[#8A8A8A] text-xs sm:text-sm mt-1">
-                Latest products added
-              </p>
-            </div>
-            <Link to="/products?ordering=-created_at"
-                  className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 text-[#C8A96E] font-bold hover:gap-3 transition-all duration-300 text-xs sm:text-sm lg:text-base">
-              View all
-              <ArrowRight size={16} className="sm:w-[18px] sm:h-[18px]" />
-            </Link>
-          </div>
-
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3 lg:gap-4">
-            {newArrivals.map((p, idx) => (
-              <div key={p.id} className="animate-[fadeUp_0.5s_ease_forwards]" style={{ animationDelay: `${idx * 40}ms` }}>
-                <ProductCard product={p} />
+      {/* ==================== THE ARCHITECT (FOUNDER PROMO) ==================== */}
+      <section className="py-12 sm:py-16 lg:py-20 border-t border-gold/10">
+        <div className="page-container">
+          <div className="grid lg:grid-cols-2 gap-8 sm:gap-12 lg:gap-16 items-center">
+            {/* Image side */}
+            <div className="relative aspect-[4/5] sm:aspect-[3/4] overflow-hidden border border-gold/20 group">
+              <img 
+                src="/founder-kairos.jpg" 
+                alt="Kairos - The Architect"
+                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
+              <div className="absolute bottom-4 sm:bottom-6 left-4 sm:left-6">
+                <p className="font-mono text-[10px] sm:text-[11px] tracking-[0.3em] uppercase text-gold mb-1">
+                  The Architect
+                </p>
+                <p className="font-display text-xl sm:text-2xl lg:text-3xl text-white tracking-wider">
+                  KAIROS
+                </p>
               </div>
-            ))}
+            </div>
+
+            {/* Content side */}
+            <div className="space-y-4 sm:space-y-6">
+              <p className="label-gold">Encrypted Transmission</p>
+
+              <h2 className="heading-section text-white leading-tight">
+                "TIME IS NOT<br />
+                <span className="text-gradient-gold">A LINE.</span> IT IS<br />
+                A LOOP."
+              </h2>
+
+              <p className="text-muted text-sm sm:text-base leading-relaxed">
+                Kairos exists between recorded moments. The masked architect of 
+                Transfinity designs each garment as a relic — a piece of equipment 
+                for the wanderer who refuses to be located.
+              </p>
+
+              <div className="flex flex-wrap gap-6 sm:gap-8 pt-2">
+                <div>
+                  <p className="font-display text-2xl sm:text-3xl text-gold">1/10</p>
+                  <p className="text-[10px] sm:text-[11px] font-mono tracking-wider uppercase text-muted mt-1">Arcs Planned</p>
+                </div>
+                <div>
+                  <p className="font-display text-2xl sm:text-3xl text-gold">2104</p>
+                  <p className="text-[10px] sm:text-[11px] font-mono tracking-wider uppercase text-muted mt-1">Year Zero</p>
+                </div>
+              </div>
+
+              <Link to="/founder"
+                className="btn-outline inline-flex items-center gap-2 mt-4"
+              >
+                WITNESS THE ARCHITECT
+                <ArrowRight size={16} />
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ==================== NEW ARRIVALS ==================== */}
+      {newArrivals.length > 0 && (
+        <section className="py-12 sm:py-16 lg:py-20 border-t border-gold/10">
+          <div className="page-container">
+            <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 sm:gap-4 mb-8 sm:mb-12">
+              <div>
+                <p className="label-gold mb-2">Fresh Signals</p>
+                <h2 className="heading-section text-white">
+                  NEW <span className="text-gradient-gold">ARRIVALS</span>
+                </h2>
+              </div>
+              <Link to="/products?ordering=-created_at"
+                className="text-[11px] sm:text-xs font-mono tracking-wider uppercase text-muted hover:text-gold transition-colors duration-300 flex items-center gap-1 shrink-0"
+              >
+                View All <ArrowRight size={12} />
+              </Link>
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
+              {newArrivals.map((p, idx) => (
+                <div key={p.id} className="animate-fadeUp" style={{ animationDelay: `${idx * 80}ms` }}>
+                  <ProductCard product={p} />
+                </div>
+              ))}
+            </div>
           </div>
         </section>
       )}
 
-      {/* CTA Section */}
-      <section className="bg-[#F5F2EE] text-[#0D0D0D] py-8 sm:py-12 lg:py-16 xl:py-20">
-        <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-4 sm:space-y-6 animate-[fadeUp_0.5s_ease]">
-          <h2 className="font-[Playfair_Display] text-xl sm:text-2xl lg:text-3xl xl:text-4xl font-bold">
-            Ready to Shop?
+      {/* ==================== TRUST / MANIFESTO ==================== */}
+      <section className="py-12 sm:py-16 lg:py-20 border-t border-gold/10">
+        <div className="page-container">
+          <div className="text-center mb-8 sm:mb-12">
+            <p className="label-gold mb-3">The Covenant</p>
+            <h2 className="heading-section text-white">OUR <span className="text-gradient-gold">MANIFESTO</span></h2>
+          </div>
+
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
+            {[
+              {
+                icon: Truck,
+                title: 'Signal Transmission',
+                subtitle: 'Free delivery above ₹999',
+              },
+              {
+                icon: Shield,
+                title: 'Encrypted Payment',
+                subtitle: '100% secure transactions',
+              },
+              {
+                icon: RefreshCw,
+                title: 'Temporal Returns',
+                subtitle: '30-day return window',
+              },
+              {
+                icon: Headphones,
+                title: '24/7 Support',
+                subtitle: 'Always connected',
+              },
+            ].map((feature, idx) => {
+              const IconComp = feature.icon
+              return (
+                <div
+                  key={feature.title}
+                  className="p-4 sm:p-6 border border-gold/10 hover:border-gold/30 transition-all duration-500 group"
+                  style={{ animationDelay: `${idx * 100}ms` }}
+                >
+                  <div className="mb-3 sm:mb-4">
+                    <IconComp size={20} className="sm:w-6 sm:h-6 text-gold/60 group-hover:text-gold transition-colors duration-300" />
+                  </div>
+                  <h3 className="font-display text-xs sm:text-sm tracking-[0.1em] uppercase text-white mb-1 sm:mb-2">
+                    {feature.title}
+                  </h3>
+                  <p className="text-[10px] sm:text-xs text-muted font-mono tracking-wider">
+                    {feature.subtitle}
+                  </p>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* ==================== CTA / ENTER THE VOID ==================== */}
+      <section className="relative py-16 sm:py-20 lg:py-28 overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(212,175,55,0.05)_0%,_transparent_70%)]" />
+        <div className="page-container relative z-10 text-center">
+          <p className="label-gold mb-4 sm:mb-6">The Journey Continues</p>
+
+          <h2 className="heading-section text-white mb-4 sm:mb-6">
+            READY TO <span className="text-gradient-gold">CROSS?</span>
           </h2>
-          <p className="text-sm sm:text-base lg:text-lg text-[#3A3A3A] max-w-xl mx-auto px-2 sm:px-0">
-            Browse our complete collection and find exactly what you're looking for.
+
+          <p className="text-muted text-sm sm:text-base max-w-xl mx-auto mb-8 sm:mb-10">
+            Each artifact is a key. Each purchase is a crossing. 
+            The next arc opens when you stop counting.
           </p>
+
           <Link to="/products"
-                className="inline-flex items-center gap-1.5 sm:gap-2 px-4 sm:px-6 lg:px-8 py-2.5 sm:py-3 lg:py-4 bg-white text-[#0D0D0D] rounded-xl sm:rounded-2xl font-bold hover:shadow-[0_12px_40px_rgba(13,13,13,0.12)] transition-all duration-300 hover:scale-105 active:scale-95 text-sm sm:text-base">
-            Start Shopping
-            <ArrowRight size={16} className="sm:w-5 sm:h-5" />
+            className="btn-primary inline-flex items-center gap-2"
+          >
+            ENTER THE SHOP
+            <ArrowRight size={16} />
           </Link>
         </div>
       </section>

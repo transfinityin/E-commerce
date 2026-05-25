@@ -7,8 +7,8 @@ import NotificationBell from './NotificationBell';
 
 export default function Navbar() {
   const [scrolled,     setScrolled]     = useState(false)
-  const [hidden,       setHidden]       = useState(false)      // ADD
-  const lastScrollY = useRef(0)                                // ADD
+  const [hidden,       setHidden]       = useState(false)
+  const lastScrollY = useRef(0)
   const [menuOpen,     setMenuOpen]     = useState(false)
   const [searchOpen,   setSearchOpen]   = useState(false)
   const [searchQuery,  setSearchQuery]  = useState('')
@@ -20,12 +20,12 @@ export default function Navbar() {
   const searchRef = useRef()
   const profileRef = useRef()
 
-    useEffect(() => {
+  useEffect(() => {
     const onScroll = () => {
       const currentY = window.scrollY
       setScrolled(currentY > 20)
 
-      // Keezha scroll + 80px cross aana hide, mela scroll aana show
+      // Scroll down > 80px = hide navbar, scroll up = show
       if (currentY > lastScrollY.current && currentY > 80) {
         setHidden(true)
       } else {
@@ -83,37 +83,45 @@ export default function Navbar() {
   }
 
   const navLinks = [
-    { label: 'Shop',      to: '/products' },
+    { label: 'HOME',      to: '/' },
+    { label: 'ARCS',      to: '/arcs' },
+    { label: 'SHOP',      to: '/products' },
+    { label: 'FOUNDER',   to: '/founder' },
+    { label: 'QR CODE',   to: '/scan' },
   ]
 
   const cartCount = cart?.total_items || 0
 
-  // Calculate total navbar height for spacer
-  const topStripHeight = 32 // h-8 = 32px
-  const navHeight = 68 // h-[68px]
-
   return (
     <>
-       <nav className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-300 ${
-  hidden ? '-translate-y-full' : 'translate-y-0'
-} ${
-  scrolled 
-    ? 'bg-[var(--color-bg)] border-b border-[var(--color-border)] shadow-[var(--shadow-sm)]' 
-    : 'bg-[var(--color-bg)] border-b border-transparent'
-}`}>
-        {/* Top strip - Responsive */}
-        <div className="bg-[var(--color-secondary)] text-[var(--color-text-inverse)] text-center font-medium text-[10px] sm:text-xs tracking-widest py-1.5 sm:py-2 px-2 sm:px-4 truncate">
-          <span className="hidden sm:inline">✦ Free shipping on orders above ₹999 &nbsp;|&nbsp; Easy 7-day returns ✦</span>
-          <span className="sm:hidden">✦ Free shipping ₹999+ | 7-day returns ✦</span>
+      {/* ==================== NAVBAR ==================== */}
+      <nav 
+        className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-500 font-body
+          ${hidden ? '-translate-y-full' : 'translate-y-0'}
+          ${scrolled 
+            ? 'bg-black/95 backdrop-blur-xl border-b border-gold/20 shadow-[0_4px_30px_rgba(212,175,55,0.1)]' 
+            : 'bg-transparent border-b border-transparent'
+          }
+        `}
+      >
+        {/* Top strip - Gold accent line */}
+        <div className="bg-gold/10 border-b border-gold/10 text-center py-1 px-4">
+          <span className="hidden sm:inline text-[10px] sm:text-[11px] font-mono tracking-[0.3em] uppercase text-gold/70">
+            ✦ Beyond the veil of the physical ✦
+          </span>
+          <span className="sm:hidden text-[9px] font-mono tracking-[0.2em] uppercase text-gold/60">
+            ✦ Beyond the physical ✦
+          </span>
         </div>
 
         {/* Main nav */}
-        <div className="flex items-center mx-auto max-w-[1400px] px-3 sm:px-4 md:px-6 h-[60px] sm:h-[64px] md:h-[68px] gap-2 sm:gap-4 md:gap-8">
+        <div className="flex items-center mx-auto max-w-[1400px] px-3 sm:px-6 md:px-8 h-[56px] sm:h-[64px] md:h-[72px]">
+
           {/* Logo */}
           <Link to="/" className="flex items-center no-underline shrink-0">
             <div className="flex flex-col gap-0.5 sm:gap-1 leading-tight">
               <img
-                src="/logosign2.png"
+                src="/logosign1.png"
                 alt="Transfinity Sign"
                 className="h-8 sm:h-10 md:h-12 w-auto object-contain self-start"
               />
@@ -124,100 +132,116 @@ export default function Navbar() {
               
             </div>
           </Link>
-          
 
           {/* Nav links — desktop */}
-          <div className="hidden md:flex flex-1 gap-1">
+          <div className="hidden md:flex flex-1 justify-center gap-1 lg:gap-2">
             {navLinks.map(link => (
               <Link 
                 key={link.label} 
                 to={link.to} 
-                className={`text-sm font-medium no-underline rounded-full transition-all duration-200 px-4 py-2 ${
-                  location.pathname === link.to 
-                    ? 'bg-[var(--color-bg-alt)] text-[var(--color-text)]' 
-                    : 'bg-transparent text-[var(--color-muted)] hover:bg-[var(--color-bg-alt)] hover:text-[var(--color-text)]'
-                }`}
+                className={`nav-link text-[11px] lg:text-xs tracking-[0.2em] uppercase py-2 px-3 lg:px-4
+                  ${location.pathname === link.to 
+                    ? 'text-gold' 
+                    : 'text-muted hover:text-gold'
+                  }
+                `}
               >
                 {link.label}
               </Link>
             ))}
           </div>
 
-          {/* Scan QR Link - Desktop */}
-          {/* <Link 
-            to="/scan" 
-            className="hidden md:flex items-center gap-1.5 text-sm font-medium text-[var(--color-muted)] no-underline rounded-full transition-all duration-200 px-4 py-2 hover:bg-[var(--color-bg-alt)] hover:text-[var(--color-text)]"
-          >
-            <QrCode size={16} className="text-[var(--color-primary)]" />
-            Scan QR
-          </Link> */}
-
-          <Link to="/map" className="nav-link">
-  <span>🗺️</span> World Map
-</Link>
-
           {/* Right icons */}
-          <div className="flex items-center ml-auto gap-0.5 sm:gap-1">
+          <div className="flex items-center ml-auto gap-1 sm:gap-2">
 
             {/* Search */}
             <button 
               onClick={() => setSearchOpen(true)} 
-              className="w-9 h-9 sm:w-10 sm:h-10 border-none bg-transparent cursor-pointer rounded-full flex items-center justify-center text-[var(--color-muted)] transition-all duration-200 hover:bg-[var(--color-bg-alt)] hover:text-[var(--color-text)]"
+              className="w-9 h-9 sm:w-10 sm:h-10 border border-gold/20 bg-transparent cursor-pointer 
+                flex items-center justify-center text-muted transition-all duration-300 
+                hover:border-gold/50 hover:text-gold hover:bg-gold/5"
+              aria-label="Search"
             >
-              <Search size={18} className="sm:w-5 sm:h-5" />
+              <Search size={16} className="sm:w-[18px] sm:h-[18px]" />
             </button>
 
-            {/* Wishlist - Hidden on very small mobile, show on sm+ */}
+            {/* Wishlist - Hidden on very small mobile */}
             <Link 
               to="/wishlist" 
-              className="hidden sm:flex w-9 h-9 sm:w-10 sm:h-10 items-center justify-center text-[var(--color-muted)] rounded-full transition-all duration-200 no-underline hover:bg-[var(--color-bg-alt)] hover:text-[var(--color-text)]"
+              className="hidden sm:flex w-9 h-9 sm:w-10 sm:h-10 items-center justify-center 
+                text-muted border border-gold/20 transition-all duration-300 no-underline 
+                hover:border-gold/50 hover:text-gold hover:bg-gold/5"
+              aria-label="Wishlist"
             >
-              <Heart size={18} className="sm:w-5 sm:h-5" />
+              <Heart size={16} className="sm:w-[18px] sm:h-[18px]" />
             </Link>
 
             {/* Cart */}
             <Link 
               to="/cart" 
-              className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center text-[var(--color-muted)] rounded-full transition-all duration-200 no-underline relative hover:bg-[var(--color-bg-alt)] hover:text-[var(--color-text)]"
+              className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center 
+                text-muted border border-gold/20 transition-all duration-300 no-underline relative 
+                hover:border-gold/50 hover:text-gold hover:bg-gold/5"
+              aria-label="Cart"
             >
-              <ShoppingBag size={18} className="sm:w-5 sm:h-5" />
+              <ShoppingBag size={16} className="sm:w-[18px] sm:h-[18px]" />
               {cartCount > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 sm:top-1 sm:right-1 bg-[var(--color-primary)] text-white text-[9px] sm:text-[10px] font-bold w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-full flex items-center justify-center leading-none">
+                <span className="absolute -top-1 -right-1 bg-gold text-black text-[9px] sm:text-[10px] 
+                  font-bold font-mono w-4 h-4 sm:w-[18px] sm:h-[18px] rounded-full 
+                  flex items-center justify-center leading-none border border-black">
                   {cartCount > 9 ? '9+' : cartCount}
                 </span>
               )}
             </Link>
- <NotificationBell />
+
+            {/* Notification */}
+            <div className="hidden sm:block">
+              <NotificationBell />
+            </div>
+
             {/* Profile / Auth */}
             {isAuthenticated ? (
-              <div ref={profileRef} className="relative hidden sm:block">
+              <div ref={profileRef} className="relative hidden md:block">
                 <button 
                   onClick={() => setProfileOpen(!profileOpen)} 
-                  className={`flex items-center cursor-pointer rounded-full transition-all duration-200 gap-1.5 sm:gap-2 pl-1 sm:pl-1.5 pr-2 sm:pr-3 py-1 sm:py-1.5 ${
-                    profileOpen 
-                      ? 'bg-[var(--color-bg-alt)] border border-[var(--color-border)]' 
-                      : 'bg-transparent border border-transparent hover:bg-[var(--color-bg-alt)] hover:border-[var(--color-border)]'
-                  }`}
+                  className={`flex items-center cursor-pointer transition-all duration-300 gap-2 
+                    pl-1.5 pr-3 py-1.5 border
+                    ${profileOpen 
+                      ? 'bg-gold/10 border-gold/40 text-gold' 
+                      : 'bg-transparent border-gold/20 text-muted hover:border-gold/40 hover:text-gold hover:bg-gold/5'
+                    }
+                  `}
                 >
-                  <div className="w-6 h-6 sm:w-7 sm:h-7 bg-[var(--color-secondary)] text-[var(--color-text-inverse)] rounded-full flex items-center justify-center text-[10px] sm:text-xs font-bold">
+                  <div className="w-7 h-7 bg-gold/20 text-gold border border-gold/30 
+                    flex items-center justify-center text-[10px] font-bold font-mono">
                     {user?.name?.[0]?.toUpperCase()}
                   </div>
-                  <span className="hidden lg:block text-[12px] sm:text-[13px] font-medium text-[var(--color-text)] max-w-[80px] truncate">
+                  <span className="hidden lg:block text-[11px] font-medium text-white tracking-wider max-w-[80px] truncate">
                     {user?.name?.split(' ')[0]}
                   </span>
                   <ChevronDown 
                     size={12} 
-                    className={`hidden lg:block text-[var(--color-muted)] transition-transform duration-200 ${profileOpen ? 'rotate-180' : ''}`} 
+                    className={`hidden lg:block text-muted transition-transform duration-300 ${profileOpen ? 'rotate-180' : ''}`} 
                   />
                 </button>
 
+                {/* Profile Dropdown */}
                 {profileOpen && (
-                  <div className="absolute right-0 top-[calc(100%+8px)] bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl shadow-[var(--shadow-lg)] min-w-[180px] sm:min-w-[200px] overflow-hidden z-[200] animate-slideDown">
-                    <div className="border-b border-[var(--color-border)] p-3 sm:p-4">
-                      <p className="text-xs sm:text-[13px] font-semibold text-[var(--color-text)] truncate">{user?.name}</p>
-                      <p className="text-[11px] sm:text-xs text-[var(--color-muted)] mt-0.5 truncate">{user?.email}</p>
+                  <div className="absolute right-0 top-[calc(100%+12px)] bg-[#0A0A0A] border border-gold/20 
+                    min-w-[200px] overflow-hidden z-[200] animate-slideUp shadow-[0_8px_40px_rgba(0,0,0,0.8)]">
+                    {/* Gold accent top */}
+                    <div className="h-[2px] bg-gradient-to-r from-transparent via-gold/60 to-transparent" />
+
+                    <div className="border-b border-gold/10 p-4">
+                      <p className="text-[13px] font-semibold text-white tracking-wide truncate font-display">
+                        {user?.name}
+                      </p>
+                      <p className="text-[11px] font-mono text-muted mt-1 truncate">
+                        {user?.email}
+                      </p>
                     </div>
-                    <div className="p-1.5 sm:p-2">
+
+                    <div className="p-2">
                       {[
                         { label: 'My Profile',   to: '/profile' },
                         { label: 'My Orders',    to: '/orders' },
@@ -228,27 +252,33 @@ export default function Navbar() {
                           key={item.label} 
                           to={item.to} 
                           onClick={() => setProfileOpen(false)} 
-                          className="block text-xs sm:text-[13px] text-[var(--color-muted)] no-underline rounded-lg transition-all duration-150 hover:bg-[var(--color-bg-alt)] hover:text-[var(--color-text)] py-2 sm:py-2.5 px-2.5 sm:px-3"
+                          className="block text-[12px] text-muted tracking-wider uppercase no-underline 
+                            transition-all duration-200 hover:bg-gold/5 hover:text-gold py-2.5 px-3"
                         >
                           {item.label}
                         </Link>
                       ))}
+
                       {user?.role === 'admin' && (
                         <Link 
                           to="/admin" 
                           onClick={() => setProfileOpen(false)} 
-                          className="block text-xs sm:text-[13px] text-[var(--color-primary)] font-semibold no-underline rounded-lg transition-all duration-150 hover:bg-[var(--color-primary-light)] py-2 sm:py-2.5 px-2.5 sm:px-3"
+                          className="flex items-center gap-2 text-[12px] text-gold font-semibold 
+                            tracking-wider uppercase no-underline transition-all duration-200 
+                            hover:bg-gold/10 py-2.5 px-3"
                         >
-                          <span className="flex items-center gap-1.5">
-                            <Zap size={12} className="sm:w-3.5 sm:h-3.5" />
-                            Admin Panel
-                          </span>
+                          <Zap size={12} />
+                          Admin Panel
                         </Link>
                       )}
-                      <hr className="border-none border-t border-[var(--color-border)] my-1" />
+
+                      <div className="h-[1px] bg-gold/10 my-2" />
+
                       <button 
                         onClick={() => { logout(); setProfileOpen(false) }} 
-                        className="w-full text-left bg-transparent border-none text-xs sm:text-[13px] text-[var(--color-danger)] cursor-pointer rounded-lg transition-all duration-150 hover:bg-[var(--color-danger-bg)] py-2 sm:py-2.5 px-2.5 sm:px-3"
+                        className="w-full text-left bg-transparent border-none text-[12px] text-red-400 
+                          tracking-wider uppercase cursor-pointer transition-all duration-200 
+                          hover:bg-red-400/10 py-2.5 px-3"
                       >
                         Sign Out
                       </button>
@@ -257,16 +287,20 @@ export default function Navbar() {
                 )}
               </div>
             ) : (
-              <div className="hidden sm:flex gap-1 sm:gap-2">
+              <div className="hidden md:flex gap-2">
                 <Link 
                   to="/login" 
-                  className="text-xs sm:text-[13px] font-medium text-[var(--color-text)] no-underline rounded-full transition-all duration-200 hover:bg-[var(--color-bg-alt)] px-3 sm:px-4 py-1.5 sm:py-2"
+                  className="text-[11px] tracking-[0.15em] uppercase font-medium text-muted 
+                    no-underline border border-gold/20 transition-all duration-300 
+                    hover:border-gold/50 hover:text-gold hover:bg-gold/5 px-4 py-2"
                 >
-                  Sign in
+                  Sign In
                 </Link>
                 <Link 
                   to="/register" 
-                  className="text-xs sm:text-[13px] font-medium text-[var(--color-text-inverse)] no-underline bg-[var(--color-secondary)] rounded-full transition-all duration-200 hover:bg-[var(--color-secondary-light)] px-3 sm:px-4 py-1.5 sm:py-2"
+                  className="text-[11px] tracking-[0.15em] uppercase font-medium text-black 
+                    no-underline bg-gold transition-all duration-300 
+                    hover:bg-gold-light hover:shadow-[0_0_20px_rgba(212,175,55,0.3)] px-4 py-2"
                 >
                   Join
                 </Link>
@@ -276,134 +310,170 @@ export default function Navbar() {
             {/* Mobile menu button */}
             <button 
               onClick={() => setMenuOpen(!menuOpen)} 
-              className="md:hidden w-9 h-9 sm:w-10 sm:h-10 border-none bg-transparent cursor-pointer rounded-full items-center justify-center text-[var(--color-text)] flex"
+              className="md:hidden w-9 h-9 sm:w-10 sm:h-10 border border-gold/20 bg-transparent 
+                cursor-pointer flex items-center justify-center text-white 
+                transition-all duration-300 hover:border-gold/50 hover:text-gold"
+              aria-label="Menu"
             >
               {menuOpen ? <X size={20} /> : <Menu size={20} />}
             </button>
           </div>
         </div>
 
-        {/* Mobile menu */}
+        {/* ==================== MOBILE MENU ==================== */}
         {menuOpen && (
-          <div className="bg-[var(--color-surface)] border-t border-[var(--color-border)] p-3 sm:p-4 animate-slideDown md:hidden">
-            {navLinks.map(link => (
-              <Link 
-                key={link.label} 
-                to={link.to} 
-                className="block text-sm sm:text-[15px] font-medium text-[var(--color-text)] no-underline rounded-xl transition-colors duration-150 hover:bg-[var(--color-bg-alt)] py-3 sm:py-3.5 px-3 sm:px-4"
-              >
-                {link.label}
-              </Link>
-            ))}
-            <Link 
-              to="/scan" 
-              className="flex items-center gap-2 text-sm sm:text-[15px] font-medium text-[var(--color-text)] no-underline rounded-xl transition-colors duration-150 hover:bg-[var(--color-bg-alt)] py-3 sm:py-3.5 px-3 sm:px-4"
-            >
-              <QrCode size={16} className="text-[var(--color-primary)]" />
-              Scan QR
-            </Link>
-            
-            {/* Mobile-only auth links when not authenticated */}
-            {!isAuthenticated && (
-              <div className="flex gap-2 mt-3 pt-3 border-t border-[var(--color-border)] sm:hidden">
+          <div className="bg-black/98 border-t border-gold/10 md:hidden animate-slideUp">
+            {/* Gold accent line */}
+            <div className="h-[1px] bg-gradient-to-r from-transparent via-gold/40 to-transparent" />
+
+            <div className="p-4 sm:p-6 space-y-1">
+              {navLinks.map((link, index) => (
                 <Link 
-                  to="/login" 
-                  className="flex-1 text-center text-sm font-medium text-[var(--color-text)] no-underline rounded-full border border-[var(--color-border)] py-2.5"
+                  key={link.label} 
+                  to={link.to} 
+                  onClick={() => setMenuOpen(false)}
+                  className={`block font-display text-sm tracking-[0.2em] uppercase no-underline 
+                    transition-all duration-300 py-3 px-4 border-l-2
+                    ${location.pathname === link.to 
+                      ? 'text-gold border-gold bg-gold/5' 
+                      : 'text-muted border-transparent hover:text-gold hover:border-gold/30 hover:bg-gold/5'
+                    }
+                  `}
+                  style={{ animationDelay: `${index * 50}ms` }}
                 >
-                  Sign in
+                  {link.label}
                 </Link>
-                <Link 
-                  to="/register" 
-                  className="flex-1 text-center text-sm font-medium text-[var(--color-text-inverse)] no-underline bg-[var(--color-secondary)] rounded-full py-2.5"
-                >
-                  Join
-                </Link>
-              </div>
-            )}
-            
-            {/* Mobile-only profile links when authenticated */}
-            {isAuthenticated && (
-              <div className="mt-3 pt-3 border-t border-[var(--color-border)] sm:hidden">
-                <div className="flex items-center gap-2 px-3 py-2 mb-2">
-                  <div className="w-8 h-8 bg-[var(--color-secondary)] text-[var(--color-text-inverse)] rounded-full flex items-center justify-center text-xs font-bold">
-                    {user?.name?.[0]?.toUpperCase()}
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold text-[var(--color-text)]">{user?.name}</p>
-                    <p className="text-xs text-[var(--color-muted)]">{user?.email}</p>
-                  </div>
+              ))}
+
+              <div className="h-[1px] bg-gold/10 my-3" />
+
+              {/* Mobile auth */}
+              {!isAuthenticated ? (
+                <div className="flex gap-3 pt-2">
+                  <Link 
+                    to="/login" 
+                    onClick={() => setMenuOpen(false)}
+                    className="flex-1 text-center text-[11px] tracking-[0.15em] uppercase font-medium 
+                      text-muted border border-gold/20 py-3 transition-all duration-300 
+                      hover:border-gold/50 hover:text-gold no-underline"
+                  >
+                    Sign In
+                  </Link>
+                  <Link 
+                    to="/register" 
+                    onClick={() => setMenuOpen(false)}
+                    className="flex-1 text-center text-[11px] tracking-[0.15em] uppercase font-medium 
+                      text-black bg-gold py-3 transition-all duration-300 
+                      hover:bg-gold-light no-underline"
+                  >
+                    Join
+                  </Link>
                 </div>
-                {[
-                  { label: 'My Profile',   to: '/profile' },
-                  { label: 'My Orders',    to: '/orders' },
-                  { label: 'Addresses',    to: '/addresses' },
-                  { label: 'Wishlist',     to: '/wishlist' },
-                ].map(item => (
-                  <Link 
-                    key={item.label} 
-                    to={item.to} 
-                    className="block text-sm text-[var(--color-muted)] no-underline rounded-lg py-2.5 px-3 hover:bg-[var(--color-bg-alt)] hover:text-[var(--color-text)]"
+              ) : (
+                <div className="space-y-1 pt-2">
+                  <div className="flex items-center gap-3 px-4 py-3 mb-2">
+                    <div className="w-10 h-10 bg-gold/20 text-gold border border-gold/30 
+                      flex items-center justify-center text-sm font-bold font-mono">
+                      {user?.name?.[0]?.toUpperCase()}
+                    </div>
+                    <div>
+                      <p className="text-sm font-display text-white tracking-wide">{user?.name}</p>
+                      <p className="text-[11px] font-mono text-muted">{user?.email}</p>
+                    </div>
+                  </div>
+
+                  {[
+                    { label: 'My Profile',   to: '/profile' },
+                    { label: 'My Orders',    to: '/orders' },
+                    { label: 'Addresses',    to: '/addresses' },
+                    { label: 'Wishlist',     to: '/wishlist' },
+                  ].map(item => (
+                    <Link 
+                      key={item.label} 
+                      to={item.to} 
+                      onClick={() => setMenuOpen(false)}
+                      className="block text-[12px] text-muted tracking-wider uppercase no-underline 
+                        transition-all duration-200 hover:text-gold py-2.5 px-4"
+                    >
+                      {item.label}
+                    </Link>
+                  ))}
+
+                  {user?.role === 'admin' && (
+                    <Link 
+                      to="/admin" 
+                      onClick={() => setMenuOpen(false)}
+                      className="flex items-center gap-2 text-[12px] text-gold font-semibold 
+                        tracking-wider uppercase no-underline py-2.5 px-4"
+                    >
+                      <Zap size={14} />
+                      Admin Panel
+                    </Link>
+                  )}
+
+                  <button 
+                    onClick={() => { logout(); setMenuOpen(false) }} 
+                    className="w-full text-left bg-transparent border-none text-[12px] text-red-400 
+                      tracking-wider uppercase cursor-pointer py-2.5 px-4 mt-2"
                   >
-                    {item.label}
-                  </Link>
-                ))}
-                {user?.role === 'admin' && (
-                  <Link 
-                    to="/admin" 
-                    className="flex items-center gap-1.5 text-sm text-[var(--color-primary)] font-semibold no-underline rounded-lg py-2.5 px-3"
-                  >
-                    <Zap size={14} />
-                    Admin Panel
-                  </Link>
-                )}
-                <button 
-                  onClick={() => { logout(); setMenuOpen(false) }} 
-                  className="w-full text-left bg-transparent border-none text-sm text-[var(--color-danger)] cursor-pointer rounded-lg py-2.5 px-3 mt-1 hover:bg-[var(--color-danger-bg)]"
-                >
-                  Sign Out
-                </button>
-              </div>
-            )}
+                    Sign Out
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         )}
       </nav>
 
-      {/* Search overlay */}
+      {/* ==================== SEARCH OVERLAY ==================== */}
       {searchOpen && (
         <div 
-          className="fixed inset-0 z-[200] bg-[var(--color-secondary)]/60 backdrop-blur-lg flex items-start justify-center pt-[100px] sm:pt-[120px] animate-fadeIn"
+          className="fixed inset-0 z-[200] bg-black/90 backdrop-blur-xl flex items-start justify-center 
+            pt-[100px] sm:pt-[140px] animate-fadeIn"
           onClick={(e) => { if (e.target === e.currentTarget) setSearchOpen(false) }}
         >
-          <div className="w-full max-w-[640px] mx-3 sm:mx-4 animate-fadeUp">
+          <div className="w-full max-w-[700px] mx-4 sm:mx-6 animate-fadeUp">
+            {/* Search label */}
+            <p className="text-center text-gold/60 text-[10px] sm:text-[11px] font-mono tracking-[0.3em] uppercase mb-4">
+              ✦ Search the archives ✦
+            </p>
+
             <form 
               onSubmit={handleSearch} 
-              className="flex bg-[var(--color-surface)] border-2 border-[var(--color-secondary)] rounded-[24px] sm:rounded-[28px] shadow-[var(--shadow-lg)] gap-2 sm:gap-3 py-1.5 sm:py-2 pl-3 sm:pl-5 pr-1.5 sm:pr-2"
+              className="flex items-center bg-[#0A0A0A] border border-gold/20 
+                shadow-[0_0_40px_rgba(212,175,55,0.1)] gap-3 py-2 px-4 sm:px-6
+                focus-within:border-gold/50 focus-within:shadow-[0_0_60px_rgba(212,175,55,0.15)]
+                transition-all duration-300"
             >
-              <Search size={18} className="sm:w-5 sm:h-5 text-[var(--color-muted)] shrink-0 self-center" />
+              <Search size={18} className="text-gold/50 shrink-0" />
               <input
                 ref={searchRef}
                 type="text"
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
-                placeholder="Search products, brands..."
-                className="flex-1 border-none outline-none text-sm sm:text-base bg-transparent text-[var(--color-text)] placeholder:text-[var(--color-muted-light)]"
+                placeholder="Search artifacts, arcs, relics..."
+                className="flex-1 border-none outline-none bg-transparent text-white 
+                  placeholder:text-muted/50 text-sm sm:text-base font-body"
               />
               <button 
                 type="submit" 
-                className="bg-[var(--color-secondary)] text-[var(--color-text-inverse)] border-none rounded-[16px] sm:rounded-[20px] text-xs sm:text-sm font-semibold cursor-pointer shrink-0 transition-all duration-200 hover:bg-[var(--color-secondary-light)] px-4 sm:px-6 py-2 sm:py-2.5"
+                className="bg-gold text-black border-none text-xs sm:text-sm font-semibold 
+                  tracking-wider uppercase cursor-pointer shrink-0 transition-all duration-300 
+                  hover:bg-gold-light hover:shadow-[0_0_20px_rgba(212,175,55,0.3)] px-5 sm:px-6 py-2 sm:py-2.5"
               >
                 Search
               </button>
             </form>
-            <p className="text-white/60 text-xs sm:text-[13px] text-center mt-3 sm:mt-4">
-              Press <kbd className="bg-white/15 px-1.5 py-0.5 rounded text-[10px] sm:text-[11px]">ESC</kbd> to close
+
+            <p className="text-center text-muted/40 text-[10px] sm:text-[11px] font-mono tracking-wider mt-4">
+              Press <kbd className="bg-gold/10 text-gold/60 px-2 py-0.5 text-[10px] border border-gold/20">ESC</kbd> to close
             </p>
           </div>
         </div>
       )}
 
       {/* Spacer - accounts for top strip + nav */}
-      <div className="h-[92px] sm:h-[96px] md:h-[100px]" />
+      <div className="h-[80px] sm:h-[88px] md:h-[96px]" />
     </>
   )
-}
+} 

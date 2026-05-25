@@ -2,9 +2,25 @@ import { useEffect, useState } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { toast } from 'react-hot-toast'
 import {
-  ShoppingBag, Heart, ChevronLeft, ChevronRight, ChevronDown, ChevronUp,
-  Truck, RefreshCw, Banknote, Zap, Star, Shield, Clock, Ruler, Sparkles, MapPin,
-  ZoomIn, ZoomOut, X
+  ShoppingBag,
+  Heart,
+  ChevronLeft,
+  ChevronRight,
+  ChevronDown,
+  ChevronUp,
+  Truck,
+  RefreshCw,
+  Banknote,
+  Zap,
+  Star,
+  Ruler,
+  Sparkles,
+  MapPin,
+  ZoomIn,
+  ZoomOut,
+  X,
+  Loader2,
+  CheckCircle2,
 } from 'lucide-react'
 import api from '../services/api'
 import useCartStore from '../store/cartStore'
@@ -14,32 +30,51 @@ import ProductCard from '../components/ProductCard'
 
 function SaleTimer() {
   const [time, setTime] = useState({ h: 10, m: 49, s: 59 })
+
   useEffect(() => {
-    const t = setInterval(() => {
-      setTime(prev => {
+    const timer = setInterval(() => {
+      setTime((prev) => {
         let { h, m, s } = prev
-        s--
-        if (s < 0) { s = 59; m-- }
-        if (m < 0) { m = 59; h-- }
+
+        s -= 1
+
+        if (s < 0) {
+          s = 59
+          m -= 1
+        }
+
+        if (m < 0) {
+          m = 59
+          h -= 1
+        }
+
         if (h < 0) return { h: 23, m: 59, s: 59 }
+
         return { h, m, s }
       })
     }, 1000)
-    return () => clearInterval(t)
+
+    return () => clearInterval(timer)
   }, [])
-  const pad = n => String(n).padStart(2, '0')
+
+  const pad = (value) => String(value).padStart(2, '0')
+
   return (
-    <div className="bg-[var(--color-warning-bg)] border border-[var(--color-warning)]/20 rounded-xl px-4 py-3 flex items-center justify-between mb-4">
-      <span className="text-[11px] font-bold text-[var(--color-warning)] tracking-wide flex items-center gap-1.5">
-        <Sparkles size={14} /> SALE ENDS IN
+    <div className="bg-gold/10 border border-gold/20 px-4 py-3 flex items-center justify-between gap-3">
+      <span className="text-[10px] sm:text-xs font-mono tracking-wider uppercase text-gold flex items-center gap-2">
+        <Sparkles size={14} />
+        Sale Ends In
       </span>
-      <div className="flex gap-1 items-center">
-        {[pad(time.h), pad(time.m), pad(time.s)].map((v, i, arr) => (
-          <span key={i} className="flex items-center gap-1">
-            <span className="bg-[var(--color-secondary)] text-white px-2 py-1 rounded text-xs font-bold font-mono min-w-[28px] text-center">
-              {v}
+
+      <div className="flex items-center gap-1">
+        {[pad(time.h), pad(time.m), pad(time.s)].map((value, index, arr) => (
+          <span key={index} className="flex items-center gap-1">
+            <span className="bg-black border border-gold/20 text-gold px-2 py-1 text-xs font-mono min-w-[30px] text-center">
+              {value}
             </span>
-            {i < arr.length - 1 && <span className="text-[var(--color-warning)] font-bold text-xs">:</span>}
+            {index < arr.length - 1 && (
+              <span className="text-gold text-xs font-bold">:</span>
+            )}
           </span>
         ))}
       </div>
@@ -49,18 +84,28 @@ function SaleTimer() {
 
 function AccordionItem({ title, content }) {
   const [open, setOpen] = useState(false)
+
   return (
-    <div className="border-b border-[var(--color-border)] last:border-b-0">
+    <div className="border-b border-gold/10 last:border-b-0">
       <button
+        type="button"
         onClick={() => setOpen(!open)}
-        className="w-full py-3 flex justify-between items-center bg-transparent border-none cursor-pointer text-left hover:text-[var(--color-primary)] transition-colors"
+        className="w-full py-4 flex justify-between items-center bg-transparent border-none cursor-pointer text-left text-white hover:text-gold transition-colors"
       >
-        <span className="text-xs font-bold text-[var(--color-text)] tracking-wide uppercase">{title}</span>
-        {open ? <ChevronUp size={14} className="text-[var(--color-muted)]" /> : <ChevronDown size={14} className="text-[var(--color-muted)]" />}
+        <span className="text-xs sm:text-sm font-mono tracking-wider uppercase">
+          {title}
+        </span>
+
+        {open ? (
+          <ChevronUp size={15} className="text-gold" />
+        ) : (
+          <ChevronDown size={15} className="text-muted" />
+        )}
       </button>
+
       {open && (
-        <div className="pb-3 text-xs text-[var(--color-muted)] leading-relaxed animate-fadeIn">
-          {content}
+        <div className="pb-4 text-xs sm:text-sm text-muted font-mono tracking-wider leading-relaxed animate-fadeIn">
+          {content || 'Information will be updated soon.'}
         </div>
       )}
     </div>
@@ -75,8 +120,9 @@ function StarRatingInput({ value, onChange }) {
           key={star}
           type="button"
           onClick={() => onChange(star)}
-          className="bg-transparent border-none cursor-pointer text-lg transition-transform hover:scale-110"
-          style={{ color: star <= value ? 'var(--color-warning)' : 'var(--color-border-light)' }}
+          className="bg-transparent border-none cursor-pointer text-xl transition-transform hover:scale-110"
+          style={{ color: star <= value ? '#D4AF37' : 'rgba(212,175,55,0.18)' }}
+          aria-label={`Rate ${star} star${star > 1 ? 's' : ''}`}
         >
           ★
         </button>
@@ -88,6 +134,7 @@ function StarRatingInput({ value, onChange }) {
 export default function ProductDetail() {
   const { slug } = useParams()
   const navigate = useNavigate()
+
   const [product, setProduct] = useState(null)
   const [related, setRelated] = useState([])
   const [selImage, setSelImage] = useState(0)
@@ -106,37 +153,56 @@ export default function ProductDetail() {
   const [replyText, setReplyText] = useState('')
   const [hasPurchased, setHasPurchased] = useState(false)
 
-  const { addToCart } = useCartStore()
-  const { toggle, isWishlisted } = useWishlistStore()
-  const { isAuthenticated, user } = useAuthStore()
   const [zoomOpen, setZoomOpen] = useState(false)
   const [zoomLevel, setZoomLevel] = useState(1)
 
-const zoomIn  = () => setZoomLevel(z => Math.min(3, +(z + 0.5).toFixed(1)))
-const zoomOut = () => setZoomLevel(z => Math.max(1, +(z - 0.5).toFixed(1)))
-const zoomReset = () => setZoomLevel(1)
+  const { addToCart } = useCartStore()
+  const { toggle, isWishlisted } = useWishlistStore()
+  const { isAuthenticated, user } = useAuthStore()
+
+  const zoomIn = () => setZoomLevel((z) => Math.min(3, +(z + 0.5).toFixed(1)))
+  const zoomOut = () => setZoomLevel((z) => Math.max(1, +(z - 0.5).toFixed(1)))
+  const zoomReset = () => setZoomLevel(1)
+
   useEffect(() => {
+    let mounted = true
+
     setLoading(true)
     setSelImage(0)
     setSelSize(null)
+    setQuantity(1)
+    setZoomOpen(false)
+    setZoomLevel(1)
+
     Promise.all([
       api.get(`/products/${slug}/`),
       api.get(`/products/${slug}/related/`).catch(() => ({ data: [] })),
-    ]).then(([p, r]) => {
-      setProduct(p.data)
-      setRelated(r.data.results || r.data || [])
-      setReviews(p.data.reviews || [])
-    }).catch(() => navigate('/products'))
-      .finally(() => setLoading(false))
-  }, [slug])
+    ])
+      .then(([productRes, relatedRes]) => {
+        if (!mounted) return
+
+        setProduct(productRes.data)
+        setRelated(relatedRes.data.results || relatedRes.data || [])
+        setReviews(productRes.data.reviews || [])
+      })
+      .catch(() => navigate('/products'))
+      .finally(() => {
+        if (mounted) setLoading(false)
+      })
+
+    return () => {
+      mounted = false
+    }
+  }, [slug, navigate])
 
   const fetchReviews = async () => {
     if (!product?.id) return
+
     try {
       const { data } = await api.get(`/reviews/product/${product.id}/`)
       setReviews(data.results || data || [])
-    } catch (e) {
-      console.error('Failed to load reviews', e)
+    } catch (error) {
+      console.error('Failed to load reviews', error)
     }
   }
 
@@ -145,47 +211,76 @@ const zoomReset = () => setZoomLevel(1)
   }, [product?.id])
 
   useEffect(() => {
-    if (isAuthenticated && product?.id) {
-      api.get('/orders/my/')
-        .then(r => {
-          const orders = r.data.results || r.data || []
-          const purchased = orders.some(o =>
-            o.items?.some(i => i.product?.id === product.id || i.product_id === product.id)
+    if (!isAuthenticated || !product?.id) return
+
+    api
+      .get('/orders/my/')
+      .then((res) => {
+        const orders = res.data.results || res.data || []
+
+        const purchased = orders.some((order) =>
+          order.items?.some(
+            (item) => item.product?.id === product.id || item.product_id === product.id
           )
-          setHasPurchased(purchased)
-        })
-        .catch(() => setHasPurchased(false))
-    }
+        )
+
+        setHasPurchased(purchased)
+      })
+      .catch(() => setHasPurchased(false))
   }, [isAuthenticated, product?.id])
 
-  const hasSizes = product?.available_sizes?.length > 0
+  const images = product?.images?.length > 0 ? product.images : []
+  const sizes = product?.available_sizes || []
+  const hasSizes = sizes.length > 0
+  const wishlisted = isWishlisted(product?.id)
+
+  const prevImage = () => {
+    if (!images.length) return
+    setSelImage((index) => (index - 1 + images.length) % images.length)
+  }
+
+  const nextImage = () => {
+    if (!images.length) return
+    setSelImage((index) => (index + 1) % images.length)
+  }
 
   const validateAndAdd = () => {
-    if (!isAuthenticated) { toast.error('Please sign in first'); return false }
-    if (hasSizes && !selSize) {
-      toast.error('Please select a size first!')
-      document.getElementById('size-section')?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    if (!isAuthenticated) {
+      toast.error('Please sign in first')
       return false
     }
+
+    if (hasSizes && !selSize) {
+      toast.error('Please select a size first')
+      document
+        .getElementById('size-section')
+        ?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      return false
+    }
+
     return true
   }
 
   const handleAddToCart = async () => {
     if (!validateAndAdd()) return
+
     setAddingCart(true)
+
     try {
       await addToCart(product.id, quantity, selSize)
-      toast.success(`Added to cart! Size: ${selSize}`)
+      toast.success(selSize ? `Added to cart! Size: ${selSize}` : 'Added to cart!')
     } catch {
       toast.error('Failed to add')
     } finally {
-      setTimeout(() => setAddingCart(false), 1000)
+      setTimeout(() => setAddingCart(false), 900)
     }
   }
 
   const handleBuyNow = async () => {
     if (!validateAndAdd()) return
+
     setBuyingNow(true)
+
     try {
       await addToCart(product.id, quantity, selSize)
       navigate('/checkout')
@@ -196,21 +291,39 @@ const zoomReset = () => setZoomLevel(1)
   }
 
   const handleWishlist = async () => {
-    if (!isAuthenticated) { toast.error('Please sign in first'); return }
+    if (!isAuthenticated) {
+      toast.error('Please sign in first')
+      return
+    }
+
     await toggle(product.id)
     toast.success(isWishlisted(product.id) ? 'Removed from wishlist' : 'Saved to wishlist!')
   }
 
   const submitReview = async () => {
-    if (!isAuthenticated) { toast.error('Please sign in first'); return }
-    if (!newRating) { toast.error('Please select a rating'); return }
-    if (!newComment.trim()) { toast.error('Please write a review'); return }
+    if (!isAuthenticated) {
+      toast.error('Please sign in first')
+      return
+    }
+
+    if (!newRating) {
+      toast.error('Please select a rating')
+      return
+    }
+
+    if (!newComment.trim()) {
+      toast.error('Please write a review')
+      return
+    }
+
     setSubmittingReview(true)
+
     try {
       await api.post(`/reviews/product/${product.id}/create/`, {
         rating: newRating,
-        comment: newComment
+        comment: newComment.trim(),
       })
+
       toast.success('Review submitted!')
       setNewRating(0)
       setNewComment('')
@@ -224,8 +337,12 @@ const zoomReset = () => setZoomLevel(1)
 
   const submitAdminReply = async (reviewId) => {
     if (!replyText.trim()) return
+
     try {
-      await api.patch(`/reviews/${reviewId}/reply/`, { admin_reply: replyText })
+      await api.patch(`/reviews/${reviewId}/reply/`, {
+        admin_reply: replyText.trim(),
+      })
+
       toast.success('Reply posted!')
       setReplyingTo(null)
       setReplyText('')
@@ -235,302 +352,308 @@ const zoomReset = () => setZoomLevel(1)
     }
   }
 
-  const images = product?.images?.length > 0 ? product.images : []
-  const wishlisted = isWishlisted(product?.id)
-  const sizes = product?.available_sizes || []
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-black pt-[76px] sm:pt-[88px] lg:pt-[96px] overflow-x-hidden">
+        <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
+          <div className="grid grid-cols-1 lg:grid-cols-[88px_1fr_420px] gap-6 animate-pulse">
+            <div className="hidden lg:flex flex-col gap-3">
+              {[1, 2, 3, 4].map((item) => (
+                <div key={item} className="w-[76px] h-[92px] skeleton-dark" />
+              ))}
+            </div>
 
-  const prevImage = () => setSelImage(i => (i - 1 + images.length) % images.length)
-  const nextImage = () => setSelImage(i => (i + 1) % images.length)
+            <div className="skeleton-dark aspect-[3/4]" />
 
-  if (loading) return (
-    <div className="min-h-screen bg-[var(--color-bg)]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-10">
-        <div className="grid grid-cols-1 lg:grid-cols-[auto_1fr_380px] gap-6 animate-pulse">
-          <div className="hidden lg:flex flex-col gap-2">
-            {[...Array(4)].map((_, i) => (
-              <div key={i} className="w-[72px] h-[88px] bg-[var(--color-bg-alt)] rounded-lg" />
-            ))}
-          </div>
-          <div className="bg-[var(--color-bg-alt)] aspect-[3/4] rounded-xl" />
-          <div className="flex flex-col gap-4 pt-5">
-            {[80, 40, 60, 30, 100, 50, 70].map((w, i) => (
-              <div key={i} className="h-3.5 bg-[var(--color-bg-alt)] rounded" style={{ width: `${w}%` }} />
-            ))}
+            <div className="flex flex-col gap-4 pt-2">
+              {[80, 45, 60, 35, 100, 50, 70].map((width, index) => (
+                <div
+                  key={index}
+                  className="h-4 skeleton-dark"
+                  style={{ width: `${width}%` }}
+                />
+              ))}
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  )
+    )
+  }
 
   if (!product) return null
 
   return (
-    <div className="min-h-screen bg-[var(--color-bg)] pb-12">
-
+    <div className="min-h-screen bg-black pt-[76px] sm:pt-[88px] lg:pt-[96px] pb-12 overflow-x-hidden">
       {/* Breadcrumb */}
-      <div className="page-container py-3 border-b border-[var(--color-border)]">
-        <nav className="text-xs text-[var(--color-muted)] flex items-center gap-1.5 flex-wrap">
-          <Link to="/" className="hover:text-[var(--color-text)] transition-colors">Home</Link>
-          <span className="text-[var(--color-muted-light)]">›</span>
-          <Link to="/products" className="hover:text-[var(--color-text)] transition-colors">Products</Link>
-          <span className="text-[var(--color-muted-light)]">›</span>
-          {product.category && (
-            <>
-              <Link
-                to={`/products?category_slug=${product.category.slug}`}
-                className="hover:text-[var(--color-text)] transition-colors"
-              >
-                {product.category.name}
-              </Link>
-              <span className="text-[var(--color-muted-light)]">›</span>
-            </>
-          )}
-          <span className="text-[var(--color-text)] font-medium">{product.name}</span>
-        </nav>
+      <div className="border-b border-gold/10 bg-[#050505]">
+        <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+          <nav className="text-[10px] sm:text-xs text-muted font-mono tracking-wider flex items-center gap-1.5 flex-wrap">
+            <Link to="/" className="hover:text-gold transition-colors">
+              Home
+            </Link>
+            <span>›</span>
+
+            <Link to="/products" className="hover:text-gold transition-colors">
+              Products
+            </Link>
+            <span>›</span>
+
+            {product.category && (
+              <>
+                <Link
+                  to={`/products?category_slug=${product.category.slug}`}
+                  className="hover:text-gold transition-colors"
+                >
+                  {product.category.name}
+                </Link>
+                <span>›</span>
+              </>
+            )}
+
+            <span className="text-white truncate max-w-[220px] sm:max-w-md">
+              {product.name}
+            </span>
+          </nav>
+        </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-5 lg:py-6">
-        <div className="grid grid-cols-1 lg:grid-cols-[auto_1fr_380px] gap-6 lg:gap-8 items-start">
-
-          {/* ── Thumbnail Column (Desktop) ── */}
-          <div className="hidden lg:flex flex-col gap-2 sticky top-28">
-            {images.length > 0 ? images.map((img, i) => (
-              <button
-                key={i}
-                onClick={() => setSelImage(i)}
-                className={`w-[72px] h-[88px] rounded-lg overflow-hidden border-2 transition-all bg-transparent p-0 flex-shrink-0 cursor-pointer ${
-                  selImage === i
-                    ? 'border-[var(--color-primary)] opacity-100 shadow-md'
-                    : 'border-[var(--color-border)] opacity-60 hover:opacity-100 hover:border-[var(--color-muted)]'
-                }`}
-              >
-                <img src={img.image} alt={`${product.name} view ${i + 1}`} className="w-full h-full object-cover" />
-              </button>
-            )) : (
-              <div className="w-[72px] h-[88px] bg-[var(--color-bg-alt)] rounded-lg flex items-center justify-center text-2xl">
+      <main className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 sm:py-6 lg:py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-[88px_minmax(0,1fr)_420px] gap-5 sm:gap-6 lg:gap-8 items-start">
+          {/* Desktop thumbnails */}
+          <aside className="hidden lg:flex flex-col gap-3 sticky top-28">
+            {images.length > 0 ? (
+              images.map((img, index) => (
+                <button
+                  key={index}
+                  type="button"
+                  onClick={() => setSelImage(index)}
+                  className={`w-[76px] h-[92px] overflow-hidden border transition-all bg-black p-0 cursor-pointer ${
+                    selImage === index
+                      ? 'border-gold opacity-100 shadow-[0_0_22px_rgba(212,175,55,0.25)]'
+                      : 'border-gold/15 opacity-60 hover:opacity-100 hover:border-gold/45'
+                  }`}
+                >
+                  <img
+                    src={img.image}
+                    alt={`${product.name} view ${index + 1}`}
+                    className="w-full h-full object-cover"
+                  />
+                </button>
+              ))
+            ) : (
+              <div className="w-[76px] h-[92px] bg-[#0A0A0A] border border-gold/10 flex items-center justify-center text-2xl">
                 🛍️
               </div>
             )}
-          </div>
+          </aside>
 
-          {/* ── Main Image ── */}
-         {/* ── Main Image ── */}
-<div className="lg:sticky lg:top-28">
-  <div className="rounded-xl overflow-hidden bg-[var(--color-bg-alt)] border border-[var(--color-border)] relative">
-
-    {images.length > 0 ? (
-      <img
-        key={selImage}
-        src={images[selImage].image}
-        alt={product.name}
-        onClick={() => { setZoomOpen(true); setZoomLevel(1) }}
-        className="w-full h-[480px] object-cover block cursor-zoom-in"
-      />
-    ) : (
-      <div className="w-full h-[480px] flex items-center justify-center text-7xl bg-[var(--color-bg-alt)]">
-        🛍️
-      </div>
-    )}
-
-    {/* Zoom icon button */}
-    {images.length > 0 && (
-      <button
-        onClick={() => { setZoomOpen(true); setZoomLevel(1) }}
-        className="absolute top-3 right-3 w-9 h-9 bg-[var(--color-surface)]/90 border border-[var(--color-border)] rounded-lg flex items-center justify-center shadow-sm hover:bg-[var(--color-surface)] transition-colors cursor-pointer"
-        title="Zoom image"
-      >
-        <ZoomIn size={16} className="text-[var(--color-text)]" />
-      </button>
-    )}
-
-   {/* Badges, Arrows, Dots */}
-{images.length > 1 && (
-  <>
-    {/* Left Arrow */}
-    <button onClick={prevImage} className="absolute left-2 top-1/2 -translate-y-1/2 ...">
-      <ChevronLeft size={20} />
-    </button>
-    {/* Right Arrow */}
-    <button onClick={nextImage} className="absolute right-2 top-1/2 -translate-y-1/2 ...">
-      <ChevronRight size={20} />
-    </button>
-    {/* Dots */}
-    <div className="absolute h-0  bottom-3 left-1/2 -translate-x-1/2 flex gap-1">
-      {images.map((_, i) => (
-        <button key={i} onClick={() => setSelImage(i)} 
-          className={`w-2 h-2 rounded-full ${selImage === i ? 'bg-white' : 'bg-white/50'}`} />
-      ))}
-    </div>
-  </>
-)}
-  
-{/* Mobile thumbnails */}
-
-</div>
-  {/* Mobile thumbnails — same as before */}
-  <div className="flex lg:hidden gap-2 overflow-x-auto mt-3 pb-1 scrollbar-hide">
-  {images.map((img, i) => (
-    <button key={i} onClick={() => setSelImage(i)} 
-      className={`w-16 h-20 shrink-0 rounded-lg overflow-hidden border-2 ${selImage === i ? 'border-primary' : 'border-border'}`}>
-      <img src={img.image} className="w-full h-full object-cover" />
-    </button>
-  ))}
-  </div>
-</div>
-
-{/* ── ZOOM MODAL ── */}
-{zoomOpen && (
-  <div
-    onClick={() => { setZoomOpen(false); setZoomLevel(1) }}
-    className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4"
-  >
-    <div
-      onClick={e => e.stopPropagation()}
-      className="relative bg-[var(--color-surface)] rounded-2xl overflow-hidden shadow-2xl flex flex-col max-w-3xl w-full max-h-[90vh]"
-    >
-      {/* Modal Header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--color-border)]">
-        <span className="text-xs font-bold text-[var(--color-text)] truncate">{product.name}</span>
-        <button
-          onClick={() => { setZoomOpen(false); setZoomLevel(1) }}
-          className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-[var(--color-bg-alt)] transition-colors cursor-pointer border-none bg-transparent"
-        >
-          <X size={16} className="text-[var(--color-text)]" />
-        </button>
-      </div>
-
-      {/* Zoomed Image */}
-      <div className="overflow-auto flex-1 flex items-center justify-center bg-[var(--color-bg-alt)]" style={{ minHeight: 360 ,minWidth: 600}}>
-        <img
-          src={images[selImage].image}
-          alt={product.name}
-          style={{
-            transform: `scale(${zoomLevel})`,
-            transformOrigin: 'center center',
-            transition: 'transform 0.2s ease',
-            maxWidth: '100%',
-            display: 'block',
-          }}
-        />
-      </div>
-
-      {/* Zoom Controls */}
-      <div className="flex items-center justify-center gap-3 px-4 py-3 border-t border-[var(--color-border)] bg-[var(--color-surface)]">
-        <button
-          onClick={zoomOut}
-          disabled={zoomLevel <= 1}
-          className="w-9 h-9 rounded-lg border border-[var(--color-border)] flex items-center justify-center bg-[var(--color-bg-alt)] hover:bg-[var(--color-border-light)] transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
-        >
-          <ZoomOut size={16} className="text-[var(--color-text)]" />
-        </button>
-
-        <span className="text-xs font-bold text-[var(--color-text)] min-w-[48px] text-center">
-          {Math.round(zoomLevel * 100)}%
-        </span>
-
-        <button
-          onClick={zoomIn}
-          disabled={zoomLevel >= 3}
-          className="w-9 h-9 rounded-lg border border-[var(--color-border)] flex items-center justify-center bg-[var(--color-bg-alt)] hover:bg-[var(--color-border-light)] transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
-        >
-          <ZoomIn size={16} className="text-[var(--color-text)]" />
-        </button>
-
-        <button
-          onClick={zoomReset}
-          className="w-9 h-9 rounded-lg border border-[var(--color-border)] flex items-center justify-center bg-[var(--color-bg-alt)] hover:bg-[var(--color-border-light)] transition-colors cursor-pointer ml-1"
-          title="Reset zoom"
-        >
-          <RefreshCw size={14} className="text-[var(--color-text)]" />
-        </button>
-      </div>
-    </div>
-  </div>
-)}
-
-          {/* ── RIGHT SIDE — Product Info ── */}
-          <div className="flex flex-col gap-4">
-
-            {/* Sale Timer */}
-            {product.sale_price && <SaleTimer />}
-
-            {/* Price Row */}
-            <div className="flex items-center gap-2.5 flex-wrap">
-              <span className="text-2xl font-extrabold text-[var(--color-text)] leading-none">
-                ₹{Number(product.effective_price).toLocaleString('en-IN')}
-              </span>
-              {product.sale_price && (
-                <>
-                  <span className="text-sm text-[var(--color-muted)] line-through leading-none">
-                    ₹{Number(product.price).toLocaleString('en-IN')}
-                  </span>
-                  <span className="text-[10px] font-bold text-white bg-[var(--color-danger)] px-2 py-0.5 rounded leading-none">
-                    {product.discount_percent}% OFF
-                  </span>
-                </>
+          {/* Main Image */}
+          <section className="lg:sticky lg:top-28">
+            <div className="relative overflow-hidden bg-[#0A0A0A] border border-gold/15">
+              {images.length > 0 ? (
+                <img
+                  key={selImage}
+                  src={images[selImage].image}
+                  alt={product.name}
+                  onClick={() => {
+                    setZoomOpen(true)
+                    setZoomLevel(1)
+                  }}
+                  className="w-full h-[420px] sm:h-[560px] lg:h-[680px] object-cover block cursor-zoom-in"
+                />
+              ) : (
+                <div className="w-full h-[420px] sm:h-[560px] lg:h-[680px] flex items-center justify-center text-7xl bg-[#0A0A0A]">
+                  🛍️
+                </div>
               )}
 
-              {/* Wishlist Button */}
+              {images.length > 0 && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setZoomOpen(true)
+                    setZoomLevel(1)
+                  }}
+                  className="absolute top-3 right-3 w-10 h-10 bg-black/80 backdrop-blur-sm border border-gold/20 flex items-center justify-center text-gold hover:border-gold/50 hover:bg-gold/10 transition-all"
+                  aria-label="Zoom image"
+                >
+                  <ZoomIn size={17} />
+                </button>
+              )}
+
+              {images.length > 1 && (
+                <>
+                  <button
+                    type="button"
+                    onClick={prevImage}
+                    className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-black/75 backdrop-blur-sm border border-gold/20 flex items-center justify-center text-gold hover:bg-gold/10 hover:border-gold/50 transition-all"
+                    aria-label="Previous image"
+                  >
+                    <ChevronLeft size={20} />
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={nextImage}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-black/75 backdrop-blur-sm border border-gold/20 flex items-center justify-center text-gold hover:bg-gold/10 hover:border-gold/50 transition-all"
+                    aria-label="Next image"
+                  >
+                    <ChevronRight size={20} />
+                  </button>
+
+                  <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5">
+                    {images.map((_, index) => (
+                      <button
+                        key={index}
+                        type="button"
+                        onClick={() => setSelImage(index)}
+                        className={`h-[2px] transition-all duration-300 ${
+                          selImage === index
+                            ? 'w-8 bg-gold'
+                            : 'w-4 bg-gold/35 hover:bg-gold/60'
+                        }`}
+                        aria-label={`Go to image ${index + 1}`}
+                      />
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
+
+            {/* Mobile thumbnails */}
+            {images.length > 1 && (
+              <div className="flex lg:hidden gap-2 overflow-x-auto mt-3 pb-1 scrollbar-hide">
+                {images.map((img, index) => (
+                  <button
+                    key={index}
+                    type="button"
+                    onClick={() => setSelImage(index)}
+                    className={`w-16 h-20 shrink-0 overflow-hidden border bg-black p-0 ${
+                      selImage === index
+                        ? 'border-gold'
+                        : 'border-gold/15 opacity-65'
+                    }`}
+                  >
+                    <img
+                      src={img.image}
+                      alt={`${product.name} thumbnail ${index + 1}`}
+                      className="w-full h-full object-cover"
+                    />
+                  </button>
+                ))}
+              </div>
+            )}
+          </section>
+
+          {/* Product Info */}
+          <section className="flex flex-col gap-4">
+            {product.sale_price && <SaleTimer />}
+
+            <div className="flex items-start gap-3 flex-wrap">
+              <div className="flex-1 min-w-0">
+                <p className="label-gold mb-2">
+                  {product.category?.name || 'Artifact'}
+                </p>
+
+                <h1 className="font-display text-xl sm:text-2xl lg:text-3xl text-white tracking-[0.12em] leading-tight">
+                  {product.name}
+                </h1>
+              </div>
+
               <button
+                type="button"
                 onClick={handleWishlist}
-                className={`ml-auto w-9 h-9 shrink-0 rounded-lg flex items-center justify-center transition-all duration-200 border cursor-pointer ${
+                className={`w-11 h-11 shrink-0 flex items-center justify-center border transition-all duration-300 ${
                   wishlisted
-                    ? 'bg-[var(--color-danger-bg)] border-[var(--color-danger)] text-[var(--color-danger)]'
-                    : 'bg-[var(--color-surface)] border-[var(--color-border)] text-[var(--color-muted)] hover:border-[var(--color-danger)] hover:text-[var(--color-danger)]'
+                    ? 'bg-red-400/10 border-red-400/40 text-red-400'
+                    : 'bg-[#0A0A0A] border-gold/15 text-muted hover:border-red-400/40 hover:text-red-400'
                 }`}
+                aria-label="Toggle wishlist"
               >
-                <Heart size={16} fill={wishlisted ? 'currentColor' : 'none'} strokeWidth={2} />
+                <Heart size={18} fill={wishlisted ? 'currentColor' : 'none'} />
               </button>
             </div>
 
-            <p className="text-[11px] text-[var(--color-muted)]">Inclusive of all taxes</p>
+            <div className="bg-[#0A0A0A] border border-gold/15 p-4">
+              <div className="flex items-center gap-3 flex-wrap">
+                <span className="font-display text-3xl sm:text-4xl text-gradient-gold">
+                  ₹{Number(product.effective_price).toLocaleString('en-IN')}
+                </span>
 
-            {/* Title */}
-            <h1 className="text-base font-bold text-[var(--color-text)] leading-snug">
-              {product.name}
-            </h1>
+                {product.sale_price && (
+                  <>
+                    <span className="text-sm text-muted line-through font-mono">
+                      ₹{Number(product.price).toLocaleString('en-IN')}
+                    </span>
 
-            {/* Rating */}
+                    <span className="text-[10px] font-mono tracking-wider uppercase text-red-400 bg-red-400/10 border border-red-400/25 px-2 py-1">
+                      {product.discount_percent}% OFF
+                    </span>
+                  </>
+                )}
+              </div>
+
+              <p className="text-[10px] sm:text-xs text-muted font-mono tracking-wider mt-2">
+                Inclusive of all taxes.
+              </p>
+            </div>
+
             {product.rating_count > 0 && (
-              <div className="flex items-center gap-2 -mt-1">
-                <div className="flex items-center gap-1 bg-[var(--color-bg-alt)] rounded-lg px-2 py-0.5 border border-[var(--color-border)]">
-                  <Star size={12} className="text-[var(--color-warning)] fill-[var(--color-warning)]" />
-                  <span className="text-xs font-bold text-[var(--color-text)]">
+              <div className="flex items-center gap-2 flex-wrap">
+                <div className="flex items-center gap-1 bg-gold/10 border border-gold/20 px-2.5 py-1">
+                  <Star size={13} className="text-gold fill-gold" />
+                  <span className="text-xs font-mono text-gold">
                     {product.rating_avg?.toFixed(1)}
                   </span>
                 </div>
-                <span className="text-xs text-[var(--color-muted)]">{product.rating_count} reviews</span>
-                <span className={`text-[11px] font-semibold ${product.in_stock ? 'text-[var(--color-success)]' : 'text-[var(--color-danger)]'}`}>
+
+                <span className="text-xs text-muted font-mono">
+                  {product.rating_count} reviews
+                </span>
+
+                <span
+                  className={`text-xs font-mono ${
+                    product.in_stock ? 'text-gold' : 'text-red-400'
+                  }`}
+                >
                   {product.in_stock ? '● In Stock' : '● Out of Stock'}
                 </span>
               </div>
             )}
 
-            <hr className="border-[var(--color-border)]" />
+            <div className="divider-gold" />
 
-            {/* Size Selector */}
+            {/* Size */}
             {hasSizes && (
-              <div id="size-section">
-                <div className="flex justify-between items-center mb-2">
-                  <p className="text-[11px] font-bold text-[var(--color-text)] tracking-wide uppercase">
-                    Select Size {selSize && <span className="text-[var(--color-muted)] font-normal normal-case">— {selSize}</span>}
+              <div id="size-section" className="bg-[#0A0A0A] border border-gold/15 p-4">
+                <div className="flex justify-between items-center gap-3 mb-3">
+                  <p className="text-xs font-mono tracking-wider uppercase text-white">
+                    Select Size{' '}
+                    {selSize && <span className="text-gold">— {selSize}</span>}
                   </p>
-                  <button className="text-[11px] text-[var(--color-muted)] underline bg-transparent border-none cursor-pointer hover:text-[var(--color-text)] transition-colors flex items-center gap-1">
-                    <Ruler size={12} /> Size Guide
+
+                  <button
+                    type="button"
+                    className="text-[10px] sm:text-xs text-muted hover:text-gold bg-transparent border-none cursor-pointer flex items-center gap-1 font-mono"
+                  >
+                    <Ruler size={12} />
+                    Size Guide
                   </button>
                 </div>
 
                 <div className="flex flex-wrap gap-2">
-                  {sizes.map(size => {
+                  {sizes.map((size) => {
                     const isSelected = selSize === size
+
                     return (
                       <button
                         key={size}
+                        type="button"
                         onClick={() => setSelSize(size)}
-                        className={`min-w-[40px] h-9 px-2.5 rounded-md text-xs font-semibold tracking-wide transition-all duration-150 border cursor-pointer ${
+                        className={`min-w-[44px] h-10 px-3 text-xs font-mono tracking-wider border transition-all duration-300 ${
                           isSelected
-                            ? 'bg-[var(--color-secondary)] border-[var(--color-secondary)] text-[var(--color-text-inverse)]'
-                            : 'bg-[var(--color-surface)] border-[var(--color-border)] text-[var(--color-text)] hover:border-[var(--color-secondary)] hover:text-[var(--color-secondary)]'
+                            ? 'bg-gold border-gold text-black'
+                            : 'bg-black border-gold/15 text-white hover:border-gold/45 hover:text-gold'
                         }`}
                       >
                         {size}
@@ -539,9 +662,9 @@ const zoomReset = () => setZoomLevel(1)
                   })}
                 </div>
 
-                {hasSizes && !selSize && (
-                  <p className="text-[11px] text-[var(--color-muted)] mt-2">
-                    Please select a size to continue
+                {!selSize && (
+                  <p className="text-[10px] sm:text-xs text-muted font-mono mt-3">
+                    Please select a size to continue.
                   </p>
                 )}
               </div>
@@ -549,23 +672,28 @@ const zoomReset = () => setZoomLevel(1)
 
             {/* Quantity */}
             {product.in_stock && (!hasSizes || selSize) && (
-              <div>
-                <p className="text-[11px] font-bold text-[var(--color-text)] mb-1.5 tracking-wide uppercase">
+              <div className="bg-[#0A0A0A] border border-gold/15 p-4">
+                <p className="text-xs font-mono tracking-wider uppercase text-white mb-3">
                   Quantity
                 </p>
-                <div className="flex items-center border border-[var(--color-border)] rounded-lg overflow-hidden w-fit bg-[var(--color-surface)]">
+
+                <div className="flex items-center border border-gold/15 bg-black w-fit">
                   <button
-                    onClick={() => setQuantity(q => Math.max(1, q - 1))}
-                    className="w-9 h-9 bg-[var(--color-bg-alt)] hover:bg-[var(--color-border-light)] transition-colors text-base flex items-center justify-center text-[var(--color-text)] font-medium cursor-pointer border-none"
+                    type="button"
+                    onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+                    className="w-10 h-10 flex items-center justify-center text-muted hover:text-gold hover:bg-gold/5 transition-all"
                   >
                     −
                   </button>
-                  <span className="w-10 text-center text-sm font-bold text-[var(--color-text)] border-x border-[var(--color-border)] h-9 flex items-center justify-center">
+
+                  <span className="w-11 h-10 flex items-center justify-center text-sm font-mono text-white border-x border-gold/15">
                     {quantity}
                   </span>
+
                   <button
-                    onClick={() => setQuantity(q => Math.min(product.stock, q + 1))}
-                    className="w-9 h-9 bg-[var(--color-bg-alt)] hover:bg-[var(--color-border-light)] transition-colors text-base flex items-center justify-center text-[var(--color-text)] font-medium cursor-pointer border-none"
+                    type="button"
+                    onClick={() => setQuantity((q) => Math.min(product.stock, q + 1))}
+                    className="w-10 h-10 flex items-center justify-center text-black bg-gold hover:bg-gold-light transition-all"
                   >
                     +
                   </button>
@@ -573,190 +701,265 @@ const zoomReset = () => setZoomLevel(1)
               </div>
             )}
 
-            {/* CTA Buttons */}
-            <div className="flex gap-2">
+            {/* CTA */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <button
+                type="button"
                 onClick={handleAddToCart}
                 disabled={!product.in_stock || addingCart}
-                className={`flex-1 h-11 px-3 rounded-lg text-[11px] font-bold tracking-wide uppercase flex items-center justify-center gap-1.5 transition-all duration-200 cursor-pointer ${
-                  addingCart
-                    ? 'bg-[var(--color-success)] text-white'
-                    : product.in_stock
-                      ? 'bg-[var(--color-secondary)] text-[var(--color-text-inverse)] hover:bg-[var(--color-secondary-light)]'
-                      : 'bg-[var(--color-bg-alt)] text-[var(--color-muted)] cursor-not-allowed'
+                className={`btn-outline w-full inline-flex items-center justify-center gap-2 min-h-[48px] disabled:opacity-50 disabled:cursor-not-allowed ${
+                  addingCart ? '!bg-gold !text-black !border-gold' : ''
                 }`}
               >
-                <ShoppingBag size={15} />
-                {addingCart ? 'Added!' : product.in_stock ? 'Add to Cart' : 'Sold Out'}
+                {addingCart ? (
+                  <>
+                    <CheckCircle2 size={16} />
+                    ADDED
+                  </>
+                ) : (
+                  <>
+                    <ShoppingBag size={16} />
+                    {product.in_stock ? 'ADD TO CART' : 'SOLD OUT'}
+                  </>
+                )}
               </button>
 
               {product.in_stock && (
                 <button
+                  type="button"
                   onClick={handleBuyNow}
                   disabled={buyingNow}
-                  className="flex-1 h-11 px-3 rounded-lg text-[11px] font-bold tracking-wide uppercase bg-[var(--color-primary)] text-white hover:bg-[var(--color-primary-dark)] transition-all duration-200 flex items-center justify-center gap-1.5 cursor-pointer shadow-md hover:shadow-lg"
+                  className="btn-primary w-full inline-flex items-center justify-center gap-2 min-h-[48px] disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <Zap size={15} />
-                  {buyingNow ? 'Loading...' : 'Buy Now'}
+                  {buyingNow ? (
+                    <>
+                      <Loader2 size={16} className="animate-spin" />
+                      LOADING
+                    </>
+                  ) : (
+                    <>
+                      <Zap size={16} />
+                      BUY NOW
+                    </>
+                  )}
                 </button>
               )}
             </div>
 
-            {/* Pincode Checker */}
-            <div>
-              <div className="flex gap-2 border border-[var(--color-border)] rounded-lg px-3 py-2 items-center bg-[var(--color-surface)]">
-                <MapPin size={14} className="text-[var(--color-muted)]" />
-                <input
-                  type="text"
-                  value={pincode}
-                  onChange={e => setPincode(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                  placeholder="Enter Pincode"
-                  className="flex-1 border-none outline-none text-xs bg-transparent text-[var(--color-text)] placeholder:text-[var(--color-muted-light)]"
-                />
-                <button
-                  onClick={() => pincode.length === 6 && toast.success('Delivery available!')}
-                  className="bg-transparent border-none text-[var(--color-text)] font-bold text-[11px] cursor-pointer hover:text-[var(--color-primary)] transition-colors"
-                >
-                  CHECK
-                </button>
-              </div>
+            {/* Pincode */}
+            <div className="flex gap-2 border border-gold/15 px-3 py-2.5 items-center bg-[#0A0A0A]">
+              <MapPin size={15} className="text-muted shrink-0" />
+
+              <input
+                type="text"
+                value={pincode}
+                onChange={(event) =>
+                  setPincode(event.target.value.replace(/\D/g, '').slice(0, 6))
+                }
+                placeholder="Enter Pincode"
+                className="flex-1 min-w-0 border-none outline-none text-sm bg-transparent text-white placeholder:text-muted/50 font-mono tracking-wider p-0"
+              />
+
+              <button
+                type="button"
+                onClick={() =>
+                  pincode.length === 6
+                    ? toast.success('Delivery available!')
+                    : toast.error('Enter valid pincode')
+                }
+                className="bg-transparent border-none text-gold text-xs font-mono tracking-wider cursor-pointer hover:text-gold-light transition-colors"
+              >
+                CHECK
+              </button>
             </div>
 
-            {/* Service Badges */}
-            <div className="grid grid-cols-3 gap-2 bg-[var(--color-bg-alt)] rounded-xl p-3 border border-[var(--color-border)]">
+            {/* Service badges */}
+            <div className="grid grid-cols-3 gap-2 bg-[#0A0A0A] border border-gold/15 p-3">
               {[
-                { icon: <Banknote size={18} />, label: 'CASH ON\nDELIVERY' },
-                { icon: <Truck size={18} />, label: 'FREE\nSHIPPING' },
-                { icon: <RefreshCw size={18} />, label: 'EASY\nRETURNS' },
-              ].map(b => (
-                <div key={b.label} className="text-center">
-                  <div className="text-[var(--color-text)] mb-1.5 flex justify-center">
-                    {b.icon}
+                { icon: Banknote, label: 'Cash On Delivery' },
+                { icon: Truck, label: 'Free Shipping' },
+                { icon: RefreshCw, label: 'Easy Returns' },
+              ].map((badge) => {
+                const Icon = badge.icon
+
+                return (
+                  <div key={badge.label} className="text-center border border-gold/10 p-3">
+                    <div className="text-gold mb-2 flex justify-center">
+                      <Icon size={18} />
+                    </div>
+                    <p className="text-[9px] sm:text-[10px] font-mono text-white tracking-wider uppercase leading-tight">
+                      {badge.label}
+                    </p>
                   </div>
-                  <p className="text-[9px] font-bold text-[var(--color-text)] tracking-wider leading-tight whitespace-pre-line">
-                    {b.label}
-                  </p>
-                </div>
-              ))}
+                )
+              })}
             </div>
 
             {/* Accordion */}
-            <div className="bg-[var(--color-surface)] rounded-xl border border-[var(--color-border)] p-4">
-              <AccordionItem title="PRODUCT DESCRIPTION" content={product.description} />
-              <AccordionItem title="SHIPPING INFO" content="Free shipping on orders above ₹999. Standard delivery in 5–7 business days." />
-              <AccordionItem title="7 DAYS RETURNS & EXCHANGE" content="Easy returns within 7 days of delivery. Product must be unworn and in original condition with all tags intact." />
+            <div className="bg-[#0A0A0A] border border-gold/15 p-4">
+              <AccordionItem title="Product Description" content={product.description} />
+              <AccordionItem
+                title="Shipping Info"
+                content="Free shipping on orders above ₹999. Standard delivery in 5–7 business days."
+              />
+              <AccordionItem
+                title="7 Days Returns & Exchange"
+                content="Easy returns within 7 days of delivery. Product must be unworn and in original condition with all tags intact."
+              />
             </div>
-          </div>
+          </section>
         </div>
 
-        {/* ── REVIEWS SECTION ── */}
-        <div className="mt-16 pt-10 border-t border-[var(--color-border)]">
+        {/* Reviews */}
+        <section className="mt-14 sm:mt-16 pt-8 sm:pt-10 border-t border-gold/10">
           <div className="flex items-center gap-3 mb-6">
-            <div className="w-8 h-8 rounded-full bg-[var(--color-primary-light)] flex items-center justify-center">
-              <Star size={16} className="text-[var(--color-primary)]" />
+            <div className="w-10 h-10 border border-gold/20 bg-gold/10 flex items-center justify-center">
+              <Star size={18} className="text-gold" />
             </div>
-            <h2 className="text-base font-extrabold tracking-wide text-[var(--color-text)]">
-              CUSTOMER REVIEWS ({reviews.length})
-            </h2>
+
+            <div>
+              <p className="label-gold mb-1">Community Signal</p>
+              <h2 className="font-display text-lg sm:text-xl text-white tracking-[0.12em]">
+                CUSTOMER REVIEWS ({reviews.length})
+              </h2>
+            </div>
           </div>
 
-          {/* Review Input Form */}
           {isAuthenticated && (
-            <div className="rounded-2xl p-5 mb-8 bg-[var(--color-bg-alt)] border border-[var(--color-border)]">
-              <p className="text-sm font-bold mb-3 text-[var(--color-text)]">
-                Write a Review {hasPurchased && <span className="text-[10px] font-normal text-[var(--color-success)] ml-2">✓ Verified Purchase</span>}
+            <div className="bg-[#0A0A0A] border border-gold/15 p-4 sm:p-5 mb-8">
+              <p className="text-sm font-mono text-white tracking-wider mb-3">
+                Write a Review
+                {hasPurchased && (
+                  <span className="text-[10px] text-gold ml-2">
+                    ✓ Verified Purchase
+                  </span>
+                )}
               </p>
 
               <div className="flex flex-col gap-3">
-                <div className="flex items-center gap-2">
-                  <span className="text-xs text-[var(--color-muted)]">Your Rating:</span>
+                <div className="flex items-center gap-3 flex-wrap">
+                  <span className="text-xs text-muted font-mono">Your Rating:</span>
                   <StarRatingInput value={newRating} onChange={setNewRating} />
                 </div>
 
                 <textarea
                   value={newComment}
-                  onChange={e => setNewComment(e.target.value)}
-                  placeholder="Share your experience with this product..."
-                  rows={3}
-                  className="w-full rounded-xl text-sm bg-[var(--color-surface)] border border-[var(--color-border)] text-[var(--color-text)] px-4 py-3 outline-none focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary-light)] transition-all resize-none placeholder:text-[var(--color-muted-light)]"
+                  onChange={(event) => setNewComment(event.target.value)}
+                  placeholder="Share your experience with this artifact..."
+                  rows={4}
+                  className="w-full text-sm bg-black border border-gold/15 text-white px-4 py-3 outline-none focus:border-gold/60 focus:shadow-[0_0_0_3px_rgba(212,175,55,0.12)] transition-all resize-none placeholder:text-muted/50 font-mono tracking-wider"
                 />
 
                 <div className="flex justify-end">
                   <button
+                    type="button"
                     onClick={submitReview}
                     disabled={submittingReview}
-                    className="text-sm font-semibold rounded-xl text-white transition-all duration-300 px-6 py-2.5 bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] disabled:opacity-50 cursor-pointer"
+                    className="btn-primary inline-flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    {submittingReview ? 'Submitting...' : 'Submit Review'}
+                    {submittingReview ? (
+                      <>
+                        <Loader2 size={16} className="animate-spin" />
+                        SUBMITTING
+                      </>
+                    ) : (
+                      'SUBMIT REVIEW'
+                    )}
                   </button>
                 </div>
               </div>
             </div>
           )}
 
-          {/* Reviews List */}
           {reviews.length === 0 ? (
-            <div className="text-center p-8 bg-[var(--color-surface)] rounded-2xl border border-[var(--color-border)]">
-              <Star size={32} className="text-[var(--color-muted-light)] mx-auto mb-3" />
-              <p className="text-sm text-[var(--color-muted)]">No reviews yet. Be the first to review!</p>
+            <div className="text-center p-8 bg-[#0A0A0A] border border-gold/15">
+              <Star size={34} className="text-gold/35 mx-auto mb-3" />
+              <p className="text-sm text-muted font-mono">
+                No reviews yet. Be the first to review.
+              </p>
             </div>
           ) : (
             <div className="flex flex-col gap-4">
-              {reviews.map(r => (
-                <div key={r.id} className="rounded-xl p-4 bg-[var(--color-bg-alt)] border border-[var(--color-border)]">
-                  <div className="flex items-center gap-2.5 mb-2">
-                    <div className="w-8 h-8 rounded-full bg-[var(--color-primary)] flex items-center justify-center text-white font-bold text-xs">
-                      {r.user?.name?.[0] || 'U'}
+              {reviews.map((review) => (
+                <div
+                  key={review.id}
+                  className="p-4 bg-[#0A0A0A] border border-gold/15"
+                >
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="w-9 h-9 bg-gold text-black flex items-center justify-center font-mono text-xs">
+                      {review.user?.name?.[0] || 'U'}
                     </div>
-                    <div className="flex-1">
-                      <p className="text-xs font-semibold text-[var(--color-text)]">{r.user?.name || 'Anonymous'}</p>
+
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-mono text-white tracking-wider">
+                        {review.user?.name || 'Anonymous'}
+                      </p>
+
                       <div className="flex gap-0.5">
-                        {[1, 2, 3, 4, 5].map(s => (
-                          <span key={s} className={`text-xs ${s <= r.rating ? 'text-[var(--color-warning)]' : 'text-[var(--color-border-light)]'}`}>★</span>
+                        {[1, 2, 3, 4, 5].map((star) => (
+                          <span
+                            key={star}
+                            className={`text-xs ${
+                              star <= review.rating ? 'text-gold' : 'text-gold/20'
+                            }`}
+                          >
+                            ★
+                          </span>
                         ))}
                       </div>
                     </div>
-                    {r.is_verified && (
-                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[var(--color-success-bg)] text-[var(--color-success)]">
-                        ✓ Verified
+
+                    {review.is_verified && (
+                      <span className="text-[10px] font-mono tracking-wider uppercase px-2 py-1 border border-gold/20 bg-gold/10 text-gold">
+                        Verified
                       </span>
                     )}
                   </div>
-                  <p className="text-xs leading-relaxed text-[var(--color-muted)]">{r.comment}</p>
-                  <p className="text-[10px] mt-2 text-[var(--color-muted-light)]">
-                    {new Date(r.created_at).toLocaleDateString('en-IN')}
+
+                  <p className="text-xs sm:text-sm leading-relaxed text-muted font-mono tracking-wider">
+                    {review.comment}
                   </p>
 
-                  {/* Admin Reply Display */}
-                  {r.admin_reply && (
-                    <div className="mt-3 rounded-lg p-3 bg-[var(--color-primary-light)] border border-[var(--color-primary)]">
-                      <p className="text-[10px] font-bold uppercase tracking-wide mb-1 text-[var(--color-primary-dark)]">Admin Response</p>
-                      <p className="text-xs text-[var(--color-text)]">{r.admin_reply}</p>
+                  <p className="text-[10px] mt-2 text-muted font-mono">
+                    {new Date(review.created_at).toLocaleDateString('en-IN')}
+                  </p>
+
+                  {review.admin_reply && (
+                    <div className="mt-3 p-3 bg-gold/10 border border-gold/20">
+                      <p className="text-[10px] font-mono uppercase tracking-wider mb-1 text-gold">
+                        Admin Response
+                      </p>
+                      <p className="text-xs text-muted font-mono leading-relaxed">
+                        {review.admin_reply}
+                      </p>
                     </div>
                   )}
 
-                  {/* Admin Reply Input */}
                   {user?.is_staff && (
                     <div className="mt-3">
-                      {replyingTo === r.id ? (
+                      {replyingTo === review.id ? (
                         <div className="flex flex-col gap-2">
                           <textarea
                             value={replyText}
-                            onChange={e => setReplyText(e.target.value)}
+                            onChange={(event) => setReplyText(event.target.value)}
                             placeholder="Write admin reply..."
                             rows={2}
-                            className="w-full rounded-lg text-xs bg-[var(--color-surface)] border border-[var(--color-border)] text-[var(--color-text)] px-3 py-2 outline-none focus:border-[var(--color-primary)] resize-none placeholder:text-[var(--color-muted-light)]"
+                            className="w-full text-xs bg-black border border-gold/15 text-white px-3 py-2 outline-none focus:border-gold resize-none placeholder:text-muted/50"
                           />
+
                           <div className="flex gap-2 justify-end">
                             <button
+                              type="button"
                               onClick={() => setReplyingTo(null)}
-                              className="text-xs font-semibold rounded-lg cursor-pointer px-3 py-1.5 bg-[var(--color-bg)] text-[var(--color-text)] border border-[var(--color-border)] hover:bg-[var(--color-bg-alt)] transition-colors"
+                              className="btn-outline !px-4 !py-2 text-xs"
                             >
                               Cancel
                             </button>
+
                             <button
-                              onClick={() => submitAdminReply(r.id)}
-                              className="text-xs font-semibold rounded-lg text-white cursor-pointer px-3 py-1.5 bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] transition-colors"
+                              type="button"
+                              onClick={() => submitAdminReply(review.id)}
+                              className="btn-primary !px-4 !py-2 text-xs"
                             >
                               Post Reply
                             </button>
@@ -764,10 +967,14 @@ const zoomReset = () => setZoomLevel(1)
                         </div>
                       ) : (
                         <button
-                          onClick={() => { setReplyingTo(r.id); setReplyText('') }}
-                          className="text-[11px] font-bold cursor-pointer bg-transparent border-none text-[var(--color-primary)] hover:text-[var(--color-primary-dark)] transition-colors"
+                          type="button"
+                          onClick={() => {
+                            setReplyingTo(review.id)
+                            setReplyText('')
+                          }}
+                          className="text-[11px] font-mono tracking-wider cursor-pointer bg-transparent border-none text-gold hover:text-gold-light transition-colors"
                         >
-                          💬 Reply as Admin
+                          Reply as Admin
                         </button>
                       )}
                     </div>
@@ -776,42 +983,122 @@ const zoomReset = () => setZoomLevel(1)
               ))}
             </div>
           )}
-        </div>
+        </section>
 
-        {/* ── Related Products ── */}
+        {/* Related */}
         {related.length > 0 && (
-          <div className="mt-16 pt-10 border-t border-[var(--color-border)]">
+          <section className="mt-14 sm:mt-16 pt-8 sm:pt-10 border-t border-gold/10">
             <div className="flex items-center gap-3 mb-6">
-              <div className="w-8 h-8 rounded-full bg-[var(--color-primary-light)] flex items-center justify-center">
-                <Sparkles size={16} className="text-[var(--color-primary)]" />
+              <div className="w-10 h-10 border border-gold/20 bg-gold/10 flex items-center justify-center">
+                <Sparkles size={18} className="text-gold" />
               </div>
-              <h2 className="text-base font-extrabold tracking-wide text-[var(--color-text)]">
-                SIMILAR PRODUCTS
-              </h2>
+
+              <div>
+                <p className="label-gold mb-1">Similar Signals</p>
+                <h2 className="font-display text-lg sm:text-xl text-white tracking-[0.12em]">
+                  SIMILAR PRODUCTS
+                </h2>
+              </div>
             </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-              {related.slice(0, 4).map((p, i) => (
-                <ProductCard key={p.id} product={p} index={i} />
+
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-5">
+              {related.slice(0, 4).map((item, index) => (
+                <ProductCard key={item.id} product={item} index={index} />
               ))}
             </div>
-          </div>
+          </section>
         )}
-      </div>
+      </main>
+
+      {/* Zoom Modal */}
+      {zoomOpen && images.length > 0 && (
+        <div
+          onClick={() => {
+            setZoomOpen(false)
+            setZoomLevel(1)
+          }}
+          className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-3 sm:p-5"
+        >
+          <div
+            onClick={(event) => event.stopPropagation()}
+            className="relative bg-[#0A0A0A] border border-gold/20 shadow-[0_30px_120px_rgba(0,0,0,0.75)] flex flex-col w-full max-w-5xl max-h-[92vh]"
+          >
+            <div className="flex items-center justify-between gap-3 px-4 py-3 border-b border-gold/10">
+              <span className="text-xs sm:text-sm font-mono text-white tracking-wider truncate">
+                {product.name}
+              </span>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setZoomOpen(false)
+                  setZoomLevel(1)
+                }}
+                className="w-9 h-9 flex items-center justify-center hover:bg-gold/10 text-gold transition-colors bg-transparent border border-gold/15"
+                aria-label="Close zoom"
+              >
+                <X size={17} />
+              </button>
+            </div>
+
+            <div className="overflow-auto flex-1 flex items-center justify-center bg-black min-h-[320px] sm:min-h-[480px]">
+              <img
+                src={images[selImage].image}
+                alt={product.name}
+                style={{
+                  transform: `scale(${zoomLevel})`,
+                  transformOrigin: 'center center',
+                  transition: 'transform 0.2s ease',
+                  maxWidth: '100%',
+                  display: 'block',
+                }}
+              />
+            </div>
+
+            <div className="flex items-center justify-center gap-3 px-4 py-3 border-t border-gold/10 bg-[#0A0A0A]">
+              <button
+                type="button"
+                onClick={zoomOut}
+                disabled={zoomLevel <= 1}
+                className="w-10 h-10 border border-gold/15 flex items-center justify-center bg-black hover:bg-gold/10 text-gold transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                <ZoomOut size={17} />
+              </button>
+
+              <span className="text-xs font-mono text-white min-w-[52px] text-center">
+                {Math.round(zoomLevel * 100)}%
+              </span>
+
+              <button
+                type="button"
+                onClick={zoomIn}
+                disabled={zoomLevel >= 3}
+                className="w-10 h-10 border border-gold/15 flex items-center justify-center bg-black hover:bg-gold/10 text-gold transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                <ZoomIn size={17} />
+              </button>
+
+              <button
+                type="button"
+                onClick={zoomReset}
+                className="w-10 h-10 border border-gold/15 flex items-center justify-center bg-black hover:bg-gold/10 text-gold transition-colors"
+                title="Reset zoom"
+              >
+                <RefreshCw size={15} />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <style>{`
         @keyframes fadeIn {
           from { opacity: 0; transform: translateY(4px); }
           to { opacity: 1; transform: translateY(0); }
         }
+
         .animate-fadeIn {
           animation: fadeIn 0.25s ease;
-        }
-        .scrollbar-hide::-webkit-scrollbar {
-          display: none;
-        }
-        .scrollbar-hide {
-          -ms-overflow-style: none;
-          scrollbar-width: none;
         }
       `}</style>
     </div>

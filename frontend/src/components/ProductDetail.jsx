@@ -13,26 +13,26 @@ import {
 import api from '../services/api'
 import ProductCard from '../components/ProductCard'
 
-const ACCENT = '#C8A96E'
+const GOLD = '#D4AF37'
 
 /* ─── Filter Section ─── */
 function FilterSection({ title, children, defaultOpen = true }) {
   const [open, setOpen] = useState(defaultOpen)
   return (
-    <div className="border-b border-slate-100 last:border-0">
+    <div className="border-b border-[var(--color-border)] last:border-0">
       <button 
         onClick={() => setOpen(!open)}
-        className="flex items-center justify-between w-full bg-transparent border-none cursor-pointer text-sm font-semibold text-slate-900 hover:text-amber-600 transition-colors"
+        className="flex items-center justify-between w-full bg-transparent border-none cursor-pointer text-sm font-semibold text-white hover:text-gold transition-colors tracking-wide"
         style={{ padding: '16px 0' }}
       >
         {title}
         <ChevronDown 
           size={16} 
-          className={`text-slate-400 transition-transform duration-200 ${open ? 'rotate-180' : ''}`} 
+          className={`text-muted transition-transform duration-200 ${open ? 'rotate-180' : ''}`} 
         />
       </button>
       {open && (
-        <div className="animate-[fadeIn_0.2s_ease]" style={{ paddingBottom: '16px' }}>
+        <div className="animate-fadeUp" style={{ paddingBottom: '16px' }}>
           {children}
         </div>
       )}
@@ -48,7 +48,7 @@ export default function ProductListing() {
   const [loading, setLoading] = useState(true)
   const [viewMode, setViewMode] = useState('grid')
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false)
-  
+
   const [selectedCats, setSelectedCats] = useState([])
   const [priceRange, setPriceRange] = useState({ min: '', max: '' })
   const [selectedRating, setSelectedRating] = useState(null)
@@ -72,7 +72,7 @@ export default function ProductListing() {
       if (priceRange.min) params.set('price_min', priceRange.min)
       if (priceRange.max) params.set('price_max', priceRange.max)
       if (selectedRating) params.set('rating_min', selectedRating)
-      
+
       const { data } = await api.get(`/products/?${params.toString()}`)
       setProducts(data.results || data)
     } catch (err) {
@@ -114,25 +114,44 @@ export default function ProductListing() {
   const activeFilterCount = selectedCats.length + (priceRange.min || priceRange.max ? 1 : 0) + (selectedRating ? 1 : 0) + selectedSizes.length
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-[var(--color-bg)] text-[var(--color-text)] font-body">
+
+      {/* ===== TRANSFINITY HEADER ===== */}
+      <header className="nav-transfinity fixed top-0 left-0 right-0 z-50">
+        <div className="page-container flex items-center justify-between py-4">
+          <div className="flex items-center gap-3">
+            <span className="text-gold text-2xl">∞</span>
+            <span className="font-display text-gold text-sm tracking-[0.3em]">TRANSFINITY</span>
+          </div>
+          <nav className="hidden sm:flex gap-8">
+            <a href="/" className="nav-link">HOME</a>
+            <a href="/arcs" className="nav-link">ARCS</a>
+            <a href="/shop" className="nav-link nav-link-active">SHOP</a>
+            <a href="/founder" className="nav-link">FOUNDER</a>
+          </nav>
+        </div>
+      </header>
+
+      {/* Spacer for fixed header */}
+      <div className="h-20" />
 
       {/* Mobile Filter Overlay */}
       {mobileFilterOpen && (
         <div className="fixed inset-0 z-50 lg:hidden">
           <div 
-            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            className="absolute inset-0 bg-black/80 backdrop-blur-sm"
             onClick={() => setMobileFilterOpen(false)}
           />
           <div 
-            className="absolute left-0 top-0 h-full bg-white shadow-2xl overflow-y-auto"
+            className="absolute left-0 top-0 h-full bg-[var(--color-bg)] border-r border-[var(--color-border)] shadow-2xl overflow-y-auto"
             style={{ width: '320px' }}
           >
             <div style={{ padding: '24px' }}>
-              <div className="flex items-center justify-between" style={{ marginBottom: '24px' }}>
-                <h2 className="text-lg font-bold text-slate-900">Filters</h2>
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="heading-card text-sm">FILTERS</h2>
                 <button 
                   onClick={() => setMobileFilterOpen(false)}
-                  className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center hover:bg-slate-200 transition-colors border-none cursor-pointer"
+                  className="w-8 h-8 border border-[var(--color-border)] flex items-center justify-center text-muted hover:text-gold hover:border-gold transition-colors bg-transparent cursor-pointer"
                 >
                   <X size={18} />
                 </button>
@@ -158,20 +177,20 @@ export default function ProductListing() {
         </div>
       )}
 
-      <div className="flex mx-auto" style={{ maxWidth: '1600px' }}>
-        
+      <div className="flex mx-auto page-container" style={{ maxWidth: '1600px' }}>
+
         {/* ═══ LEFT SIDEBAR ═══ */}
         <aside className="group relative flex-shrink-0 hidden lg:block z-30">
-          
+
           {/* Collapsed Strip */}
           <div 
-            className="h-screen bg-slate-900 sticky top-0 flex flex-col items-center transition-all duration-300 group-hover:opacity-0 group-hover:w-0 overflow-hidden"
+            className="h-screen bg-[var(--color-bg)] sticky top-0 flex flex-col items-center transition-all duration-300 group-hover:opacity-0 group-hover:w-0 overflow-hidden border-r border-[var(--color-border)]"
             style={{ width: '56px', padding: '32px 0', gap: '16px' }}
           >
-            <SlidersHorizontal style={{ color: ACCENT }} size={22} />
+            <SlidersHorizontal className="text-gold" size={22} />
             <div className="flex-1 flex items-center justify-center">
               <span 
-                className="text-white/60 text-xs font-bold tracking-[0.2em] uppercase"
+                className="text-muted text-xs font-bold tracking-[0.2em] uppercase"
                 style={{ writingMode: 'vertical-lr', transform: 'rotate(180deg)' }}
               >
                 Filters
@@ -179,8 +198,7 @@ export default function ProductListing() {
             </div>
             {activeFilterCount > 0 && (
               <span 
-                className="rounded-full bg-amber-500 text-white text-[10px] font-bold flex items-center justify-center"
-                style={{ width: '20px', height: '20px' }}
+                className="w-5 h-5 flex items-center justify-center bg-gold text-black text-[10px] font-bold"
               >
                 {activeFilterCount}
               </span>
@@ -189,19 +207,19 @@ export default function ProductListing() {
 
           {/* Expanded Panel */}
           <div 
-            className="absolute left-0 top-0 h-screen bg-white border-r border-slate-200 shadow-2xl -translate-x-full group-hover:translate-x-0 transition-transform duration-300 ease-out overflow-y-auto"
+            className="absolute left-0 top-0 h-screen bg-[var(--color-bg)] border-r border-[var(--color-border)] shadow-2xl -translate-x-full group-hover:translate-x-0 transition-transform duration-300 ease-out overflow-y-auto"
             style={{ width: '320px' }}
           >
             <div style={{ padding: '24px' }}>
-              <div className="flex items-center justify-between" style={{ marginBottom: '32px' }}>
-                <div className="flex items-center" style={{ gap: '8px' }}>
-                  <SlidersHorizontal className="text-slate-900" size={20} />
-                  <h2 className="text-lg font-bold text-slate-900">Filters</h2>
+              <div className="flex items-center justify-between mb-8">
+                <div className="flex items-center gap-2">
+                  <SlidersHorizontal className="text-gold" size={20} />
+                  <h2 className="heading-card text-sm">FILTERS</h2>
                 </div>
                 {activeFilterCount > 0 && (
                   <button 
                     onClick={clearFilters}
-                    className="text-xs font-medium text-red-500 hover:text-red-600 transition-colors bg-transparent border-none cursor-pointer"
+                    className="text-xs font-medium text-gold hover:text-gold-light transition-colors bg-transparent border-none cursor-pointer"
                   >
                     Clear all
                   </button>
@@ -227,44 +245,43 @@ export default function ProductListing() {
 
         {/* ═══ MAIN CONTENT ═══ */}
         <main className="flex-1 min-w-0">
-          
+
           {/* Top Bar */}
           <div 
-            className="sticky top-0 z-20 bg-white/80 backdrop-blur-md border-b border-slate-200"
+            className="sticky top-20 z-20 bg-[var(--color-bg)]/80 backdrop-blur-md border-b border-[var(--color-border)]"
             style={{ padding: '16px 24px' }}
           >
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between" style={{ gap: '16px' }}>
-              
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+
               {/* Breadcrumb */}
               <div>
-                <div className="flex items-center text-xs text-slate-500" style={{ gap: '8px', marginBottom: '4px' }}>
-                  <Link to="/" className="hover:text-slate-900 transition-colors">Home</Link>
-                  <ArrowRight size={12} />
-                  <span className="text-slate-900 font-medium">Products</span>
+                <div className="flex items-center gap-2 mb-1 text-xs text-muted">
+                  <Link to="/" className="hover:text-gold transition-colors">Home</Link>
+                  <ArrowRight size={12} className="text-muted" />
+                  <span className="text-white font-medium tracking-wide">SHOP</span>
                 </div>
-                <h1 className="text-xl sm:text-2xl font-bold text-slate-900 font-serif">
-                  All Products
-                  <span className="text-sm font-normal text-slate-500 font-sans" style={{ marginLeft: '8px' }}>
-                    ({products.length} items)
+                <div className="flex items-center gap-2">
+                  <h1 className="heading-section text-lg sm:text-xl lg:text-2xl">
+                    ALL ARTIFACTS
+                  </h1>
+                  <span className="text-sm text-muted">
+                    ({products.length} found)
                   </span>
-                </h1>
+                </div>
               </div>
 
               {/* Controls */}
-              <div className="flex items-center" style={{ gap: '12px' }}>
+              <div className="flex items-center gap-3">
                 {/* Mobile Filter */}
                 <button 
                   onClick={() => setMobileFilterOpen(true)}
-                  className="lg:hidden flex items-center bg-slate-900 text-white rounded-lg text-sm font-medium hover:bg-slate-800 transition-colors border-none cursor-pointer"
+                  className="lg:hidden flex items-center bg-[var(--color-surface)] border border-[var(--color-border)] text-white text-xs font-medium hover:border-gold transition-colors cursor-pointer"
                   style={{ padding: '8px 16px', gap: '8px' }}
                 >
-                  <SlidersHorizontal size={16} />
+                  <SlidersHorizontal size={16} className="text-gold" />
                   Filters
                   {activeFilterCount > 0 && (
-                    <span 
-                      className="rounded-full bg-amber-500 text-white text-[10px] font-bold flex items-center justify-center"
-                      style={{ width: '20px', height: '20px' }}
-                    >
+                    <span className="w-5 h-5 flex items-center justify-center bg-gold text-black text-[10px] font-bold">
                       {activeFilterCount}
                     </span>
                   )}
@@ -275,29 +292,29 @@ export default function ProductListing() {
                   <select 
                     value={sortBy}
                     onChange={(e) => setSortBy(e.target.value)}
-                    className="appearance-none bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-900 hover:border-slate-300 focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 outline-none transition-all cursor-pointer"
+                    className="appearance-none bg-[var(--color-surface)] border border-[var(--color-border)] text-xs sm:text-sm font-medium text-white hover:border-gold focus:border-gold focus:ring-2 focus:ring-gold/20 outline-none transition-all cursor-pointer"
                     style={{ padding: '8px 32px 8px 16px' }}
                   >
-                    <option value="-created_at">Newest First</option>
+                    <option value="-created_at">Newest Arrivals</option>
                     <option value="price">Price: Low to High</option>
                     <option value="-price">Price: High to Low</option>
                     <option value="-rating_avg">Top Rated</option>
-                    <option value="-sold_count">Best Selling</option>
+                    <option value="-sold_count">Most Acquired</option>
                   </select>
-                  <ChevronDown size={16} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+                  <ChevronDown size={16} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted pointer-events-none" />
                 </div>
 
                 {/* View Mode */}
-                <div className="hidden sm:flex items-center border border-slate-200 rounded-lg overflow-hidden">
+                <div className="hidden sm:flex items-center border border-[var(--color-border)] overflow-hidden">
                   <button 
                     onClick={() => setViewMode('grid')}
-                    className={`p-2 transition-colors border-none cursor-pointer ${viewMode === 'grid' ? 'bg-slate-900 text-white' : 'bg-white text-slate-500 hover:text-slate-900'}`}
+                    className={`p-2 transition-colors border-none cursor-pointer ${viewMode === 'grid' ? 'bg-gold text-black' : 'bg-[var(--color-surface)] text-muted hover:text-white'}`}
                   >
                     <Grid3X3 size={18} />
                   </button>
                   <button 
                     onClick={() => setViewMode('list')}
-                    className={`p-2 transition-colors border-none cursor-pointer ${viewMode === 'list' ? 'bg-slate-900 text-white' : 'bg-white text-slate-500 hover:text-slate-900'}`}
+                    className={`p-2 transition-colors border-none cursor-pointer ${viewMode === 'list' ? 'bg-gold text-black' : 'bg-[var(--color-surface)] text-muted hover:text-white'}`}
                   >
                     <LayoutList size={18} />
                   </button>
@@ -307,18 +324,18 @@ export default function ProductListing() {
 
             {/* Active Filter Chips */}
             {activeFilterCount > 0 && (
-              <div className="flex flex-wrap items-center" style={{ gap: '8px', marginTop: '16px', paddingTop: '16px', borderTop: '1px solid #f1f5f9' }}>
-                <span className="text-xs font-medium text-slate-500">Active:</span>
+              <div className="flex flex-wrap items-center gap-2 mt-4 pt-4 border-t border-[var(--color-border)]">
+                <span className="label-gold text-[10px]">ACTIVE:</span>
                 {selectedCats.map(catId => {
                   const cat = categories.find(c => c.id === catId)
                   return cat ? (
                     <span 
                       key={catId} 
-                      className="inline-flex items-center rounded-full text-xs font-medium border border-amber-200 bg-amber-50 text-amber-700"
+                      className="inline-flex items-center border border-[var(--color-border)] bg-[var(--color-surface)] text-white text-xs"
                       style={{ padding: '4px 12px', gap: '4px' }}
                     >
                       {cat.name}
-                      <button onClick={() => toggleCat(catId)} className="hover:text-amber-900 bg-transparent border-none cursor-pointer">
+                      <button onClick={() => toggleCat(catId)} className="hover:text-gold bg-transparent border-none cursor-pointer">
                         <X size={12} />
                       </button>
                     </span>
@@ -326,11 +343,11 @@ export default function ProductListing() {
                 })}
                 {selectedRating && (
                   <span 
-                    className="inline-flex items-center rounded-full text-xs font-medium border border-amber-200 bg-amber-50 text-amber-700"
+                    className="inline-flex items-center border border-[var(--color-border)] bg-[var(--color-surface)] text-white text-xs"
                     style={{ padding: '4px 12px', gap: '4px' }}
                   >
                     {selectedRating}+ Stars
-                    <button onClick={() => setSelectedRating(null)} className="hover:text-amber-900 bg-transparent border-none cursor-pointer">
+                    <button onClick={() => setSelectedRating(null)} className="hover:text-gold bg-transparent border-none cursor-pointer">
                       <X size={12} />
                     </button>
                   </span>
@@ -338,22 +355,22 @@ export default function ProductListing() {
                 {selectedSizes.map(size => (
                   <span 
                     key={size} 
-                    className="inline-flex items-center rounded-full text-xs font-medium border border-amber-200 bg-amber-50 text-amber-700"
+                    className="inline-flex items-center border border-[var(--color-border)] bg-[var(--color-surface)] text-white text-xs"
                     style={{ padding: '4px 12px', gap: '4px' }}
                   >
                     Size {size}
-                    <button onClick={() => toggleSize(size)} className="hover:text-amber-900 bg-transparent border-none cursor-pointer">
+                    <button onClick={() => toggleSize(size)} className="hover:text-gold bg-transparent border-none cursor-pointer">
                       <X size={12} />
                     </button>
                   </span>
                 ))}
                 {(priceRange.min || priceRange.max) && (
                   <span 
-                    className="inline-flex items-center rounded-full text-xs font-medium border border-amber-200 bg-amber-50 text-amber-700"
+                    className="inline-flex items-center border border-[var(--color-border)] bg-[var(--color-surface)] text-white text-xs"
                     style={{ padding: '4px 12px', gap: '4px' }}
                   >
                     ₹{priceRange.min || '0'} - ₹{priceRange.max || '∞'}
-                    <button onClick={() => setPriceRange({ min: '', max: '' })} className="hover:text-amber-900 bg-transparent border-none cursor-pointer">
+                    <button onClick={() => setPriceRange({ min: '', max: '' })} className="hover:text-gold bg-transparent border-none cursor-pointer">
                       <X size={12} />
                     </button>
                   </span>
@@ -363,39 +380,44 @@ export default function ProductListing() {
           </div>
 
           {/* Products */}
-          <div style={{ padding: '24px' }}>
+          <div className="py-6 sm:py-8 px-4 sm:px-6">
             {loading ? (
-              <div className={`grid gap-4 ${viewMode === 'grid' ? 'grid-cols-2 sm:grid-cols-3 xl:grid-cols-4' : 'grid-cols-1'}`}>
+              <div className={`grid gap-3 sm:gap-4 ${viewMode === 'grid' ? 'grid-cols-2 sm:grid-cols-3 xl:grid-cols-4' : 'grid-cols-1'}`}>
                 {[...Array(8)].map((_, i) => (
-                  <div key={i} className="bg-white rounded-xl border border-slate-200 overflow-hidden animate-pulse">
-                    <div className="bg-slate-200" style={{ aspectRatio: '1' }} />
-                    <div className="flex flex-col" style={{ padding: '16px', gap: '12px' }}>
-                      <div className="h-4 bg-slate-200 rounded w-3/4" />
-                      <div className="h-4 bg-slate-200 rounded w-1/2" />
-                      <div className="h-8 bg-slate-200 rounded w-1/3" />
+                  <div key={i} className="card-dark overflow-hidden animate-pulse">
+                    <div className="bg-[var(--color-surface)]" style={{ aspectRatio: '3/4' }} />
+                    <div className="p-3 sm:p-4 flex flex-col gap-3">
+                      <div className="h-3 bg-[var(--color-surface)] w-3/4" />
+                      <div className="h-3 bg-[var(--color-surface)] w-1/2" />
+                      <div className="h-6 bg-[var(--color-surface)] w-1/3" />
                     </div>
                   </div>
                 ))}
               </div>
             ) : products.length === 0 ? (
-              <div className="flex flex-col items-center justify-center text-center" style={{ padding: '80px 0' }}>
-                <Search size={48} className="text-slate-300" style={{ marginBottom: '16px' }} />
-                <h3 className="text-lg font-bold text-slate-900" style={{ marginBottom: '8px' }}>No products found</h3>
-                <p className="text-slate-500" style={{ marginBottom: '24px' }}>Try adjusting your filters or search criteria</p>
+              <div className="flex flex-col items-center justify-center text-center py-20 sm:py-32">
+                <div className="w-16 h-16 border border-[var(--color-border)] flex items-center justify-center mb-6">
+                  <Search size={24} className="text-muted" />
+                </div>
+                <p className="label-gold mb-2">NO SIGNAL</p>
+                <h3 className="heading-card text-lg sm:text-xl mb-2">No Artifacts Found</h3>
+                <p className="text-muted text-sm mb-8 max-w-sm">
+                  Adjust your filter parameters or browse the full collection to locate your desired relics.
+                </p>
                 <button 
                   onClick={clearFilters}
-                  className="bg-slate-900 text-white rounded-lg font-medium hover:bg-slate-800 transition-colors border-none cursor-pointer"
-                  style={{ padding: '8px 24px' }}
+                  className="btn-primary"
                 >
-                  Clear all filters
+                  RESET FILTERS
                 </button>
               </div>
             ) : (
-              <div className={`grid gap-4 ${viewMode === 'grid' ? 'grid-cols-2 sm:grid-cols-3 xl:grid-cols-4' : 'grid-cols-1'}`}>
-                {products.map((product) => (
+              <div className={`grid gap-3 sm:gap-4 ${viewMode === 'grid' ? 'grid-cols-2 sm:grid-cols-3 xl:grid-cols-4' : 'grid-cols-1'}`}>
+                {products.map((product, i) => (
                   <ProductCard 
                     key={product.id} 
                     product={product} 
+                    index={i}
                     viewMode={viewMode}
                   />
                 ))}
@@ -404,6 +426,50 @@ export default function ProductListing() {
           </div>
         </main>
       </div>
+
+      {/* ===== FOOTER ===== */}
+      <footer className="footer-transfinity mt-16">
+        <div className="page-container">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 mb-8">
+            <div>
+              <p className="label-gold mb-4">NAVIGATE</p>
+              <div className="space-y-2">
+                <a href="/shop" className="footer-link block">Shop All</a>
+                <a href="/arcs" className="footer-link block">Arc Index</a>
+                <a href="/manifesto" className="footer-link block">Manifesto</a>
+              </div>
+            </div>
+            <div>
+              <p className="label-gold mb-4">ACCOUNT</p>
+              <div className="space-y-2">
+                <a href="/login" className="footer-link block">Sign In</a>
+                <a href="/register" className="footer-link block">Create Account</a>
+              </div>
+            </div>
+            <div>
+              <p className="label-gold mb-4">TRANSMIT</p>
+              <div className="space-y-2">
+                <a href="#" className="footer-link block">Instagram</a>
+                <a href="#" className="footer-link block">Discord</a>
+                <a href="#" className="footer-link block">X-Link</a>
+              </div>
+            </div>
+          </div>
+          <div className="divider-gold mb-6" />
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-2">
+              <span className="text-gold text-lg">∞</span>
+              <span className="font-display text-gold text-xs tracking-[0.3em]">TRANSFINITY</span>
+            </div>
+            <p className="text-muted text-xs tracking-wider">
+              LONDON // TOKYO // DIGITAL VOID
+            </p>
+            <p className="text-muted text-[10px]">
+              © 2104 Transfinity Systems
+            </p>
+          </div>
+        </div>
+      </footer>
     </div>
   )
 }
@@ -416,60 +482,59 @@ function FilterContent({
   selectedSizes, toggleSize, sizes, ratings
 }) {
   return (
-    <div className="flex flex-col" style={{ gap: '4px' }}>
+    <div className="flex flex-col gap-1">
       {/* Categories */}
-      <FilterSection title="Categories">
-        <div className="flex flex-col" style={{ gap: '8px' }}>
+      <FilterSection title="CATEGORIES">
+        <div className="flex flex-col gap-2">
           {categories.map(cat => (
-            <label key={cat.id} className="flex items-center cursor-pointer group" style={{ gap: '12px' }}>
+            <label key={cat.id} className="flex items-center cursor-pointer group gap-3">
               <div 
-                className={`rounded border-2 flex items-center justify-center transition-all ${selectedCats.includes(cat.id) ? 'border-amber-500' : 'border-slate-300 group-hover:border-amber-400'}`}
-                style={{ 
-                  width: '20px', 
-                  height: '20px',
-                  background: selectedCats.includes(cat.id) ? ACCENT : 'transparent'
-                }}
+                className={`w-5 h-5 border-2 flex items-center justify-center transition-all ${
+                  selectedCats.includes(cat.id) 
+                    ? 'border-gold bg-gold' 
+                    : 'border-[var(--color-border)] group-hover:border-gold/60'
+                }`}
               >
                 {selectedCats.includes(cat.id) && <CheckIcon />}
               </div>
-              <span className={`text-sm ${selectedCats.includes(cat.id) ? 'text-slate-900 font-medium' : 'text-slate-600'}`}>
+              <span className={`text-sm ${selectedCats.includes(cat.id) ? 'text-white font-medium' : 'text-muted'}`}>
                 {cat.name}
               </span>
-              <span className="text-xs text-slate-400 ml-auto">{cat.product_count || 0}</span>
+              <span className="text-xs text-muted ml-auto">{cat.product_count || 0}</span>
             </label>
           ))}
         </div>
       </FilterSection>
 
       {/* Price Range */}
-      <FilterSection title="Price Range">
-        <div className="flex flex-col" style={{ gap: '12px' }}>
-          <div className="flex items-center" style={{ gap: '8px' }}>
+      <FilterSection title="PRICE RANGE">
+        <div className="flex flex-col gap-3">
+          <div className="flex items-center gap-2">
             <div className="relative flex-1">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-slate-400">₹</span>
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-muted">₹</span>
               <input 
                 type="number"
                 placeholder="Min"
                 value={priceRange.min}
                 onChange={(e) => setPriceRange(prev => ({ ...prev, min: e.target.value }))}
-                className="w-full bg-slate-50 border border-slate-200 rounded-lg text-sm focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 outline-none transition-all"
+                className="w-full bg-[var(--color-surface)] border border-[var(--color-border)] text-sm text-white focus:border-gold focus:ring-2 focus:ring-gold/20 outline-none transition-all placeholder:text-muted"
                 style={{ padding: '8px 8px 8px 28px' }}
               />
             </div>
-            <span className="text-slate-400">-</span>
+            <span className="text-muted">-</span>
             <div className="relative flex-1">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-slate-400">₹</span>
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-muted">₹</span>
               <input 
                 type="number"
                 placeholder="Max"
                 value={priceRange.max}
                 onChange={(e) => setPriceRange(prev => ({ ...prev, max: e.target.value }))}
-                className="w-full bg-slate-50 border border-slate-200 rounded-lg text-sm focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 outline-none transition-all"
+                className="w-full bg-[var(--color-surface)] border border-[var(--color-border)] text-sm text-white focus:border-gold focus:ring-2 focus:ring-gold/20 outline-none transition-all placeholder:text-muted"
                 style={{ padding: '8px 8px 8px 28px' }}
               />
             </div>
           </div>
-          <div className="flex flex-wrap" style={{ gap: '8px' }}>
+          <div className="flex flex-wrap gap-2">
             {['Under ₹500', '₹500 - ₹1000', '₹1000 - ₹2000', 'Over ₹2000'].map(range => (
               <button 
                 key={range}
@@ -479,7 +544,7 @@ function FilterContent({
                   else if (range === '₹1000 - ₹2000') setPriceRange({ min: '1000', max: '2000' })
                   else setPriceRange({ min: '2000', max: '' })
                 }}
-                className="bg-slate-50 border border-slate-200 rounded-lg text-xs font-medium text-slate-600 hover:border-amber-500 hover:text-amber-600 transition-all bg-transparent cursor-pointer"
+                className="bg-[var(--color-surface)] border border-[var(--color-border)] text-xs font-medium text-muted hover:border-gold hover:text-gold transition-all bg-transparent cursor-pointer"
                 style={{ padding: '6px 12px' }}
               >
                 {range}
@@ -490,25 +555,29 @@ function FilterContent({
       </FilterSection>
 
       {/* Rating */}
-      <FilterSection title="Rating">
-        <div className="flex flex-col" style={{ gap: '8px' }}>
+      <FilterSection title="RATING">
+        <div className="flex flex-col gap-2">
           {ratings.map(rating => (
             <button 
               key={rating}
               onClick={() => setSelectedRating(selectedRating === rating ? null : rating)}
-              className={`flex items-center w-full rounded-lg transition-all border bg-transparent cursor-pointer ${selectedRating === rating ? 'bg-amber-50 border-amber-200' : 'hover:bg-slate-50 border-transparent'}`}
+              className={`flex items-center w-full transition-all border bg-transparent cursor-pointer ${
+                selectedRating === rating 
+                  ? 'bg-[var(--color-bg-alt)] border-gold' 
+                  : 'hover:bg-[var(--color-bg-alt)] border-transparent'
+              }`}
               style={{ padding: '8px 12px', gap: '8px' }}
             >
-              <div className="flex" style={{ gap: '2px' }}>
+              <div className="flex gap-0.5">
                 {[1, 2, 3, 4, 5].map(s => (
                   <Star 
                     key={s} 
                     size={14} 
-                    className={s <= rating ? 'text-amber-400 fill-amber-400' : 'text-slate-200'} 
+                    className={s <= rating ? 'text-gold fill-gold' : 'text-[var(--color-border)]'} 
                   />
                 ))}
               </div>
-              <span className={`text-sm ${selectedRating === rating ? 'text-amber-700 font-medium' : 'text-slate-600'}`}>
+              <span className={`text-sm ${selectedRating === rating ? 'text-gold font-medium' : 'text-muted'}`}>
                 & Up
               </span>
             </button>
@@ -517,13 +586,17 @@ function FilterContent({
       </FilterSection>
 
       {/* Size */}
-      <FilterSection title="Size">
-        <div className="flex flex-wrap" style={{ gap: '8px' }}>
+      <FilterSection title="SIZE">
+        <div className="flex flex-wrap gap-2">
           {sizes.map(size => (
             <button
               key={size}
               onClick={() => toggleSize(size)}
-              className={`rounded-lg border-2 text-sm font-bold transition-all bg-transparent cursor-pointer ${selectedSizes.includes(size) ? 'bg-slate-900 border-slate-900 text-white' : 'bg-white border-slate-200 text-slate-600 hover:border-slate-400'}`}
+              className={`border-2 text-sm font-bold transition-all bg-transparent cursor-pointer ${
+                selectedSizes.includes(size) 
+                  ? 'bg-gold border-gold text-black' 
+                  : 'bg-[var(--color-surface)] border-[var(--color-border)] text-muted hover:border-gold'
+              }`}
               style={{ width: '40px', height: '40px' }}
             >
               {size}
@@ -541,17 +614,16 @@ function MobileFilters(props) {
     <>
       <FilterContent {...props} />
       <div 
-        className="sticky bottom-0 bg-white border-t border-slate-200"
+        className="sticky bottom-0 bg-[var(--color-bg)] border-t border-[var(--color-border)]"
         style={{ margin: '24px -24px 0', padding: '16px 24px 24px' }}
       >
         <button 
           onClick={() => {
             props.onClose()
           }}
-          className="w-full bg-slate-900 text-white rounded-xl font-bold hover:bg-slate-800 transition-colors border-none cursor-pointer"
-          style={{ padding: '12px 0' }}
+          className="w-full btn-primary"
         >
-          Show {props.activeFilterCount > 0 ? 'Filtered' : 'All'} Results
+          SHOW {props.activeFilterCount > 0 ? 'FILTERED' : 'ALL'} RESULTS
         </button>
       </div>
     </>
@@ -562,7 +634,7 @@ function MobileFilters(props) {
 function CheckIcon() {
   return (
     <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-      <path d="M2 6L5 9L10 3" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M2 6L5 9L10 3" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
     </svg>
   )
 }

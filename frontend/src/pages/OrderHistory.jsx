@@ -1,24 +1,32 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Package, ArrowRight, ShoppingBag, Calendar, ChevronRight } from 'lucide-react'
+import {
+  Package,
+  ArrowRight,
+  ShoppingBag,
+  Calendar,
+  ChevronRight,
+  Loader2,
+} from 'lucide-react'
 import api from '../services/api'
 
 const STATUS_CONFIG = {
-  pending:    { label: 'Pending',    bg: 'var(--color-primary-light)', color: 'var(--color-primary-dark)', border: 'var(--color-primary)' },
-  confirmed:  { label: 'Confirmed',  bg: 'var(--color-info-bg)', color: 'var(--color-info)', border: 'var(--color-info)' },
-  processing: { label: 'Processing', bg: 'var(--color-primary-light)', color: 'var(--color-primary)', border: 'var(--color-primary)' },
-  shipped:    { label: 'Shipped',    bg: 'var(--color-info-bg)', color: 'var(--color-info)', border: 'var(--color-info)' },
-  delivered:  { label: 'Delivered',  bg: 'var(--color-success-bg)', color: 'var(--color-success)', border: 'var(--color-success)' },
-  cancelled:  { label: 'Cancelled',  bg: 'var(--color-danger-bg)', color: 'var(--color-danger)', border: 'var(--color-danger)' },
-  refunded:   { label: 'Refunded',   bg: 'var(--color-bg-alt)', color: 'var(--color-text)', border: 'var(--color-border)' },
+  pending: { label: 'Pending', tone: 'text-gold border-gold/30 bg-gold/10' },
+  confirmed: { label: 'Confirmed', tone: 'text-gold border-gold/30 bg-gold/10' },
+  processing: { label: 'Processing', tone: 'text-gold border-gold/30 bg-gold/10' },
+  shipped: { label: 'Shipped', tone: 'text-gold border-gold/30 bg-gold/10' },
+  delivered: { label: 'Delivered', tone: 'text-gold border-gold/40 bg-gold/10' },
+  cancelled: { label: 'Cancelled', tone: 'text-red-400 border-red-400/30 bg-red-400/10' },
+  refunded: { label: 'Refunded', tone: 'text-muted border-gold/20 bg-black' },
 }
 
-// Helper for image URL
 const getImageUrl = (imageData) => {
   if (!imageData) return null
+
   const imagePath = typeof imageData === 'object' ? imageData.image : imageData
   if (!imagePath) return null
   if (imagePath.startsWith('http')) return imagePath
+
   return `http://localhost:8000${imagePath.startsWith('/') ? '' : '/'}${imagePath}`
 }
 
@@ -27,157 +35,180 @@ export default function OrderHistory() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    let mounted = true
+
     setLoading(true)
-    api.get('/orders/my/').then(r => {
-      setOrders(r.data.results || r.data)
-    }).finally(() => setLoading(false))
+
+    api
+      .get('/orders/my/')
+      .then((res) => {
+        if (mounted) setOrders(res.data.results || res.data || [])
+      })
+      .finally(() => {
+        if (mounted) setLoading(false)
+      })
+
+    return () => {
+      mounted = false
+    }
   }, [])
 
-  if (loading) return (
-    <div className="min-h-screen bg-[var(--color-bg)] flex items-center justify-center">
-      <div className="w-6 h-6 sm:w-8 sm:h-8 border-2 border-[var(--color-primary)] border-t-transparent rounded-full animate-spin" />
-    </div>
-  )
-
-  if (orders.length === 0) return (
-    <div className="min-h-screen bg-[var(--color-bg)] flex items-center justify-center px-4">
-      <div className="flex flex-col items-center text-center gap-4 sm:gap-5 max-w-sm px-4">
-        <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-[var(--color-primary-light)] flex items-center justify-center">
-          <ShoppingBag size={24} className="sm:w-7 sm:h-7 text-[var(--color-primary)]" />
-        </div>
-        <div>
-          <p className="text-[10px] sm:text-[11px] font-bold tracking-[0.2em] uppercase text-[var(--color-primary)] mb-1.5 sm:mb-2">
-            Your Orders
-          </p>
-          <h2 className="text-lg sm:text-xl font-bold text-[var(--color-text)] mb-1.5 sm:mb-2">No orders yet</h2>
-          <p className="text-xs sm:text-sm text-[var(--color-muted)] mb-5 sm:mb-6">
-            Start shopping to see your orders here. Your purchase history will appear once you place your first order.
-          </p>
-        </div>
-        <Link
-          to="/products"
-          className="inline-flex items-center gap-1.5 sm:gap-2 bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] text-white text-xs sm:text-sm font-semibold rounded-xl transition-all duration-300 px-5 sm:px-6 py-2.5 sm:py-3 shadow-md hover:shadow-lg hover:-translate-y-0.5"
-        >
-          Shop Now <ArrowRight size={14} className="sm:w-4 sm:h-4" />
-        </Link>
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-black pt-[76px] sm:pt-[88px] lg:pt-[96px] flex items-center justify-center">
+        <Loader2 size={28} className="text-gold animate-spin" />
       </div>
-    </div>
-  )
+    )
+  }
+
+  if (orders.length === 0) {
+    return (
+      <div className="min-h-screen bg-black pt-[76px] sm:pt-[88px] lg:pt-[96px] flex items-center justify-center px-4 py-10 overflow-x-hidden">
+        <div className="relative w-full max-w-xl bg-[#0A0A0A] border border-gold/15 p-6 sm:p-10 text-center overflow-hidden shadow-[0_20px_80px_rgba(0,0,0,0.5)]">
+          <div className="absolute top-0 left-0 w-16 h-px bg-gold/60" />
+          <div className="absolute top-0 left-0 w-px h-16 bg-gold/60" />
+
+          <div className="w-16 h-16 sm:w-20 sm:h-20 border border-gold/25 flex items-center justify-center mx-auto mb-6">
+            <ShoppingBag size={30} className="text-gold/70" strokeWidth={1.5} />
+          </div>
+
+          <p className="label-gold mb-3">Your Orders</p>
+
+          <h1 className="font-display text-2xl sm:text-3xl text-white tracking-[0.13em] mb-3">
+            NO ORDERS <span className="text-gradient-gold">YET</span>
+          </h1>
+
+          <p className="text-muted text-xs sm:text-sm font-mono tracking-wider leading-relaxed max-w-sm mx-auto mb-7">
+            Your purchase history will appear once you place your first artifact order.
+          </p>
+
+          <Link
+            to="/products"
+            className="btn-primary inline-flex items-center justify-center gap-2 w-full sm:w-auto"
+          >
+            SHOP NOW
+            <ArrowRight size={16} />
+          </Link>
+        </div>
+      </div>
+    )
+  }
 
   return (
-    <div className="min-h-screen bg-[var(--color-bg)]">
-      <div className="page-container py-6 sm:py-8 lg:py-10">
-
+    <div className="min-h-screen bg-black pt-[76px] sm:pt-[88px] lg:pt-[96px] overflow-x-hidden">
+      <main className="w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 lg:py-12">
         {/* Header */}
-        <div className="flex items-center justify-between flex-wrap gap-2 sm:gap-3 mb-6 sm:mb-8">
+        <section className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-6 sm:mb-8">
           <div>
-            <p className="text-[10px] sm:text-[11px] font-bold tracking-[0.2em] uppercase text-[var(--color-primary)] mb-1.5 sm:mb-2">
-              Purchase History
-            </p>
-            <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-[var(--color-text)]">
-              My Orders
-            </h1>
-          </div>
-          <span className="text-xs sm:text-sm font-medium text-[var(--color-muted)] bg-[var(--color-bg-alt)] rounded-full px-2.5 sm:px-3 py-1 sm:py-1.5 border border-[var(--color-border)]">
-            {orders.length} order{orders.length !== 1 ? 's' : ''}
-          </span>
-        </div>
+            <p className="label-gold mb-2">Purchase History</p>
 
-        {/* Orders List */}
-        <div className="flex flex-col gap-3 sm:gap-4">
+            <h1 className="font-display text-2xl sm:text-3xl lg:text-4xl text-white tracking-[0.12em] leading-tight">
+              MY <span className="text-gradient-gold">ORDERS</span>
+            </h1>
+
+            <p className="text-xs sm:text-sm text-muted font-mono tracking-wider mt-2">
+              Track your artifact transmissions and payment status.
+            </p>
+          </div>
+
+          <span className="text-[10px] sm:text-xs font-mono tracking-wider uppercase text-gold bg-gold/10 border border-gold/20 px-3 py-2 w-fit">
+            {orders.length} Order{orders.length !== 1 ? 's' : ''}
+          </span>
+        </section>
+
+        <div className="divider-gold mb-6 sm:mb-8" />
+
+        {/* Orders */}
+        <section className="flex flex-col gap-4 sm:gap-5">
           {orders.map((order, index) => {
-            const cfg = STATUS_CONFIG[order.status] || STATUS_CONFIG.pending
+            const status = STATUS_CONFIG[order.status] || STATUS_CONFIG.pending
 
             return (
               <Link
                 key={order.id}
                 to={`/orders/${order.id}`}
-                className="group block bg-[var(--color-surface)] rounded-xl sm:rounded-2xl border border-[var(--color-border)] shadow-sm hover:shadow-md hover:border-[var(--color-primary)]/30 transition-all duration-300 p-4 sm:p-5 animate-fadeUp"
+                className="group block bg-[#0A0A0A] border border-gold/15 hover:border-gold/35 p-4 sm:p-5 lg:p-6 animate-fadeUp transition-all duration-500 hover:shadow-[0_16px_60px_rgba(212,175,55,0.08)]"
                 style={{ animationDelay: `${index * 0.05}s` }}
               >
-                {/* Top Row */}
-                <div className="flex items-start justify-between mb-3 sm:mb-4">
+                <div className="flex items-start justify-between gap-4 mb-4">
                   <div className="min-w-0">
-                    <div className="flex items-center gap-1.5 sm:gap-2 mb-1">
-                      <p className="text-xs sm:text-sm font-bold font-mono text-[var(--color-text)] truncate">
+                    <div className="flex items-center flex-wrap gap-2 mb-2">
+                      <p className="text-xs sm:text-sm font-mono text-white tracking-wider truncate">
                         #{order.id?.slice(0, 8).toUpperCase()}
                       </p>
+
                       <span
-                        className="inline-flex items-center text-[9px] sm:text-[10px] font-bold rounded-full px-2 sm:px-2.5 py-0.5 border shrink-0"
-                        style={{
-                          background: cfg.bg,
-                          color: cfg.color,
-                          borderColor: cfg.border,
-                        }}
+                        className={`inline-flex items-center text-[9px] sm:text-[10px] font-mono tracking-wider uppercase px-2.5 py-1 border shrink-0 ${status.tone}`}
                       >
-                        {cfg.label}
+                        {status.label}
                       </span>
                     </div>
-                    <p className="text-[10px] sm:text-xs text-[var(--color-muted)] flex items-center gap-1">
-                      <Calendar size={10} className="sm:w-3 sm:h-3" />
+
+                    <p className="text-[10px] sm:text-xs text-muted font-mono flex items-center gap-1.5">
+                      <Calendar size={12} />
                       {new Date(order.created_at).toLocaleDateString('en-IN', {
-                        day: 'numeric', month: 'short', year: 'numeric'
+                        day: 'numeric',
+                        month: 'short',
+                        year: 'numeric',
                       })}
                     </p>
                   </div>
-                  <div className="text-right shrink-0 ml-2">
-                    <span className="text-sm sm:text-base font-bold text-[var(--color-text)]">
+
+                  <div className="text-right shrink-0">
+                    <span className="price-tag text-sm sm:text-base">
                       ₹{Number(order.total).toLocaleString('en-IN')}
                     </span>
-                    <p className="text-[9px] sm:text-[10px] text-[var(--color-muted)] mt-0.5">
-                      {order.items?.length || 0} item{order.items?.length !== 1 ? 's' : ''}
+
+                    <p className="text-[9px] sm:text-[10px] text-muted font-mono tracking-wider mt-1">
+                      {order.items?.length || 0} Item{order.items?.length !== 1 ? 's' : ''}
                     </p>
                   </div>
                 </div>
 
-                {/* Product Thumbs */}
-                <div className="flex items-center gap-2 sm:gap-3">
-                  <div className="flex items-center gap-1.5 sm:gap-2">
-                    {order.items?.slice(0, 3).map(item => (
-                      getImageUrl(item.product?.primary_image) ? (
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-2 overflow-hidden">
+                    {order.items?.slice(0, 3).map((item) => {
+                      const imageUrl = getImageUrl(item.product?.primary_image)
+
+                      return imageUrl ? (
                         <img
                           key={item.id}
-                          src={getImageUrl(item.product?.primary_image)}
+                          src={imageUrl}
                           alt={item.product_name}
-                          className="w-10 h-10 sm:w-12 sm:h-12 object-cover rounded-lg bg-[var(--color-bg-alt)] border border-[var(--color-border)]"
-                          onError={(e) => { e.target.style.display = 'none' }}
+                          className="w-11 h-11 sm:w-13 sm:h-13 object-cover bg-black border border-gold/10"
+                          onError={(e) => {
+                            e.currentTarget.style.display = 'none'
+                          }}
                         />
                       ) : (
                         <div
                           key={item.id}
-                          className="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center rounded-lg bg-[var(--color-bg-alt)] border border-[var(--color-border)] text-[var(--color-muted)]"
+                          className="w-11 h-11 sm:w-13 sm:h-13 flex items-center justify-center bg-black border border-gold/10 text-muted shrink-0"
                         >
-                          <Package size={12} className="sm:w-3.5 sm:h-3.5" />
+                          <Package size={14} />
                         </div>
                       )
-                    ))}
+                    })}
+
                     {order.items?.length > 3 && (
-                      <div className="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center rounded-lg bg-[var(--color-bg-alt)] border border-[var(--color-border)] text-[10px] sm:text-xs font-bold text-[var(--color-muted)]">
+                      <div className="w-11 h-11 sm:w-13 sm:h-13 flex items-center justify-center bg-black border border-gold/10 text-[10px] sm:text-xs font-mono text-muted shrink-0">
                         +{order.items.length - 3}
                       </div>
                     )}
                   </div>
-                  <div className="ml-auto flex items-center gap-1 text-[var(--color-muted)] group-hover:text-[var(--color-primary)] transition-colors">
-                    <span className="text-[10px] sm:text-xs font-medium hidden sm:inline">View Details</span>
-                    <ChevronRight size={14} className="sm:w-4 sm:h-4 group-hover:translate-x-0.5 transition-transform" />
+
+                  <div className="ml-auto flex items-center gap-1 text-muted group-hover:text-gold transition-colors">
+                    <span className="text-[10px] sm:text-xs font-mono tracking-wider uppercase hidden sm:inline">
+                      View Details
+                    </span>
+                    <ChevronRight size={16} className="group-hover:translate-x-1 transition-transform" />
                   </div>
                 </div>
               </Link>
             )
           })}
-        </div>
-      </div>
-
-      <style>{`
-        @keyframes fadeUp {
-          from { opacity: 0; transform: translateY(12px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        .animate-fadeUp {
-          animation: fadeUp 0.4s ease forwards;
-          opacity: 0;
-        }
-      `}</style>
+        </section>
+      </main>
     </div>
   )
 }
