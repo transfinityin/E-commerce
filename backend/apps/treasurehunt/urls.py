@@ -25,5 +25,8 @@ urlpatterns = [
     path('admin/locations/<int:pk>/', views.HuntLocationDetailView.as_view(), name='admin-location-detail'),
     path('admin/generate-qr/', views.generate_qr_batch, name='admin-generate-qr'),
     path('qr-status/<str:secret_hash>/', views.check_qr_status, name='qr-status'),
+
+    path('mystery-claim/', views.ClaimMysteryCardView.as_view(), name='mystery-claim'),
+    # path('progress/', views.HuntProgressView.as_view(), name='hunt-progress'),
 ]
 print("TREASUREHUNT URLS LOADED")

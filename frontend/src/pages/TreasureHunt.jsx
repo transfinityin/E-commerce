@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useHuntStore } from '../store/useHuntStore';
 import { huntService } from '../services/huntApi';
 import { toast } from 'react-hot-toast';
-import HuntRewardModal from '../components/HuntRewardModal';
+// import HuntRewardModal from '../components/HuntRewardModal';
 
 const TreasureHunt = () => {
   const navigate = useNavigate();

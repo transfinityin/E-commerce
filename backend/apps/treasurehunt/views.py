@@ -1328,9 +1328,15 @@ class HuntProgressView(generics.RetrieveAPIView):
                 'current_level': progress.current_level,
                 'is_completed': progress.current_level >= 5,
                 'started_at': progress.started_at,
+                'unlocked_arcs': progress.unlocked_arcs,
             })
         except UserHuntProgress.DoesNotExist:
-            return Response({'error': 'No active hunt'}, status=404)
+            return Response({
+                'current_level': 0,
+                'is_completed': False,
+                'started_at': None,
+                'unlocked_arcs': [],
+            })
 
 
 class LeaderboardView(generics.ListAPIView):
@@ -1398,38 +1404,101 @@ class HuntLocationDetailView(generics.RetrieveUpdateDestroyAPIView):
 @api_view(['POST'])
 @permission_classes([permissions.IsAuthenticated, IsAdminOrReadOnly])
 def generate_qr_batch(request):
-    order_ids = request.data.get('order_ids', [])
-    if not order_ids:
-        return Response({'error': 'No order IDs provided.'}, status=400)
-    
-    from orders.models import Order
+    qr_type = request.data.get('type', 'tshirt') # Default aaga tshirt irukattum
     generated = []
-    for order_id in order_ids:
-        try:
-            order = Order.objects.get(id=order_id)
-            if hasattr(order, 'tshirt_qr'):
+    # ----------------------------------------------------
+    # 1. T-SHIRT QR GENERATION (Existing Logic)
+    # ----------------------------------------------------
+    if qr_type == 'tshirt':
+        order_ids = request.data.get('order_ids', [])
+        if not order_ids:
+            return Response({'error': 'No order IDs provided.'}, status=400)
+        
+        from orders.models import Order
+        from .utils import generate_unique_qr_secret
+        
+        for order_id in order_ids:
+            try:
+                order = Order.objects.get(id=order_id)
+                if hasattr(order, 'tshirt_qr'):
+                    generated.append({'order_id': str(order_id), 'status': 'already_exists'})
+                    continue
+                
+                secret = generate_unique_qr_secret()
+                qr = TShirtQRCode.objects.create(order=order, secret_hash=secret)
                 generated.append({
                     'order_id': str(order_id),
-                    'status': 'already_exists',
-                    'qr_secret': order.tshirt_qr.secret_hash
+                    'status': 'created',
+                    'qr_secret': secret,
+                    'qr_url': f"{settings.FRONTEND_URL}/scan?code={secret}"
                 })
-                continue
+            except Order.DoesNotExist:
+                generated.append({'order_id': str(order_id), 'status': 'order_not_found'})
+
+    # ----------------------------------------------------
+    # 2. MYSTERY CARD GENERATION (New Logic: Arc / Coupon)
+    # ----------------------------------------------------
+    elif qr_type in ['arc', 'coupon']:
+        count = int(request.data.get('count', 1))
+        
+        for _ in range(count):
+            if qr_type == 'arc':
+                arc_slug = request.data.get('arc_slug')
+                if not arc_slug:
+                    return Response({'error': 'arc_slug is required for Arc QRs'}, status=400)
+                
+                qr = MysteryCardQR.objects.create(reward_type='arc', arc_slug=arc_slug)
             
-            from .utils import generate_unique_qr_secret
-            secret = generate_unique_qr_secret()
-            qr = TShirtQRCode.objects.create(order=order, secret_hash=secret)
+            elif qr_type == 'coupon':
+                discount = request.data.get('discount')
+                if not discount:
+                    return Response({'error': 'discount percentage is required for Coupon QRs'}, status=400)
+                
+                qr = MysteryCardQR.objects.create(reward_type='coupon', discount_percentage=discount)
+
             generated.append({
-                'order_id': str(order_id),
                 'status': 'created',
-                'qr_secret': secret,
-                'qr_url': f"{settings.FRONTEND_URL}/scan?code={secret}"
+                'qr_secret': qr.code,
+                'qr_url': f"{settings.FRONTEND_URL}/scan?code={qr.code}",
+                'type': qr_type
             })
-        except Order.DoesNotExist:
-            generated.append({'order_id': str(order_id), 'status': 'order_not_found'})
-        except Exception as e:
-            generated.append({'order_id': str(order_id), 'status': 'error', 'message': str(e)})
-    
+
+    else:
+        return Response({'error': 'Invalid QR type requested.'}, status=400)
+
     return Response({'generated': generated, 'total': len(generated)})
+    # order_ids = request.data.get('order_ids', [])
+    # if not order_ids:
+    #     return Response({'error': 'No order IDs provided.'}, status=400)
+    
+    # from orders.models import Order
+    # generated = []
+    # for order_id in order_ids:
+    #     try:
+    #         order = Order.objects.get(id=order_id)
+    #         if hasattr(order, 'tshirt_qr'):
+    #             generated.append({
+    #                 'order_id': str(order_id),
+    #                 'status': 'already_exists',
+    #                 'qr_secret': order.tshirt_qr.secret_hash
+    #             })
+    #             continue
+            
+    #         from .utils import generate_unique_qr_secret
+    #         secret = generate_unique_qr_secret()
+    #         qr = TShirtQRCode.objects.create(order=order, secret_hash=secret)
+    #         generated.append({
+    #             'order_id': str(order_id),
+    #             'status': 'created',
+    #             'qr_secret': secret,
+    #             'qr_url': f"{settings.FRONTEND_URL}/scan?code={secret}"
+    #         })
+    #     except Order.DoesNotExist:
+    #         generated.append({'order_id': str(order_id), 'status': 'order_not_found'})
+    #     except Exception as e:
+    #         generated.append({'order_id': str(order_id), 'status': 'error', 'message': str(e)})
+    
+    # return Response({'generated': generated, 'total': len(generated)})
 
 
 @api_view(['GET'])
@@ -1445,3 +1514,77 @@ def check_qr_status(request, secret_hash):
         })
     except TShirtQRCode.DoesNotExist:
         return Response({'exists': False}, status=404)
+    
+
+
+
+from rest_framework.views import APIView
+from .models import MysteryCardQR, UserHuntProgress
+from apps.coupons.models import Coupon
+
+import secrets
+class ClaimMysteryCardView(APIView):
+    # Customer login panniruntha thaan intha mystery card claim panna mudiyum
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        code = request.data.get('code')
+        if not code:
+            return Response({'success': False, 'message': 'Code is missing!'}, status=400)
+
+        # 1. Card irukka nu check pandrom
+        try:
+            mystery_card = MysteryCardQR.objects.get(code=code)
+        except MysteryCardQR.DoesNotExist:
+            return Response({'success': False, 'message': 'Invalid Mystery Card!'}, status=404)
+
+        # 2. Already use aayiducha nu check pandrom
+        if mystery_card.is_used:
+            return Response({'success': False, 'message': 'This card has already been claimed!'}, status=400)
+
+        # 3. Card-a "Used" nu mark pandrom
+        mystery_card.is_used = True
+        mystery_card.claimed_by = request.user
+        mystery_card.claimed_at = timezone.now()
+        mystery_card.save()
+
+        # 4. REWARD THAROM - ARC ah iruntha:
+        if mystery_card.reward_type == 'arc':
+            progress, created = UserHuntProgress.objects.get_or_create(user=request.user,defaults={'current_level': 0, 'unlocked_arcs': []})
+            arc_slug = mystery_card.arc_slug
+            
+            # List-la intha arc illana add pandrom
+            if arc_slug not in progress.unlocked_arcs:
+                progress.unlocked_arcs.append(arc_slug)
+                progress.save()
+            
+            return Response({
+                'success': True,
+                'reward_type': 'arc',
+                'arc_slug': arc_slug,
+                'message': f'🌌 SECRET REVEALED! You unlocked the {arc_slug.capitalize()} Arc!'
+            })
+
+        # 5. REWARD THAROM - COUPON ah iruntha:
+        elif mystery_card.reward_type == 'coupon':
+            # Puthusa oru actual coupon-a database-la create pandrom
+            coupon_code = f"MYST{secrets.token_urlsafe(4)[:6].upper()}"
+            discount = mystery_card.discount_percentage
+            
+            Coupon.objects.create(
+                code=coupon_code,
+                description="Mystery Box Reward",
+                discount_type='percent',
+                discount_value=discount,
+                max_uses=1,
+                is_active=True,
+                expires_at=timezone.now() + timezone.timedelta(days=7) # 7 days validity
+            )
+            
+            return Response({
+                'success': True,
+                'reward_type': 'coupon',
+                'coupon_code': coupon_code,
+                'discount': discount,
+                'message': f'🎉 SURPRISE! You won {discount}% OFF! Code: {coupon_code}'
+            })

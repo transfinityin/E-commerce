@@ -104,7 +104,7 @@ from django.utils.decorators import method_decorator
 import json
 
 from .models import (
-    Arc, StorySegment, Challenge, Reward, ShipPath,
+    Arc, MysteryCardQR, StorySegment, Challenge, Reward, ShipPath,
     Treasure, TreasureClaim, FounderProgress,
     CommunityUnlockProgress, PurchaseLog,
     TShirtQRCode, HuntLocation, UserHuntProgress,
@@ -717,3 +717,11 @@ try:
 
 except Exception:
     pass  # Legacy models not available
+
+
+@admin.register(MysteryCardQR)
+class MysteryCardQRAdmin(admin.ModelAdmin):
+    list_display = ('code', 'reward_type', 'arc_slug', 'discount_percentage', 'is_used', 'claimed_by')
+    list_filter = ('reward_type', 'is_used')
+    search_fields = ('code', 'arc_slug')
+    readonly_fields = ('code', 'is_used', 'claimed_by', 'claimed_at')

@@ -428,7 +428,32 @@ const QRScanner = () => {
       handleCouponScan(qrCodeId)
     }
   }, [qrCodeId])
-
+const handleMysteryScan = async (code) => {
+    setLoading(true)
+    try {
+      // Backend api hit pandrom
+      const { data } = await api.post('/hunt/mystery-claim/', { code })
+      
+      if (data.success) {
+        if (data.reward_type === 'arc') {
+          toast.success(data.message, { duration: 5000, icon: '🌌' })
+          // Arc page-kku redirect pandrom
+          navigate('/arcs') 
+        } else if (data.reward_type === 'coupon') {
+          toast.success(data.message, { duration: 5000, icon: '🎉' })
+          // Coupon-a local storage-la save pandrom checkout-kaga
+          const savedCoupons = JSON.parse(localStorage.getItem('qr_coupons') || '[]')
+          savedCoupons.push({ code: data.coupon_code, discount: data.discount, expires_at: new Date(Date.now() + 7*24*60*60*1000) })
+          localStorage.setItem('qr_coupons', JSON.stringify(savedCoupons))
+          navigate('/products')
+        }
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Invalid or Expired Mystery Card')
+    } finally {
+      setLoading(false)
+    }
+  }
   const getCurrentPosition = () => {
     return new Promise((resolve, reject) => {
       if (!navigator.geolocation) {
@@ -518,10 +543,10 @@ const QRScanner = () => {
     if (code.startsWith('th-')) {
       handleHuntScan(code)
     } else if (code.startsWith('loc-')) {
-      // Logic for location hunt (you can move your manual logic here)
       handleHuntScan(code, true) 
+    } else if (code.startsWith('myst-')) {  // <-- PUTHUSA ADD PANNATHU
+      handleMysteryScan(code)
     } else {
-      // If it doesn't have th- or loc- prefix, assume it's a Coupon QR Offer
       handleCouponScan(code)
     }
   }

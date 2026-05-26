@@ -15,7 +15,7 @@ import {
   Loader2,
 } from 'lucide-react'
 import api from '../../services/api'
-import HuntAdminSection from '../../components/HuntAdminSection'
+
 
 const METRIC_CARDS = [
   {
@@ -380,7 +380,7 @@ export default function Dashboard() {
 
         {/* Hunt Admin */}
         <section className="mb-7 sm:mb-9">
-          <HuntAdminSection />
+          {/* <HuntAdminSection /> */}
         </section>
 
         {/* Recent Orders */}

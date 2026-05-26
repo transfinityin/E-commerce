@@ -7,8 +7,8 @@ import ProtectedRoute from './components/ProtectedRoute'
 import AdminRoute from './components/AdminRoute'
 import { useEffect } from 'react'
 import AdminHeroBanners from './pages/admin/AdminHeroBanners'
-import HomePage from './pages/HomePage'
-import LorePage from './pages/LorePage'
+
+
 import useAuthStore from './store/authStore'
 import useCartStore from './store/cartStore'
 import useWishlistStore from './store/wishlistStore'
@@ -40,13 +40,13 @@ import QROffers from './pages/admin/QROffers'
 import TreasureHunt from './pages/TreasureHunt'
 import QRScanner from './pages/QRScanner'
 import MyMaps from './pages/MyMaps'
-import HuntLocations from './pages/admin/HuntLocations'
+
 
 
 // ===== NEW: TRANSFINITY WORLD MAP =====
-import WorldMap from './components/WorldMap/WorldMap'
+
 // import CouponQRScanner from './pages/QRScanner'
-import HuntQRCodes from './pages/admin/HuntQRCodes'
+// import HuntQRCodes from './pages/admin/HuntQRCodes'
 // Support pages
 import SupportPage from './pages/SupportPage'
 import ContactPage from './pages/ContactPage'
@@ -56,7 +56,7 @@ import PrivacyPage from './pages/PrivacyPage'
 import TermsPage from './pages/TermsPage'
 import CookiesPage from './pages/CookiesPage'
 import RefundsPage from './pages/RefundsPage'
-import ArcDetail from './components/WorldMap/ArcDetail'
+
 import Arcs from './pages/Arc'
 
 import Intro from './pages/Intro'
@@ -99,12 +99,10 @@ export default function App() {
         <Route path="/register"           element={<Register />} />
         <Route path="/forgot-password"    element={<ForgotPassword />} />
 
-        <Route path="/homepage" element={<HomePage />} />
-        <Route path="/lore/:arcName" element={<LorePage />} />
-        <Route path="/arc/:arcKey/detail" element={<ArcDetail />} />
+    
         <Route path="/arcs/wanderer" element={<Wanderer />} />
         {/* ===== NEW: WORLD MAP ROUTES ===== */}
-        <Route path="/map" element={<WorldMap />} />
+
         
         
         
@@ -113,6 +111,7 @@ export default function App() {
           <Route path="/cart"             element={<Cart />} />
           <Route path="/checkout"         element={<Checkout />} />
           <Route path="/order-success/:id" element={<OrderSuccess />} />
+
           
           <Route path="/profile"          element={<Profile />} />
           <Route path="/wishlist" element={<Wishlist />} />
@@ -120,7 +119,7 @@ export default function App() {
           <Route path="/hunt/start" element={<Navigate to="/scan" replace />} />
           <Route path="/orders"           element={<OrderHistory />} />
           <Route path="/orders/:id"       element={<OrderDetail />} />
-          <Route path="/admin/hunt/qr-codes" element={<HuntQRCodes />} />
+          {/* <Route path="/admin/hunt/qr-codes" element={<HuntQRCodes />} /> */}
         </Route>
       </Route>
 
@@ -132,7 +131,7 @@ export default function App() {
         <Route path="/admin/users"        element={<AdminUsers />} />
         <Route path="/admin/hero-banners" element={<AdminHeroBanners />} />
         <Route path="/admin/qr-offers"    element={<QROffers />} />
-        <Route path="/admin/hunt/locations" element={<HuntLocations />} />
+        {/* <Route path="/admin/hunt/locations" element={<HuntLocations />} /> */}
         
       </Route>
 

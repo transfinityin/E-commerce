@@ -1074,11 +1074,12 @@ try:
         id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
         user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='hunt_progress')
         current_level = models.PositiveSmallIntegerField(default=0, validators=[MinValueValidator(0), MaxValueValidator(5)])
-        tshirt_qr = models.OneToOneField(TShirtQRCode, on_delete=models.CASCADE, related_name='hunt_progress')
+        tshirt_qr = models.OneToOneField(TShirtQRCode, on_delete=models.CASCADE, related_name='hunt_progress', null=True, blank=True)
         started_at = models.DateTimeField(auto_now_add=True)
         completed_at = models.DateTimeField(null=True, blank=True)
         last_unlocked_at = models.DateTimeField(null=True, blank=True)
         total_time_minutes = models.PositiveIntegerField(default=0)
+        unlocked_arcs = models.JSONField(default=list)
 
         class Meta:
             db_table = 'user_hunt_progress'
@@ -1109,3 +1110,44 @@ try:
 
 except Exception:
     pass  # Legacy models not available if orders/coupons apps don't exist
+
+
+
+import secrets
+from django.utils import timezone
+
+class MysteryCardQR(models.Model):
+    REWARD_CHOICES = (
+        ('arc', 'Unlock Story Arc'),
+        ('coupon', 'Discount Coupon'),
+    )
+    
+    # myst-abcd123 mathiri code generate aagum
+    code = models.CharField(max_length=50, unique=True, blank=True)
+    
+    # Admin select pandra type
+    reward_type = models.CharField(max_length=10, choices=REWARD_CHOICES)
+    
+    # Arc select panna intha field-la peru type pannanum (e.g., wanderer)
+    arc_slug = models.CharField(max_length=50, blank=True, null=True, help_text="Example: wanderer, founderer")
+    
+    # Coupon select panna intha field-la discount podanum (e.g., 15.00)
+    discount_percentage = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True)
+    
+    # Tracking fields
+    is_used = models.BooleanField(default=False)
+    claimed_by = models.ForeignKey('users.User', null=True, blank=True, on_delete=models.SET_NULL)
+    claimed_at = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def save(self, *args, **kwargs):
+        # Auto-generate 'myst-' code if it doesn't exist
+        if not self.code:
+            self.code = f"myst-{secrets.token_urlsafe(6)[:8].lower()}"
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        status = "Used" if self.is_used else "Active"
+        if self.reward_type == 'arc':
+            return f"{self.code} - Arc: {self.arc_slug} ({status})"
+        return f"{self.code} - Coupon: {self.discount_percentage}% ({status})"

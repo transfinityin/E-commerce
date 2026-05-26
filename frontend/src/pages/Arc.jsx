@@ -1,8 +1,8 @@
 import { Link } from 'react-router-dom'
 import Navbar from '../components/Navbar'
-
+import { useHuntStore } from "../store/useHuntStore";
 const ARC_BG_IMAGE = '/arcs-bg3.jpg'
-
+import { useEffect } from 'react'
 // Unlock progress - in production, fetch from backend/API
 const UNLOCK_PROGRESS = {
   wanderer: true,    // Arc 01 - Unlocked
@@ -103,22 +103,29 @@ const UNLOCK_PROGRESS = {
  
 // ]
 
-const ARCS = [
-  { no: '01', title: 'Wanderer', subtitle: 'The first threshold.', status: 'unlocked', href: '/arcs/wanderer', slug: 'wanderer' },
-  { no: '02', title: 'Founderer', subtitle: 'The architect of beginnings.', status: 'locked', href: '/arcs/founderer', slug: 'founderer' },
-  { no: '03', title: 'Phantom', subtitle: 'Walls of obsidian glass.', status: 'locked', href: '/arcs/phantom', slug: 'phantom' },
-  { no: '04', title: 'Ascension', subtitle: 'Disappear from the record.', status: 'locked', href: '/arcs/ascension', slug: 'ascension' },
-  { no: '05', title: 'Rebirth', subtitle: 'The first true crossing.', status: 'locked', href: '/arcs/rebirth', slug: 'rebirth' },
-  { no: '06', title: 'Eclipse Sun', subtitle: 'A star without warmth.', status: 'locked', href: '/arcs/eclipse-sun', slug: 'eclipse-sun' },
-  { no: '07', title: 'Crimson', subtitle: 'The ledger of broken oaths.', status: 'locked', href: '/arcs/crimson', slug: 'crimson' },
-  { no: '08', title: 'Void', subtitle: 'A path made of signal.', status: 'locked', href: '/arcs/void', slug: 'void' },
-  { no: '09', title: 'Zenith Court', subtitle: 'Beneath the silent throne.', status: 'locked', href: '/arcs/zenith-court', slug: 'zenith-court' },
-  { no: '10', title: 'Cosmic', subtitle: 'The garment of stars.', status: 'locked', href: '/arcs/cosmic', slug: 'cosmic' },
-  { no: '11', title: 'Shadow War', subtitle: 'When all roads converge.', status: 'locked', href: '/arcs/shadow-war', slug: 'shadow-war' },
-  { no: '12', title: 'Eternal', subtitle: 'The end that returns.', status: 'locked', href: '/arcs/eternal', slug: 'eternal' },
+export default function Arcs() {
+  const { progress, fetchProgress } = useHuntStore()
+  useEffect(() => {
+    fetchProgress()
+  }, [])
+
+  // User-oda unlocked arcs list (illana empty array)
+  const myUnlockedArcs = progress?.unlocked_arcs || []
+  const ARCS = [
+    { no: '01', title: 'Wanderer', subtitle: 'The first threshold.', status: myUnlockedArcs.includes('wanderer') ? 'unlocked' : 'locked', href: '/arcs/wanderer', slug: 'wanderer' },
+    { no: '02', title: 'Founderer', subtitle: 'The architect of beginnings.', status: myUnlockedArcs.includes('founderer') ? 'unlocked' : 'locked', href: '/arcs/founderer', slug: 'founderer' },
+    { no: '03', title: 'Phantom', subtitle: 'Walls of obsidian glass.', status: myUnlockedArcs.includes('phantom') ? 'unlocked' : 'locked', href: '/arcs/phantom', slug: 'phantom' },
+    { no: '04', title: 'Ascension', subtitle: 'Disappear from the record.', status: myUnlockedArcs.includes('ascension') ? 'unlocked' : 'locked', href: '/arcs/ascension', slug: 'ascension' ,},
+    { no: '05', title: 'Rebirth', subtitle: 'The first true crossing.', status: myUnlockedArcs.includes('rebirth') ? 'unlocked' : 'locked', href: '/arcs/rebirth', slug: 'rebirth' },
+    { no: '06', title: 'Eclipse Sun', subtitle: 'A star without warmth.', status: myUnlockedArcs.includes('eclipse-sun') ? 'unlocked' : 'locked', href: '/arcs/eclipse-sun', slug: 'eclipse-sun' },
+    { no: '07', title: 'Crimson', subtitle: 'The ledger of broken oaths.', status: myUnlockedArcs.includes('crimson') ? 'unlocked' : 'locked', href: '/arcs/crimson', slug: 'crimson' },
+    { no: '08', title: 'Void', subtitle: 'A path made of signal.', status: myUnlockedArcs.includes('void') ? 'unlocked' : 'locked', href: '/arcs/void', slug: 'void' },
+    { no: '09', title: 'Zenith Court', subtitle: 'Beneath the silent throne.', status: myUnlockedArcs.includes('zenith-court') ? 'unlocked' : 'locked', href: '/arcs/zenith-court', slug: 'zenith-court' },
+    { no: '10', title: 'Cosmic', subtitle: 'The garment of stars.', status: myUnlockedArcs.includes('cosmic') ? 'unlocked' : 'locked', href: '/arcs/cosmic', slug: 'cosmic' },
+    { no: '11', title: 'Shadow War', subtitle: 'When all roads converge.', status: myUnlockedArcs.includes('shadow-war') ? 'unlocked' : 'locked', href: '/arcs/shadow-war', slug: 'shadow-war' },
+    { no: '12', title: 'Eternal', subtitle: 'The end that returns.', status: myUnlockedArcs.includes('eternal') ? 'unlocked' : 'locked', href: '/arcs/eternal', slug: 'eternal' },
 ]
 
-export default function Arcs() {
   return (
     <>
       <style>{`

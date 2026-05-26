@@ -577,3 +577,12 @@ class LeaderboardSerializer(serializers.ModelSerializer):
     class Meta:
         model = HuntLeaderboard
         fields = ['rank', 'score', 'updated_at']
+
+
+
+
+class UserHuntProgressSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserHuntProgress
+        # Intha fields list-la 'unlocked_arcs' add pannanum
+        fields = ['id', 'user', 'current_level', 'total_score', 'unlocked_arcs', 'last_scan_time']
