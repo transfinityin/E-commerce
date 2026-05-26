@@ -497,7 +497,7 @@ const handleMysteryScan = async (code) => {
   const handleCouponScan = async (codeId) => {
     setLoading(true)
     try {
-      const { data } = await api.post('/coupons/qr-scan/', { qr_code_id: codeId })
+      const { data } = await api.post('/hunt/mystery-claim/', { qr_code_id: codeId })
       
       if (data.success) {
         toast.success(`🎉 You won ${data.discount}% OFF! Code: ${data.coupon_code}`, { duration: 5000 })

@@ -8,6 +8,7 @@ router.register(r'paths', views.ShipPathViewSet, basename='path')
 router.register(r'treasures', views.TreasureViewSet, basename='treasure')
 router.register(r'progress', views.FounderProgressViewSet, basename='progress')
 
+
 urlpatterns = [
     path('', include(router.urls)),
     path('map/world/', views.MapViewSet.as_view({'get': 'world'}), name='map-world'),
@@ -28,5 +29,7 @@ urlpatterns = [
 
     path('mystery-claim/', views.ClaimMysteryCardView.as_view(), name='mystery-claim'),
     # path('progress/', views.HuntProgressView.as_view(), name='hunt-progress'),
+    path('qr-studio/', views.QRStudioDashboardView.as_view(), name='qr-studio'),
+    path('scan/', views.UnifiedQRScanView.as_view(), name='unified-scan'),
 ]
 print("TREASUREHUNT URLS LOADED")

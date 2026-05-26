@@ -190,7 +190,7 @@ export default function QROffers() {
 
     try {
       const { data } = await api.post('/hunt/admin/generate-qr/', payload)
-      toast.success(`🎉 Generated ${data.total} QRs successfully!`)
+        
       setGeneratedResults(data.generated)
     } catch (error) {
       toast.error(error.response?.data?.error || 'Failed to generate batch QRs')

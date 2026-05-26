@@ -666,6 +666,9 @@ from .models import (
     TShirtQRCode, HuntLocation, UserHuntProgress,
     HuntReward, HuntLeaderboard
 )
+import secrets
+from datetime import timedelta
+from apps.coupons.models import Coupon as CouponModel, QROffer, QRScanLog
 from .serializers import (
     ArcSerializer, ArcDetailSerializer, ShipPathSerializer,
     FounderProgressSerializer, TreasureSerializer,
@@ -1521,7 +1524,121 @@ def check_qr_status(request, secret_hash):
 from rest_framework.views import APIView
 from .models import MysteryCardQR, UserHuntProgress
 from apps.coupons.models import Coupon
+from apps.coupons.models import QROffer          # Digital offers
+from apps.users.permissions import IsAdmin       # Strict admin only
+class QRStudioDashboardView(APIView):
+    """
+    GET /api/treasurehunt/qr-studio/
+    
+    Returns everything for the React/Vite admin panel:
+      • Digital QR Offers   (from coupons app)
+      • Physical Mystery Cards (Arc / Coupon)
+      • T-Shirt Hunt QRs
+    Plus unified stats for the top stat cards.
+    """
+    permission_classes = [permissions.IsAuthenticated, IsAdmin]
 
+    def get(self, request):
+        # ─────────── 1. DIGITAL OFFERS ───────────
+        digital_qs = QROffer.objects.all().order_by('-created_at')
+        digital_offers = []
+        for offer in digital_qs:
+            digital_offers.append({
+                'id': str(offer.id),
+                'category': 'digital',
+                'sub_type': offer.reveal_type,
+                'title': offer.title,
+                'code': offer.qr_code_id,
+                'status': 'active' if offer.is_valid() else 'inactive',
+                'scan_count': offer.scan_count,
+                'max_scans': offer.max_scans,
+                'discount_display': self._discount_label(offer),
+                'created_at': offer.created_at,
+                'qr_image_url': (
+                    request.build_absolute_uri(offer.qr_image.url)
+                    if offer.qr_image and hasattr(offer.qr_image, 'url')
+                    else None
+                ),
+            })
+
+        # ─────────── 2. MYSTERY CARDS (Physical) ───────────
+        mystery_qs = MysteryCardQR.objects.all().order_by('-created_at')
+        mystery_cards = []
+        for card in mystery_qs:
+            mystery_cards.append({
+                'id': str(card.id),
+                'category': 'physical',
+                'sub_type': card.reward_type,          # 'arc' or 'coupon'
+                'title': (
+                    f"Arc Unlock: {card.arc_slug}"
+                    if card.reward_type == 'arc'
+                    else f"Coupon: {card.discount_percentage}% OFF"
+                ),
+                'code': card.code,
+                'status': 'claimed' if card.is_used else 'unclaimed',
+                'claimed_by': getattr(card.claimed_by, 'email', None),
+                'created_at': card.created_at,
+                'qr_image_url': None,
+            })
+
+        # ─────────── 3. T-SHIRT QRs ───────────
+        tshirt_qs = TShirtQRCode.objects.all().order_by('-created_at')
+        tshirt_qrs = []
+        for qr in tshirt_qs:
+            tshirt_qrs.append({
+                'id': str(qr.id),
+                'category': 'tshirt',
+                'sub_type': 'tshirt_hunt',
+                'title': 'T-Shirt Hunt QR',
+                'code': qr.secret_hash,
+                'status': 'activated' if qr.is_activated else 'pending',
+                'claimed_by': getattr(qr.activated_by, 'email', None),
+                'created_at': qr.created_at,
+                'qr_image_url': None,
+            })
+
+        # ─────────── 4. UNIFIED STATS ───────────
+        active_digital = sum(1 for o in digital_offers if o['status'] == 'active')
+        active_mystery = sum(1 for c in mystery_cards if c['status'] == 'unclaimed')
+        active_tshirt  = sum(1 for q in tshirt_qrs if q['status'] == 'pending')
+
+        total_digital = len(digital_offers)
+        total_mystery = len(mystery_cards)
+        total_tshirt  = len(tshirt_qrs)
+
+        total_scans = (
+            (digital_qs.aggregate(s=Sum('scan_count'))['s'] or 0)
+            + mystery_qs.filter(is_used=True).count()
+            + tshirt_qs.filter(is_activated=True).count()
+        )
+
+        return Response({
+            'stats': {
+                'total_offers': total_digital + total_mystery + total_tshirt,
+                'total_scans': total_scans,
+                'active_now': active_digital + active_mystery + active_tshirt,
+                'inactive': (
+                    (total_digital - active_digital) +
+                    (total_mystery - active_mystery) +
+                    (total_tshirt - active_tshirt)
+                ),
+                'breakdown': {
+                    'digital': {'total': total_digital, 'active': active_digital},
+                    'mystery': {'total': total_mystery, 'active': active_mystery},
+                    'tshirt':  {'total': total_tshirt,  'active': active_tshirt},
+                }
+            },
+            'items': {
+                'digital_offers': digital_offers,
+                'mystery_cards': mystery_cards,
+                'tshirt_qrs': tshirt_qrs,
+            }
+        })
+
+    def _discount_label(self, offer):
+        if offer.reveal_type == 'fixed' and offer.fixed_discount:
+            return f"{offer.fixed_discount}%"
+        return f"{offer.min_discount}% – {offer.max_discount}%"
 import secrets
 class ClaimMysteryCardView(APIView):
     # Customer login panniruntha thaan intha mystery card claim panna mudiyum
@@ -1588,3 +1705,238 @@ class ClaimMysteryCardView(APIView):
                 'discount': discount,
                 'message': f'🎉 SURPRISE! You won {discount}% OFF! Code: {coupon_code}'
             })
+
+class UnifiedQRScanView(APIView):
+    """
+    POST /api/treasurehunt/scan/
+    Body: { "code": "scanned-string", "device_id": "abc123" }
+    
+    Handles ALL QR types:
+      1. Digital QROffer   (coupons app)
+      2. Mystery Card      (treasurehunt app - arc/coupon)
+      3. T-Shirt Hunt QR   (treasurehunt app)
+    """
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request):
+        code      = request.data.get('code') or request.data.get('qr_code_id')
+        device_id = request.data.get('device_id', '')
+
+        if not code:
+            return Response({
+                'success': False,
+                'message': 'QR code is required'
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        ip_address = self._get_client_ip(request)
+
+        # ═══════════════════════════════════════════════════
+        # 1. DIGITAL QROFFER (coupons app)
+        # ═══════════════════════════════════════════════════
+        try:
+            offer = QROffer.objects.get(qr_code_id=code)
+
+            if not offer.is_valid():
+                return Response({
+                    'success': False,
+                    'message': 'This offer has expired or reached its limit!'
+                }, status=status.HTTP_400_BAD_REQUEST)
+
+            # Anti-fraud: same device scanned recently?
+            recent = QRScanLog.objects.filter(
+                qr_offer=offer,
+                device_id=device_id,
+                scanned_at__gte=timezone.now() - timedelta(hours=24),
+                is_used=False
+            ).first()
+
+            if recent:
+                return Response({
+                    'success': True,
+                    'type': 'digital_offer',
+                    'reveal_type': offer.reveal_type,
+                    'discount': recent.discount_revealed,
+                    'coupon_code': recent.coupon_code,
+                    'expires_at': recent.expires_at,
+                    'title': offer.title,
+                    'message': 'You already have an active discount!'
+                })
+
+            discount = offer.get_random_discount()
+            coupon_code = f"QR{secrets.token_urlsafe(6)[:8].upper()}"
+
+            with transaction.atomic():
+                CouponModel.objects.create(
+                    code=coupon_code,
+                    description=f"QR Offer: {offer.title}",
+                    discount_type='percent',
+                    discount_value=discount,
+                    max_uses=1,
+                    is_active=True,
+                    expires_at=timezone.now() + timedelta(minutes=offer.scan_expiry_minutes)
+                )
+                offer.scan_count += 1
+                offer.save()
+
+                log = QRScanLog.objects.create(
+                    qr_offer=offer,
+                    user=request.user if request.user.is_authenticated else None,
+                    device_id=device_id,
+                    ip_address=ip_address,
+                    discount_revealed=discount,
+                    coupon_code=coupon_code,
+                    expires_at=timezone.now() + timedelta(minutes=offer.scan_expiry_minutes)
+                )
+
+            return Response({
+                'success': True,
+                'type': 'digital_offer',
+                'reveal_type': offer.reveal_type,
+                'discount': discount,
+                'coupon_code': coupon_code,
+                'expires_at': log.expires_at,
+                'title': offer.title,
+                'message': f'🎉 You won {discount}% off!'
+            })
+
+        except QROffer.DoesNotExist:
+            pass
+
+        # ═══════════════════════════════════════════════════
+        # 2. MYSTERY CARD (treasurehunt app)
+        # ═══════════════════════════════════════════════════
+        try:
+            card = MysteryCardQR.objects.get(code=code)
+
+            if card.is_used:
+                return Response({
+                    'success': False,
+                    'message': 'This card has already been claimed!'
+                }, status=status.HTTP_400_BAD_REQUEST)
+
+            if not request.user.is_authenticated:
+                return Response({
+                    'success': False,
+                    'type': 'mystery_card',
+                    'requires_auth': True,
+                    'message': 'Please login to claim this mystery reward!'
+                }, status=status.HTTP_401_UNAUTHORIZED)
+
+            card.is_used = True
+            card.claimed_by = request.user
+            card.claimed_at = timezone.now()
+            card.save()
+
+            if card.reward_type == 'arc':
+                progress, _ = UserHuntProgress.objects.get_or_create(
+                    user=request.user,
+                    defaults={'current_level': 0, 'unlocked_arcs': []}
+                )
+                slug = card.arc_slug or 'founder'
+                if slug not in progress.unlocked_arcs:
+                    progress.unlocked_arcs.append(slug)
+                    progress.save()
+
+                return Response({
+                    'success': True,
+                    'type': 'mystery_card',
+                    'reward_type': 'arc',
+                    'arc_slug': slug,
+                    'message': f'🌌 SECRET REVEALED! You unlocked the {slug.capitalize()} Arc!'
+                })
+
+            elif card.reward_type == 'coupon':
+                coupon_code = f"MYST{secrets.token_urlsafe(4)[:6].upper()}"
+                discount = card.discount_percentage or 10
+
+                CouponModel.objects.create(
+                    code=coupon_code,
+                    description="Mystery Box Reward",
+                    discount_type='percent',
+                    discount_value=discount,
+                    max_uses=1,
+                    is_active=True,
+                    expires_at=timezone.now() + timedelta(days=7)
+                )
+
+                return Response({
+                    'success': True,
+                    'type': 'mystery_card',
+                    'reward_type': 'coupon',
+                    'coupon_code': coupon_code,
+                    'discount': discount,
+                    'message': f'🎉 SURPRISE! You won {discount}% OFF! Code: {coupon_code}'
+                })
+
+        except MysteryCardQR.DoesNotExist:
+            pass
+
+        # ═══════════════════════════════════════════════════
+        # 3. T-SHIRT HUNT QR
+        # ═══════════════════════════════════════════════════
+        try:
+            qr = TShirtQRCode.objects.get(secret_hash=code)
+
+            if qr.is_activated:
+                return Response({
+                    'success': False,
+                    'message': 'This T-Shirt QR is already claimed.'
+                }, status=status.HTTP_400_BAD_REQUEST)
+
+            if not request.user.is_authenticated:
+                return Response({
+                    'success': False,
+                    'type': 'tshirt_hunt',
+                    'requires_auth': True,
+                    'message': 'Please login to start your treasure hunt!'
+                }, status=status.HTTP_401_UNAUTHORIZED)
+
+            if hasattr(request.user, 'hunt_progress'):
+                return Response({
+                    'success': False,
+                    'message': 'You already have an active treasure hunt.',
+                    'current_level': request.user.hunt_progress.current_level
+                }, status=status.HTTP_400_BAD_REQUEST)
+
+            with transaction.atomic():
+                qr.is_activated = True
+                qr.activated_by = request.user
+                qr.activated_at = timezone.now()
+                qr.save()
+
+                progress = UserHuntProgress.objects.create(
+                    user=request.user,
+                    tshirt_qr=qr,
+                    current_level=1,
+                    last_unlocked_at=timezone.now()
+                )
+
+                HuntLeaderboard.objects.create(
+                    user=request.user,
+                    progress=progress,
+                    score=calculate_hunt_score(progress)
+                )
+
+            return Response({
+                'success': True,
+                'type': 'tshirt_hunt',
+                'message': 'Treasure Hunt activated! Level 1 unlocked.',
+                'current_level': 1
+            })
+
+        except TShirtQRCode.DoesNotExist:
+            pass
+
+        # ═══════════════════════════════════════════════════
+        # Nothing matched any table
+        # ═══════════════════════════════════════════════════
+        return Response({
+            'success': False,
+            'message': 'Invalid QR Code!'
+        }, status=status.HTTP_400_BAD_REQUEST)
+
+    def _get_client_ip(self, request):
+        xff = request.META.get('HTTP_X_FORWARDED_FOR')
+        if xff:
+            return xff.split(',')[0]
+        return request.META.get('REMOTE_ADDR')
