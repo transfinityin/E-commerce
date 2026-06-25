@@ -1,0 +1,7 @@
+services:
+  db:
+    image: postgres:17
+    environment:
+      POSTGRES_DB: transfinity_Ecommerce
+      POSTGRES_USER: transfinity
+      POSTGRES_PASSWORD: postgres_ecommerce

@@ -1,5 +1,5 @@
-import { useEffect, useRef } from 'react';
-import { getUnreadCount } from '../services/notificationApi';
+import { useEffect, useRef } from "react";
+import { getUnreadCount } from "../services/notificationApi";
 
 export function useNotificationToast() {
   const prevCount = useRef(0);
@@ -12,10 +12,11 @@ export function useNotificationToast() {
         if (current > prevCount.current && prevCount.current !== 0) {
           // New notification arrived!
           // You can integrate react-hot-toast or your own toast here
-          console.log('🔔 New notification!');
+          console.log("🔔 New notification!");
         }
         prevCount.current = current;
       } catch (e) {
+        console.error("Failed to check notifications:", e.message);
         // silent fail
       }
     };

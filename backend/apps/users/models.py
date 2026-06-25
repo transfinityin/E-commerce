@@ -64,7 +64,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     ('eternal', 'Eternal'),        # 11
 ]
     
-    rank = models.CharField(max_length=20, choices=RANK_CHOICES, default='wanderer')
+    rank = models.CharField(max_length=20, choices=RANK_CHOICES, default='wanderer',db_column='user_rank')
     xp = models.PositiveIntegerField(default=0)
     unlocked_arcs = models.JSONField(default=list)  # ["wanderer", "founder"]
     

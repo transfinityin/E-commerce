@@ -1,13 +1,15 @@
-import axios from 'axios';
+import axios from "axios";
 
-const API_URL = import.meta.env.VITE_API_URL || 'https://transfinity-backend.onrender.com/api';
+const API_URL =
+  import.meta.env.VITE_API_URL ||
+  "https://transfinity-backend.onrender.com/api";
 
 const API = axios.create({
   baseURL: API_URL,
 });
 
 API.interceptors.request.use((config) => {
-  const token = localStorage.getItem('access_token');
+  const token = localStorage.getItem("access_token");
   if (token) config.headers.Authorization = `Bearer ${token}`;
   return config;
 });
@@ -24,10 +26,10 @@ const unwrap = (res) => {
 };
 
 export const getNotifications = async () => {
-  const res = await API.get('/notifications/');
+  const res = await API.get("/notifications/");
   return { ...res, data: unwrap(res) };
 };
 
 export const markAsRead = (id) => API.post(`/notifications/${id}/read/`);
-export const markAllAsRead = () => API.post('/notifications/mark-all-read/');
-export const getUnreadCount = () => API.get('/notifications/unread-count/');
+export const markAllAsRead = () => API.post("/notifications/mark-all-read/");
+export const getUnreadCount = () => API.get("/notifications/unread-count/");

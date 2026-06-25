@@ -21,11 +21,10 @@ class Migration(migrations.Migration):
         # === ADD MISSING FIELDS TO EXISTING MODELS ===
         
         # Arc model - missing fields
-        migrations.AddField(
-            model_name='arc',
-            name='description',
-            field=models.TextField(blank=True),
-        ),
+        migrations.RunSQL(
+    "SELECT 1;",  # do nothing if exists
+    reverse_sql="SELECT 1;",
+),
         migrations.AddField(
             model_name='arc',
             name='is_active',

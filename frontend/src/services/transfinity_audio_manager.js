@@ -1,14 +1,14 @@
 // ===== TRANSFINITY AUDIO MANAGER (Howler Version) =====
-import { Howl, Howler } from 'howler';
+import { Howl, Howler } from "howler";
 
 class TransfinityAudioManager {
   constructor() {
-    this.isMuted = localStorage.getItem('map_muted') === 'true';
+    this.isMuted = localStorage.getItem("map_muted") === "true";
     this.isInitialized = false;
     this.currentAmbient = null;
     this.sounds = {};
     this.ambientSounds = {};
-    this.masterVolume = parseFloat(localStorage.getItem('map_volume') || '0.7');
+    this.masterVolume = parseFloat(localStorage.getItem("map_volume") || "0.7");
     this.audioCtx = null;
     this.gainNode = null;
   }
@@ -20,9 +20,12 @@ class TransfinityAudioManager {
       await this.loadAmbientSounds();
       this.loadEffectSounds();
       this.isInitialized = true;
-      console.log('[AudioManager] Initialized successfully');
+      console.log("[AudioManager] Initialized successfully");
     } catch (e) {
-      console.warn('[AudioManager] Howler init failed, using Web Audio fallback:', e);
+      console.warn(
+        "[AudioManager] Howler init failed, using Web Audio fallback:",
+        e,
+      );
       this.initWebAudioFallback();
     }
   }
@@ -35,17 +38,47 @@ class TransfinityAudioManager {
       this.gainNode.connect(this.audioCtx.destination);
       this.isInitialized = true;
     } catch (e) {
-      console.error('[AudioManager] Web Audio API not supported');
+      console.error("[AudioManager] Web Audio API not supported");
     }
   }
 
   async loadAmbientSounds() {
     const ambientConfigs = [
-      { name: 'ocean', src: ['/audio/ambient/ocean-loop.mp3'], loop: true, volume: 0.15, fadeIn: 2000 },
-      { name: 'wind', src: ['/audio/ambient/wind-loop.mp3'], loop: true, volume: 0.08, fadeIn: 3000 },
-      { name: 'fire', src: ['/audio/ambient/fire-crackle.mp3'], loop: true, volume: 0.06, fadeIn: 1500 },
-      { name: 'cosmic', src: ['/audio/ambient/cosmic-drone.mp3'], loop: true, volume: 0.1, fadeIn: 4000 },
-      { name: 'storm', src: ['/audio/ambient/storm-rumble.mp3'], loop: true, volume: 0.12, fadeIn: 2000 },
+      {
+        name: "ocean",
+        src: ["/audio/ambient/ocean-loop.mp3"],
+        loop: true,
+        volume: 0.15,
+        fadeIn: 2000,
+      },
+      {
+        name: "wind",
+        src: ["/audio/ambient/wind-loop.mp3"],
+        loop: true,
+        volume: 0.08,
+        fadeIn: 3000,
+      },
+      {
+        name: "fire",
+        src: ["/audio/ambient/fire-crackle.mp3"],
+        loop: true,
+        volume: 0.06,
+        fadeIn: 1500,
+      },
+      {
+        name: "cosmic",
+        src: ["/audio/ambient/cosmic-drone.mp3"],
+        loop: true,
+        volume: 0.1,
+        fadeIn: 4000,
+      },
+      {
+        name: "storm",
+        src: ["/audio/ambient/storm-rumble.mp3"],
+        loop: true,
+        volume: 0.12,
+        fadeIn: 2000,
+      },
     ];
 
     for (const config of ambientConfigs) {
@@ -57,7 +90,9 @@ class TransfinityAudioManager {
           html5: true,
           preload: false,
           onloaderror: () => {
-            console.warn(`[AudioManager] Failed to load ambient: ${config.name}`);
+            console.warn(
+              `[AudioManager] Failed to load ambient: ${config.name}`,
+            );
           },
         });
         this.ambientSounds[config.name]._tfConfig = config;
@@ -69,14 +104,22 @@ class TransfinityAudioManager {
 
   loadEffectSounds() {
     const effectConfigs = [
-      { name: 'hover', src: ['/audio/effects/hover.wav'], volume: 0.3 },
-      { name: 'click', src: ['/audio/effects/click.mp3'], volume: 0.4 },
-      { name: 'unlock', src: ['/audio/effects/unlock-chime.mp3'], volume: 0.5 },
-      { name: 'treasure', src: ['/audio/effects/treasure-found.mp3'], volume: 0.6 },
-      { name: 'sail', src: ['/audio/effects/sail-creak.mp3'], volume: 0.3 },
-      { name: 'complete', src: ['/audio/effects/arc-complete.mp3'], volume: 0.5 },
-      { name: 'error', src: ['/audio/effects/error-buzz.mp3'], volume: 0.3 },
-      { name: 'levelup', src: ['/audio/effects/level-up.mp3'], volume: 0.6 },
+      { name: "hover", src: ["/audio/effects/hover.wav"], volume: 0.3 },
+      { name: "click", src: ["/audio/effects/click.mp3"], volume: 0.4 },
+      { name: "unlock", src: ["/audio/effects/unlock-chime.mp3"], volume: 0.5 },
+      {
+        name: "treasure",
+        src: ["/audio/effects/treasure-found.mp3"],
+        volume: 0.6,
+      },
+      { name: "sail", src: ["/audio/effects/sail-creak.mp3"], volume: 0.3 },
+      {
+        name: "complete",
+        src: ["/audio/effects/arc-complete.mp3"],
+        volume: 0.5,
+      },
+      { name: "error", src: ["/audio/effects/error-buzz.mp3"], volume: 0.3 },
+      { name: "levelup", src: ["/audio/effects/level-up.mp3"], volume: 0.6 },
     ];
 
     for (const config of effectConfigs) {
@@ -87,7 +130,9 @@ class TransfinityAudioManager {
           html5: false,
           preload: true,
           onloaderror: () => {
-            console.warn(`[AudioManager] Failed to load effect: ${config.name}`);
+            console.warn(
+              `[AudioManager] Failed to load effect: ${config.name}`,
+            );
           },
         });
       } catch (e) {
@@ -97,7 +142,7 @@ class TransfinityAudioManager {
   }
 
   // Synthesized fallback (same as before)
-  playTone(freq, duration, type = 'sine', vol = 0.06) {
+  playTone(freq, duration, type = "sine", vol = 0.06) {
     if (this.isMuted || !this.audioCtx) return;
     try {
       const ctx = this.audioCtx;
@@ -111,43 +156,43 @@ class TransfinityAudioManager {
       osc.start();
       gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
       osc.stop(ctx.currentTime + duration);
-    } catch(e) {}
+    } catch (e) {}
   }
 
   playEffect(name) {
     if (this.isMuted) return;
 
     // Try Howler first
-    if (this.sounds[name] && this.sounds[name].state() === 'loaded') {
+    if (this.sounds[name] && this.sounds[name].state() === "loaded") {
       this.sounds[name].play();
       return;
     }
 
     // Fallback to synthesized
     const synthesizedEffects = {
-      hover: () => this.playTone(520, 0.06, 'sine', 0.04),
-      click: () => this.playTone(800, 0.1, 'triangle', 0.05),
+      hover: () => this.playTone(520, 0.06, "sine", 0.04),
+      click: () => this.playTone(800, 0.1, "triangle", 0.05),
       unlock: () => {
-        this.playTone(523, 0.2, 'sine', 0.05);
-        setTimeout(() => this.playTone(659, 0.2, 'sine', 0.05), 100);
-        setTimeout(() => this.playTone(784, 0.3, 'sine', 0.05), 200);
+        this.playTone(523, 0.2, "sine", 0.05);
+        setTimeout(() => this.playTone(659, 0.2, "sine", 0.05), 100);
+        setTimeout(() => this.playTone(784, 0.3, "sine", 0.05), 200);
       },
       treasure: () => {
-        this.playTone(880, 0.15, 'sine', 0.06);
-        setTimeout(() => this.playTone(1100, 0.2, 'sine', 0.06), 100);
-        setTimeout(() => this.playTone(1320, 0.3, 'sine', 0.06), 200);
+        this.playTone(880, 0.15, "sine", 0.06);
+        setTimeout(() => this.playTone(1100, 0.2, "sine", 0.06), 100);
+        setTimeout(() => this.playTone(1320, 0.3, "sine", 0.06), 200);
       },
-      sail: () => this.playTone(160, 0.5, 'sawtooth', 0.03),
+      sail: () => this.playTone(160, 0.5, "sawtooth", 0.03),
       complete: () => {
-        this.playTone(523, 0.2, 'sine', 0.05);
-        setTimeout(() => this.playTone(659, 0.2, 'sine', 0.05), 100);
-        setTimeout(() => this.playTone(784, 0.3, 'sine', 0.05), 200);
-        setTimeout(() => this.playTone(1047, 0.4, 'sine', 0.05), 300);
+        this.playTone(523, 0.2, "sine", 0.05);
+        setTimeout(() => this.playTone(659, 0.2, "sine", 0.05), 100);
+        setTimeout(() => this.playTone(784, 0.3, "sine", 0.05), 200);
+        setTimeout(() => this.playTone(1047, 0.4, "sine", 0.05), 300);
       },
-      error: () => this.playTone(150, 0.3, 'sawtooth', 0.05),
+      error: () => this.playTone(150, 0.3, "sawtooth", 0.05),
       levelup: () => {
-        [523, 659, 784, 1047, 1319].forEach((f, i) => 
-          setTimeout(() => this.playTone(f, 0.15, 'sine', 0.05), i * 80)
+        [523, 659, 784, 1047, 1319].forEach((f, i) =>
+          setTimeout(() => this.playTone(f, 0.15, "sine", 0.05), i * 80),
         );
       },
     };
@@ -160,8 +205,8 @@ class TransfinityAudioManager {
     this.stopAmbient();
 
     const ambient = this.ambientSounds[type];
-    if (ambient && ambient.state() === 'unloaded') ambient.load();
-    if (ambient && ambient.state() === 'loaded') {
+    if (ambient && ambient.state() === "unloaded") ambient.load();
+    if (ambient && ambient.state() === "loaded") {
       const config = ambient._tfConfig;
       ambient.volume(0);
       ambient.play();
@@ -171,7 +216,7 @@ class TransfinityAudioManager {
     }
 
     // Fallback to procedural ocean
-    if (type === 'ocean') this.startProceduralOcean();
+    if (type === "ocean") this.startProceduralOcean();
   }
 
   stopAmbient() {
@@ -192,31 +237,31 @@ class TransfinityAudioManager {
     const noiseBuffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
     const output = noiseBuffer.getChannelData(0);
     for (let i = 0; i < bufferSize; i++) output[i] = Math.random() * 2 - 1;
-    
+
     const whiteNoise = ctx.createBufferSource();
     whiteNoise.buffer = noiseBuffer;
     whiteNoise.loop = true;
-    
+
     const filter = ctx.createBiquadFilter();
-    filter.type = 'lowpass';
+    filter.type = "lowpass";
     filter.frequency.value = 400;
     filter.Q.value = 0.5;
-    
+
     const lfo = ctx.createOscillator();
-    lfo.type = 'sine';
+    lfo.type = "sine";
     lfo.frequency.value = 0.15;
     const lfoGain = ctx.createGain();
     lfoGain.gain.value = 200;
     lfo.connect(lfoGain);
     lfoGain.connect(filter.frequency);
-    
+
     const gain = ctx.createGain();
     gain.gain.value = 0.08 * this.masterVolume;
-    
+
     whiteNoise.connect(filter);
     filter.connect(gain);
     gain.connect(this.gainNode || ctx.destination);
-    
+
     whiteNoise.start();
     lfo.start();
     this._proceduralOcean = { whiteNoise, lfo, gain };
@@ -227,16 +272,17 @@ class TransfinityAudioManager {
       try {
         this._proceduralOcean.whiteNoise.stop();
         this._proceduralOcean.lfo.stop();
-      } catch(e) {}
+      } catch (e) {}
       this._proceduralOcean = null;
     }
   }
 
   toggleMute() {
     this.isMuted = !this.isMuted;
-    localStorage.setItem('map_muted', this.isMuted);
+    localStorage.setItem("map_muted", this.isMuted);
     Howler.mute(this.isMuted);
-    if (this.gainNode) this.gainNode.gain.value = this.isMuted ? 0 : this.masterVolume;
+    if (this.gainNode)
+      this.gainNode.gain.value = this.isMuted ? 0 : this.masterVolume;
     if (this.isMuted) this.stopAmbient();
     else if (this.currentAmbient) this.playAmbient(this.currentAmbient);
     return this.isMuted;
@@ -244,9 +290,10 @@ class TransfinityAudioManager {
 
   setVolume(vol) {
     this.masterVolume = Math.max(0, Math.min(1, vol));
-    localStorage.setItem('map_volume', this.masterVolume);
+    localStorage.setItem("map_volume", this.masterVolume);
     Howler.volume(this.isMuted ? 0 : this.masterVolume);
-    if (this.gainNode) this.gainNode.gain.value = this.isMuted ? 0 : this.masterVolume;
+    if (this.gainNode)
+      this.gainNode.gain.value = this.isMuted ? 0 : this.masterVolume;
   }
 
   destroy() {
