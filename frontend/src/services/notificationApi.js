@@ -1,8 +1,7 @@
 import axios from "axios";
 
 const API_URL =
-  import.meta.env.VITE_API_URL ||
-  "https://transfinity-backend.onrender.com/api";
+  import.meta.env.VITE_API_URL || "https://api.transfinity.shop/api";
 
 const API = axios.create({
   baseURL: API_URL,
