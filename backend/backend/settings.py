@@ -211,8 +211,7 @@ GOOGLE_SHEET_ID = "1Cg0WdYbJSzrbzviaKmZ-NBXzvf_QgpTGoXw6o2aARfQ"
 
 # ── URLs ─────────────────────────────────────────────────────
 FRONTEND_URL = os.getenv('FRONTEND_URL', 'https://transfinity.shop')
-BACKEND_URL  = os.getenv('BACKEND_URL', 'https://transfinity-backend.onrender.com')
-
+BACKEND_URL  = os.getenv('BACKEND_URL', 'https://api.transfinity.shop')
 # ── OAuth Credentials ─────────────────────────────────────────
 GOOGLE_CLIENT_ID     = os.getenv('GOOGLE_CLIENT_ID', '')
 GOOGLE_CLIENT_SECRET = os.getenv('GOOGLE_CLIENT_SECRET', '')
