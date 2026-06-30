@@ -132,8 +132,8 @@ class Address(models.Model):
     state     = models.CharField(max_length=100)
     pincode   = models.CharField(max_length=10)
     country   = models.CharField(max_length=100, default="India")
-    latitude  = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
-    longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+    latitude  = models.DecimalField(max_digits=12, decimal_places=6, null=True, blank=True)
+    longitude = models.DecimalField(max_digits=12, decimal_places=6, null=True, blank=True)
     is_default = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
