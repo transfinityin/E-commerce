@@ -32,7 +32,7 @@ export default function NotFound() {
         <div className="flex flex-col sm:flex-row items-center justify-center gap-2.5 sm:gap-3">
           <Link
             to="/"
-            className="inline-flex items-center gap-1.5 sm:gap-2 bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] text-white rounded-xl text-xs sm:text-sm font-bold transition-all duration-300 px-5 sm:px-6 py-3 sm:py-3.5 shadow-md hover:shadow-lg hover:-translate-y-0.5 w-full sm:w-auto justify-center"
+            className="inline-flex items-center gap-1.5 sm:gap-2 bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] text-neutral-900 rounded-xl text-xs sm:text-sm font-bold transition-all duration-300 px-5 sm:px-6 py-3 sm:py-3.5 shadow-md hover:shadow-lg hover:-translate-y-0.5 w-full sm:w-auto justify-center"
           >
             <Home size={14} className="sm:w-4 sm:h-4" />
             Go Home

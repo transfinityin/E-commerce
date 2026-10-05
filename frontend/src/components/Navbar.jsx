@@ -99,17 +99,17 @@ export default function Navbar() {
         className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-500 font-body
           ${hidden ? '-translate-y-full' : 'translate-y-0'}
           ${scrolled 
-            ? 'bg-black/95 backdrop-blur-xl border-b border-gold/20 shadow-[0_4px_30px_rgba(212,175,55,0.1)]' 
+            ? 'bg-white/95 backdrop-blur-xl border-b border-neutral-200 shadow-[0_4px_30px_rgba(212,175,55,0.1)]' 
             : 'bg-transparent border-b border-transparent'
           }
         `}
       >
         {/* Top strip - Gold accent line */}
-        <div className="bg-gold/10 border-b border-gold/10 text-center py-1 px-4">
-          <span className="hidden sm:inline text-[10px] sm:text-[11px] font-mono tracking-[0.3em] uppercase text-gold/70">
+        <div className="bg-gold/10 border-b border-neutral-200 text-center py-1 px-4">
+          <span className="hidden sm:inline text-[10px] sm:text-[11px] font-mono tracking-[0.3em] uppercase text-neutral-800/70">
             ✦ Beyond the veil of the physical ✦
           </span>
-          <span className="sm:hidden text-[9px] font-mono tracking-[0.2em] uppercase text-gold/60">
+          <span className="sm:hidden text-[9px] font-mono tracking-[0.2em] uppercase text-neutral-800/60">
             ✦ Beyond the physical ✦
           </span>
         </div>
@@ -141,8 +141,8 @@ export default function Navbar() {
                 to={link.to} 
                 className={`nav-link text-[11px] lg:text-xs tracking-[0.2em] uppercase py-2 px-3 lg:px-4
                   ${location.pathname === link.to 
-                    ? 'text-gold' 
-                    : 'text-muted hover:text-gold'
+                    ? 'text-neutral-800' 
+                    : 'text-muted hover:text-neutral-800'
                   }
                 `}
               >
@@ -157,9 +157,9 @@ export default function Navbar() {
             {/* Search */}
             <button 
               onClick={() => setSearchOpen(true)} 
-              className="w-9 h-9 sm:w-10 sm:h-10 border border-gold/20 bg-transparent cursor-pointer 
+              className="w-9 h-9 sm:w-10 sm:h-10 border border-neutral-200 bg-transparent cursor-pointer 
                 flex items-center justify-center text-muted transition-all duration-300 
-                hover:border-gold/50 hover:text-gold hover:bg-gold/5"
+                hover:border-gold/50 hover:text-neutral-800 hover:bg-gold/5"
               aria-label="Search"
             >
               <Search size={16} className="sm:w-[18px] sm:h-[18px]" />
@@ -169,8 +169,8 @@ export default function Navbar() {
             <Link 
               to="/wishlist" 
               className="hidden sm:flex w-9 h-9 sm:w-10 sm:h-10 items-center justify-center 
-                text-muted border border-gold/20 transition-all duration-300 no-underline 
-                hover:border-gold/50 hover:text-gold hover:bg-gold/5"
+                text-muted border border-neutral-200 transition-all duration-300 no-underline 
+                hover:border-gold/50 hover:text-neutral-800 hover:bg-gold/5"
               aria-label="Wishlist"
             >
               <Heart size={16} className="sm:w-[18px] sm:h-[18px]" />
@@ -180,8 +180,8 @@ export default function Navbar() {
             <Link 
               to="/cart" 
               className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center 
-                text-muted border border-gold/20 transition-all duration-300 no-underline relative 
-                hover:border-gold/50 hover:text-gold hover:bg-gold/5"
+                text-muted border border-neutral-200 transition-all duration-300 no-underline relative 
+                hover:border-gold/50 hover:text-neutral-800 hover:bg-gold/5"
               aria-label="Cart"
             >
               <ShoppingBag size={16} className="sm:w-[18px] sm:h-[18px]" />
@@ -207,16 +207,16 @@ export default function Navbar() {
                   className={`flex items-center cursor-pointer transition-all duration-300 gap-2 
                     pl-1.5 pr-3 py-1.5 border
                     ${profileOpen 
-                      ? 'bg-gold/10 border-gold/40 text-gold' 
-                      : 'bg-transparent border-gold/20 text-muted hover:border-gold/40 hover:text-gold hover:bg-gold/5'
+                      ? 'bg-gold/10 border-gold/40 text-neutral-800' 
+                      : 'bg-transparent border-neutral-200 text-muted hover:border-gold/40 hover:text-neutral-800 hover:bg-gold/5'
                     }
                   `}
                 >
-                  <div className="w-7 h-7 bg-gold/20 text-gold border border-gold/30 
+                  <div className="w-7 h-7 bg-gold/20 text-neutral-800 border border-gold/30 
                     flex items-center justify-center text-[10px] font-bold font-mono">
                     {user?.name?.[0]?.toUpperCase()}
                   </div>
-                  <span className="hidden lg:block text-[11px] font-medium text-white tracking-wider max-w-[80px] truncate">
+                  <span className="hidden lg:block text-[11px] font-medium text-neutral-900 tracking-wider max-w-[80px] truncate">
                     {user?.name?.split(' ')[0]}
                   </span>
                   <ChevronDown 
@@ -227,13 +227,13 @@ export default function Navbar() {
 
                 {/* Profile Dropdown */}
                 {profileOpen && (
-                  <div className="absolute right-0 top-[calc(100%+12px)] bg-[#0A0A0A] border border-gold/20 
+                  <div className="absolute right-0 top-[calc(100%+12px)] bg-[#0A0A0A] border border-neutral-200 
                     min-w-[200px] overflow-hidden z-[200] animate-slideUp shadow-[0_8px_40px_rgba(0,0,0,0.8)]">
                     {/* Gold accent top */}
                     <div className="h-[2px] bg-gradient-to-r from-transparent via-gold/60 to-transparent" />
 
-                    <div className="border-b border-gold/10 p-4">
-                      <p className="text-[13px] font-semibold text-white tracking-wide truncate font-display">
+                    <div className="border-b border-neutral-200 p-4">
+                      <p className="text-[13px] font-semibold text-neutral-900 tracking-wide truncate font-display">
                         {user?.name}
                       </p>
                       <p className="text-[11px] font-mono text-muted mt-1 truncate">
@@ -253,7 +253,7 @@ export default function Navbar() {
                           to={item.to} 
                           onClick={() => setProfileOpen(false)} 
                           className="block text-[12px] text-muted tracking-wider uppercase no-underline 
-                            transition-all duration-200 hover:bg-gold/5 hover:text-gold py-2.5 px-3"
+                            transition-all duration-200 hover:bg-gold/5 hover:text-neutral-800 py-2.5 px-3"
                         >
                           {item.label}
                         </Link>
@@ -263,7 +263,7 @@ export default function Navbar() {
                         <Link 
                           to="/admin" 
                           onClick={() => setProfileOpen(false)} 
-                          className="flex items-center gap-2 text-[12px] text-gold font-semibold 
+                          className="flex items-center gap-2 text-[12px] text-neutral-800 font-semibold 
                             tracking-wider uppercase no-underline transition-all duration-200 
                             hover:bg-gold/10 py-2.5 px-3"
                         >
@@ -291,8 +291,8 @@ export default function Navbar() {
                 <Link 
                   to="/login" 
                   className="text-[11px] tracking-[0.15em] uppercase font-medium text-muted 
-                    no-underline border border-gold/20 transition-all duration-300 
-                    hover:border-gold/50 hover:text-gold hover:bg-gold/5 px-4 py-2"
+                    no-underline border border-neutral-200 transition-all duration-300 
+                    hover:border-gold/50 hover:text-neutral-800 hover:bg-gold/5 px-4 py-2"
                 >
                   Sign In
                 </Link>
@@ -310,9 +310,9 @@ export default function Navbar() {
             {/* Mobile menu button */}
             <button 
               onClick={() => setMenuOpen(!menuOpen)} 
-              className="md:hidden w-9 h-9 sm:w-10 sm:h-10 border border-gold/20 bg-transparent 
-                cursor-pointer flex items-center justify-center text-white 
-                transition-all duration-300 hover:border-gold/50 hover:text-gold"
+              className="md:hidden w-9 h-9 sm:w-10 sm:h-10 border border-neutral-200 bg-transparent 
+                cursor-pointer flex items-center justify-center text-neutral-900 
+                transition-all duration-300 hover:border-gold/50 hover:text-neutral-800"
               aria-label="Menu"
             >
               {menuOpen ? <X size={20} /> : <Menu size={20} />}
@@ -322,7 +322,7 @@ export default function Navbar() {
 
         {/* ==================== MOBILE MENU ==================== */}
         {menuOpen && (
-          <div className="bg-black/98 border-t border-gold/10 md:hidden animate-slideUp">
+          <div className="bg-white/98 border-t border-neutral-200 md:hidden animate-slideUp">
             {/* Gold accent line */}
             <div className="h-[1px] bg-gradient-to-r from-transparent via-gold/40 to-transparent" />
 
@@ -335,8 +335,8 @@ export default function Navbar() {
                   className={`block font-display text-sm tracking-[0.2em] uppercase no-underline 
                     transition-all duration-300 py-3 px-4 border-l-2
                     ${location.pathname === link.to 
-                      ? 'text-gold border-gold bg-gold/5' 
-                      : 'text-muted border-transparent hover:text-gold hover:border-gold/30 hover:bg-gold/5'
+                      ? 'text-neutral-800 border-gold bg-gold/5' 
+                      : 'text-muted border-transparent hover:text-neutral-800 hover:border-gold/30 hover:bg-gold/5'
                     }
                   `}
                   style={{ animationDelay: `${index * 50}ms` }}
@@ -354,8 +354,8 @@ export default function Navbar() {
                     to="/login" 
                     onClick={() => setMenuOpen(false)}
                     className="flex-1 text-center text-[11px] tracking-[0.15em] uppercase font-medium 
-                      text-muted border border-gold/20 py-3 transition-all duration-300 
-                      hover:border-gold/50 hover:text-gold no-underline"
+                      text-muted border border-neutral-200 py-3 transition-all duration-300 
+                      hover:border-gold/50 hover:text-neutral-800 no-underline"
                   >
                     Sign In
                   </Link>
@@ -372,12 +372,12 @@ export default function Navbar() {
               ) : (
                 <div className="space-y-1 pt-2">
                   <div className="flex items-center gap-3 px-4 py-3 mb-2">
-                    <div className="w-10 h-10 bg-gold/20 text-gold border border-gold/30 
+                    <div className="w-10 h-10 bg-gold/20 text-neutral-800 border border-gold/30 
                       flex items-center justify-center text-sm font-bold font-mono">
                       {user?.name?.[0]?.toUpperCase()}
                     </div>
                     <div>
-                      <p className="text-sm font-display text-white tracking-wide">{user?.name}</p>
+                      <p className="text-sm font-display text-neutral-900 tracking-wide">{user?.name}</p>
                       <p className="text-[11px] font-mono text-muted">{user?.email}</p>
                     </div>
                   </div>
@@ -393,7 +393,7 @@ export default function Navbar() {
                       to={item.to} 
                       onClick={() => setMenuOpen(false)}
                       className="block text-[12px] text-muted tracking-wider uppercase no-underline 
-                        transition-all duration-200 hover:text-gold py-2.5 px-4"
+                        transition-all duration-200 hover:text-neutral-800 py-2.5 px-4"
                     >
                       {item.label}
                     </Link>
@@ -403,7 +403,7 @@ export default function Navbar() {
                     <Link 
                       to="/admin" 
                       onClick={() => setMenuOpen(false)}
-                      className="flex items-center gap-2 text-[12px] text-gold font-semibold 
+                      className="flex items-center gap-2 text-[12px] text-neutral-800 font-semibold 
                         tracking-wider uppercase no-underline py-2.5 px-4"
                     >
                       <Zap size={14} />
@@ -428,31 +428,31 @@ export default function Navbar() {
       {/* ==================== SEARCH OVERLAY ==================== */}
       {searchOpen && (
         <div 
-          className="fixed inset-0 z-[200] bg-black/90 backdrop-blur-xl flex items-start justify-center 
+          className="fixed inset-0 z-[200] bg-white/90 backdrop-blur-xl flex items-start justify-center 
             pt-[100px] sm:pt-[140px] animate-fadeIn"
           onClick={(e) => { if (e.target === e.currentTarget) setSearchOpen(false) }}
         >
           <div className="w-full max-w-[700px] mx-4 sm:mx-6 animate-fadeUp">
             {/* Search label */}
-            <p className="text-center text-gold/60 text-[10px] sm:text-[11px] font-mono tracking-[0.3em] uppercase mb-4">
+            <p className="text-center text-neutral-800/60 text-[10px] sm:text-[11px] font-mono tracking-[0.3em] uppercase mb-4">
               ✦ Search the archives ✦
             </p>
 
             <form 
               onSubmit={handleSearch} 
-              className="flex items-center bg-[#0A0A0A] border border-gold/20 
+              className="flex items-center bg-[#0A0A0A] border border-neutral-200 
                 shadow-[0_0_40px_rgba(212,175,55,0.1)] gap-3 py-2 px-4 sm:px-6
                 focus-within:border-gold/50 focus-within:shadow-[0_0_60px_rgba(212,175,55,0.15)]
                 transition-all duration-300"
             >
-              <Search size={18} className="text-gold/50 shrink-0" />
+              <Search size={18} className="text-neutral-800/50 shrink-0" />
               <input
                 ref={searchRef}
                 type="text"
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
                 placeholder="Search artifacts, arcs, relics..."
-                className="flex-1 border-none outline-none bg-transparent text-white 
+                className="flex-1 border-none outline-none bg-transparent text-neutral-900 
                   placeholder:text-muted/50 text-sm sm:text-base font-body"
               />
               <button 
@@ -466,7 +466,7 @@ export default function Navbar() {
             </form>
 
             <p className="text-center text-muted/40 text-[10px] sm:text-[11px] font-mono tracking-wider mt-4">
-              Press <kbd className="bg-gold/10 text-gold/60 px-2 py-0.5 text-[10px] border border-gold/20">ESC</kbd> to close
+              Press <kbd className="bg-gold/10 text-neutral-800/60 px-2 py-0.5 text-[10px] border border-neutral-200">ESC</kbd> to close
             </p>
           </div>
         </div>

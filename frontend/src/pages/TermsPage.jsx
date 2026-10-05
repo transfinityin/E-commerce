@@ -25,8 +25,8 @@ export default function TermsPage() {
       <header className="nav-transfinity fixed top-0 left-0 right-0 z-50">
         <div className="page-container flex items-center justify-between py-4">
           <div className="flex items-center gap-3">
-            <span className="text-gold text-2xl">∞</span>
-            <span className="font-display text-gold text-sm tracking-[0.3em]">TRANSFINITY</span>
+            <span className="text-neutral-900 text-2xl">∞</span>
+            <span className="font-sans text-neutral-900 text-sm tracking-[0.3em]">TRANSFINITY</span>
           </div>
           <nav className="hidden sm:flex gap-8">
             <a href="/" className="nav-link">HOME</a>
@@ -45,9 +45,9 @@ export default function TermsPage() {
 
         {/* Page Header */}
         <div className="mb-8 sm:mb-12 animate-fadeUp">
-          <p className="label-gold mb-3">LEGAL</p>
-          <h1 className="heading-section text-white">TERMS OF USE</h1>
-          <p className="text-muted text-sm mt-4">
+          <p className="text-[10px] font-medium tracking-[0.28em] uppercase text-neutral-500 mb-3">LEGAL</p>
+          <h1 className="heading-section text-neutral-900">TERMS OF USE</h1>
+          <p className="text-neutral-500 text-sm mt-4">
             Protocols governing access to the Transfinity network and artifact acquisition.
           </p>
           <div className="divider-gold mt-6" />
@@ -62,14 +62,14 @@ export default function TermsPage() {
               style={{ animationDelay: `${0.1 * (i + 1)}s` }}
             >
               <div className="flex items-start gap-4 sm:gap-6">
-                <div className="w-10 h-10 border border-[var(--color-border)] flex items-center justify-center flex-shrink-0 group-hover:border-gold transition-colors">
+                <div className="w-10 h-10 border border-[var(--color-border)] flex items-center justify-center flex-shrink-0 group-hover:border-neutral-900 transition-colors">
                   <span className="arc-number text-sm">{s.title.split('.')[0]}</span>
                 </div>
                 <div className="flex-1">
                   <h3 className="heading-card text-sm sm:text-base mb-3">
                     {s.title.split('. ')[1]}
                   </h3>
-                  <p className="text-muted text-sm leading-relaxed">
+                  <p className="text-neutral-500 text-sm leading-relaxed">
                     {s.content}
                   </p>
                 </div>
@@ -80,10 +80,10 @@ export default function TermsPage() {
 
         {/* Last Updated */}
         <div className="mt-12 text-center animate-fadeUp" style={{ animationDelay: '0.5s' }}>
-          <p className="text-muted text-xs">
-            Last updated: <span className="font-mono text-gold">Cycle 2104.05</span>
+          <p className="text-neutral-500 text-xs">
+            Last updated: <span className="font-mono text-neutral-900">Cycle 2104.05</span>
           </p>
-          <p className="text-muted text-[10px] mt-2">
+          <p className="text-neutral-500 text-[10px] mt-2">
             These terms are subject to modification. Continued use constitutes acceptance.
           </p>
         </div>
@@ -94,7 +94,7 @@ export default function TermsPage() {
         <div className="page-container">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 mb-8">
             <div>
-              <p className="label-gold mb-4">NAVIGATE</p>
+              <p className="text-[10px] font-medium tracking-[0.28em] uppercase text-neutral-500 mb-4">NAVIGATE</p>
               <div className="space-y-2">
                 <a href="/shop" className="footer-link block">Shop All</a>
                 <a href="/arcs" className="footer-link block">Arc Index</a>
@@ -102,14 +102,14 @@ export default function TermsPage() {
               </div>
             </div>
             <div>
-              <p className="label-gold mb-4">ACCOUNT</p>
+              <p className="text-[10px] font-medium tracking-[0.28em] uppercase text-neutral-500 mb-4">ACCOUNT</p>
               <div className="space-y-2">
                 <a href="/login" className="footer-link block">Sign In</a>
                 <a href="/register" className="footer-link block">Create Account</a>
               </div>
             </div>
             <div>
-              <p className="label-gold mb-4">TRANSMIT</p>
+              <p className="text-[10px] font-medium tracking-[0.28em] uppercase text-neutral-500 mb-4">TRANSMIT</p>
               <div className="space-y-2">
                 <a href="#" className="footer-link block">Instagram</a>
                 <a href="#" className="footer-link block">Discord</a>
@@ -120,13 +120,13 @@ export default function TermsPage() {
           <div className="divider-gold mb-6" />
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-2">
-              <span className="text-gold text-lg">∞</span>
-              <span className="font-display text-gold text-xs tracking-[0.3em]">TRANSFINITY</span>
+              <span className="text-neutral-900 text-lg">∞</span>
+              <span className="font-sans text-neutral-900 text-xs tracking-[0.3em]">TRANSFINITY</span>
             </div>
-            <p className="text-muted text-xs tracking-wider">
+            <p className="text-neutral-500 text-xs tracking-wider">
               LONDON // TOKYO // DIGITAL VOID
             </p>
-            <p className="text-muted text-[10px]">
+            <p className="text-neutral-500 text-[10px]">
               © 2104 Transfinity Systems
             </p>
           </div>

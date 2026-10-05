@@ -380,7 +380,7 @@ export default function QRScanner() {
   }
 
   const savedCoupons = JSON.parse(localStorage.getItem('qr_coupons') || '[]')
-  const inputClass = 'input-gold flex-1 px-4 py-3 sm:px-5 sm:py-4 text-sm text-white placeholder:text-muted/50'
+  const inputClass = 'input-gold flex-1 px-4 py-3 sm:px-5 sm:py-4 text-sm text-neutral-900 placeholder:text-muted/50'
 
   return (
     <div className="min-h-screen bg-black pt-[76px] sm:pt-[88px] lg:pt-[96px] overflow-x-hidden">
@@ -392,7 +392,7 @@ export default function QRScanner() {
             <Zap size={22} className="text-gold" />
           </div>
           <p className="label-gold mb-3">Exclusive Offers</p>
-          <h1 className="font-display text-2xl sm:text-3xl lg:text-4xl text-white tracking-[0.12em] leading-tight mb-3">
+          <h1 className="font-display text-2xl sm:text-3xl lg:text-4xl text-neutral-900 tracking-[0.12em] leading-tight mb-3">
             SCAN & <span className="text-gradient-gold">REVEAL</span>
           </h1>
           <p className="text-xs sm:text-sm text-muted font-mono tracking-wider leading-relaxed max-w-sm mx-auto">
@@ -441,7 +441,7 @@ export default function QRScanner() {
                 <div className="w-16 h-16 border-2 border-gold/15 border-t-gold rounded-full animate-spin" />
                 <div className="absolute inset-0 w-16 h-16 border-2 border-transparent border-t-gold/40 rounded-full animate-spin reverse-spin" />
               </div>
-              <p className="text-sm font-mono tracking-wider text-white mb-1">Revealing your exclusive offer...</p>
+              <p className="text-sm font-mono tracking-wider text-neutral-900 mb-1">Revealing your exclusive offer...</p>
               <p className="text-xs text-muted font-mono tracking-wider">Please wait a moment.</p>
             </div>
           )}
@@ -453,7 +453,7 @@ export default function QRScanner() {
                 <AlertCircle size={32} />
               </div>
               <p className="label-gold mb-3">Scan Failed</p>
-              <h3 className="font-display text-xl sm:text-2xl text-white tracking-[0.12em] mb-2">
+              <h3 className="font-display text-xl sm:text-2xl text-neutral-900 tracking-[0.12em] mb-2">
                 ACCESS <span className="text-gradient-gold">DENIED</span>
               </h3>
               <p className="text-sm text-muted font-mono tracking-wider leading-relaxed mb-2 max-w-xs">{error}</p>
@@ -472,7 +472,7 @@ export default function QRScanner() {
                   <Unlock size={40} className="text-gold" />
                 </div>
                 <p className="label-gold mb-3">Arc Unlocked</p>
-                <h2 className="font-display text-2xl lg:text-3xl text-white tracking-[0.12em] mb-2">
+                <h2 className="font-display text-2xl lg:text-3xl text-neutral-900 tracking-[0.12em] mb-2">
                   SECRET <span className="text-gradient-gold">REVEALED</span>
                 </h2>
                 <p className="text-sm text-muted font-mono tracking-wider leading-relaxed">{revealedData.message}</p>
@@ -508,14 +508,14 @@ export default function QRScanner() {
                   <Sparkles size={40} className="text-gold" />
                 </div>
                 <p className="label-gold mb-3">Hunt Activated</p>
-                <h2 className="font-display text-2xl lg:text-3xl text-white tracking-[0.12em] mb-2">
+                <h2 className="font-display text-2xl lg:text-3xl text-neutral-900 tracking-[0.12em] mb-2">
                   LEVEL <span className="text-gradient-gold">{revealedData.current_level}</span> UNLOCKED
                 </h2>
                 <p className="text-sm text-muted font-mono tracking-wider leading-relaxed">{revealedData.message}</p>
               </div>
               <div className="bg-black border border-gold/20 py-6 px-5 mb-6">
                 <p className="text-xs font-mono uppercase tracking-[0.2em] text-muted mb-2">Your Hunt Begins</p>
-                <p className="text-sm text-white font-mono">Find all 5 locations to complete the Treasure Hunt and win exclusive rewards!</p>
+                <p className="text-sm text-neutral-900 font-mono">Find all 5 locations to complete the Treasure Hunt and win exclusive rewards!</p>
               </div>
               <div className="flex flex-col gap-3">
                 <button type="button" className="btn-primary w-full min-h-[52px] inline-flex items-center justify-center gap-2" onClick={() => navigate('/hunt')}>
@@ -536,7 +536,7 @@ export default function QRScanner() {
                   <Sparkles size={40} className="text-gold" />
                 </div>
                 <p className="label-gold mb-3">Offer Unlocked</p>
-                <h2 className="font-display text-2xl lg:text-3xl text-white tracking-[0.12em] mb-2">CONGRATULATIONS</h2>
+                <h2 className="font-display text-2xl lg:text-3xl text-neutral-900 tracking-[0.12em] mb-2">CONGRATULATIONS</h2>
                 <p className="text-sm text-muted font-mono tracking-wider leading-relaxed">{revealedData.message}</p>
               </div>
               <div className="bg-black border border-gold/20 relative overflow-hidden py-8 px-5 sm:px-6 lg:px-8 mb-6 shadow-[0_20px_80px_rgba(0,0,0,0.5)]">
@@ -548,9 +548,9 @@ export default function QRScanner() {
                 <div className="relative z-10 font-display text-6xl lg:text-7xl text-gradient-gold mb-2 tracking-tight">
                   {revealedData.discount}<span className="text-3xl lg:text-4xl">%</span>
                 </div>
-                <p className="relative z-10 text-sm sm:text-base font-mono tracking-wider text-white mb-6">{revealedData.title}</p>
+                <p className="relative z-10 text-sm sm:text-base font-mono tracking-wider text-neutral-900 mb-6">{revealedData.title}</p>
                 <div className="relative z-10 flex items-center bg-[#0A0A0A] border border-gold/20 py-3 px-3 sm:px-4 gap-3">
-                  <span className="flex-1 font-mono text-base sm:text-lg text-white tracking-wider truncate">{revealedData.coupon_code}</span>
+                  <span className="flex-1 font-mono text-base sm:text-lg text-neutral-900 tracking-wider truncate">{revealedData.coupon_code}</span>
                   <button
                     type="button"
                     onClick={handleCopyCode}
@@ -584,7 +584,7 @@ export default function QRScanner() {
               <div className="w-9 h-9 border border-gold/20 bg-gold/10 flex items-center justify-center">
                 <Ticket size={16} className="text-gold" />
               </div>
-              <h3 className="font-display text-sm sm:text-base text-white tracking-[0.12em]">SAVED OFFERS</h3>
+              <h3 className="font-display text-sm sm:text-base text-neutral-900 tracking-[0.12em]">SAVED OFFERS</h3>
               <span className="ml-auto text-xs font-mono text-gold bg-gold/10 border border-gold/20 px-2.5 py-1">{savedCoupons.length}</span>
             </div>
             <div className="flex flex-col gap-3">
@@ -593,7 +593,7 @@ export default function QRScanner() {
                   <div className="flex items-center gap-3 min-w-0">
                     <div className="w-11 h-11 bg-gold text-black flex items-center justify-center text-sm font-display shrink-0">{coupon.discount}%</div>
                     <div className="min-w-0">
-                      <span className="text-sm font-mono text-white group-hover:text-gold transition-colors truncate block">{coupon.title}</span>
+                      <span className="text-sm font-mono text-neutral-900 group-hover:text-gold transition-colors truncate block">{coupon.title}</span>
                       <span className="text-xs text-muted font-mono">Expires {coupon.expires_at ? new Date(coupon.expires_at).toLocaleDateString() : 'soon'}</span>
                     </div>
                   </div>

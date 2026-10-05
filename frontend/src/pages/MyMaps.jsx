@@ -86,7 +86,7 @@ const MyMaps = () => {
           <p className="text-[var(--color-muted)] mb-4">Start the hunt first!</p>
           <button
             onClick={() => navigate('/hunt')}
-            className="bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] text-white px-6 py-3 rounded-xl font-bold shadow-[var(--shadow-gold)]"
+            className="bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] text-neutral-900 px-6 py-3 rounded-xl font-bold shadow-[var(--shadow-gold)]"
           >
             Go to Hunt
           </button>
@@ -157,8 +157,8 @@ const MyMaps = () => {
                 <div className="flex items-start justify-between">
                   <div className="flex items-start gap-3">
                     <div className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 ${
-                      isUnlocked ? 'bg-[var(--color-success)] text-white' : 
-                      isNext ? 'bg-[var(--color-primary)] text-white' : 
+                      isUnlocked ? 'bg-[var(--color-success)] text-neutral-900' : 
+                      isNext ? 'bg-[var(--color-primary)] text-neutral-900' : 
                       'bg-[var(--color-bg-alt)] text-[var(--color-muted)]'
                     }`}>
                       <span className="text-xl">
@@ -171,7 +171,7 @@ const MyMaps = () => {
                           Level {location.level}: {location.name}
                         </h3>
                         {isNext && (
-                          <span className="bg-[var(--color-warning)] text-white text-xs font-bold px-2 py-0.5 rounded-full">
+                          <span className="bg-[var(--color-warning)] text-neutral-900 text-xs font-bold px-2 py-0.5 rounded-full">
                             NEXT
                           </span>
                         )}
@@ -185,7 +185,7 @@ const MyMaps = () => {
                   {distance !== undefined && (
                     <div className={`text-right px-3 py-1 rounded-lg ${
                       isWithinRange 
-                        ? 'bg-[var(--color-success)] text-white' 
+                        ? 'bg-[var(--color-success)] text-neutral-900' 
                         : 'bg-[var(--color-bg-alt)] text-[var(--color-muted)]'
                     }`}>
                       <p className="font-bold text-sm">{distance}m</p>
@@ -233,7 +233,7 @@ const MyMaps = () => {
                                 e.stopPropagation();
                                 navigate('/scan');
                               }}
-                              className="bg-[var(--color-success)] hover:bg-[var(--color-primary-dark)] text-white px-6 py-2.5 rounded-xl font-bold text-sm shadow-sm transition-all"
+                              className="bg-[var(--color-success)] hover:bg-[var(--color-primary-dark)] text-neutral-900 px-6 py-2.5 rounded-xl font-bold text-sm shadow-sm transition-all"
                             >
                               Scan Location QR
                             </button>

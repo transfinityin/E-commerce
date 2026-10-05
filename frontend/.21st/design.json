@@ -1,0 +1,264 @@
+{
+  "version": 1,
+  "project": {
+    "name": "frontend",
+    "productType": null,
+    "stack": [
+      "nextjs",
+      "react",
+      "shadcn",
+      "tailwind-v4",
+      "vite"
+    ]
+  },
+  "sources": {
+    "tokens": [
+      "src/index.css"
+    ],
+    "components": [
+      "src/components/ui"
+    ],
+    "assets": [
+      "public/images",
+      "src/assets"
+    ],
+    "instructions": []
+  },
+  "design": {
+    "colorMode": "light",
+    "colors": {
+      "--color-bg": {
+        "value": "#F4F4F2",
+        "source": "src/index.css"
+      },
+      "--color-bg-alt": {
+        "value": "#EFEFEF",
+        "source": "src/index.css"
+      },
+      "--color-surface": {
+        "value": "#111111",
+        "source": "src/index.css"
+      },
+      "--color-surface-light": {
+        "value": "#1A1A1A",
+        "source": "src/index.css"
+      },
+      "--color-gold": {
+        "value": "#D4AF37",
+        "source": "src/index.css"
+      },
+      "--color-gold-light": {
+        "value": "#F0C040",
+        "source": "src/index.css"
+      },
+      "--color-gold-dark": {
+        "value": "#B8960C",
+        "source": "src/index.css"
+      },
+      "--color-gold-muted": {
+        "value": "rgba(212, 175, 55, 0.3)",
+        "source": "src/index.css"
+      },
+      "--color-gold-glow": {
+        "value": "rgba(212, 175, 55, 0.15)",
+        "source": "src/index.css"
+      },
+      "--color-text": {
+        "value": "#111111",
+        "source": "src/index.css"
+      },
+      "--color-text-inverse": {
+        "value": "#FFFFFF",
+        "source": "src/index.css"
+      },
+      "--color-muted": {
+        "value": "#8B8B8B",
+        "source": "src/index.css"
+      },
+      "--color-muted-light": {
+        "value": "#A0A0A0",
+        "source": "src/index.css"
+      },
+      "--color-border": {
+        "value": "rgba(212, 175, 55, 0.2)",
+        "source": "src/index.css"
+      },
+      "--color-border-hover": {
+        "value": "rgba(212, 175, 55, 0.5)",
+        "source": "src/index.css"
+      },
+      "--color-success": {
+        "value": "#D4AF37",
+        "source": "src/index.css"
+      },
+      "--color-success-bg": {
+        "value": "rgba(212, 175, 55, 0.1)",
+        "source": "src/index.css"
+      },
+      "--color-danger": {
+        "value": "#FF4444",
+        "source": "src/index.css"
+      },
+      "--color-danger-bg": {
+        "value": "rgba(255, 68, 68, 0.1)",
+        "source": "src/index.css"
+      },
+      "--tf-border-angle": {
+        "value": "360deg",
+        "source": "src/index.css"
+      }
+    },
+    "typography": {
+      "--font-display": {
+        "value": "'Cinzel', serif",
+        "source": "src/index.css"
+      },
+      "--font-body": {
+        "value": "'Inter', sans-serif",
+        "source": "src/index.css"
+      },
+      "--font-mono": {
+        "value": "'JetBrains Mono', 'Fira Code', monospace",
+        "source": "src/index.css"
+      }
+    },
+    "spacing": {},
+    "radius": {},
+    "shadows": {
+      "--shadow-sm": {
+        "value": "0 1px 3px rgba(212, 175, 55, 0.1)",
+        "source": "src/index.css"
+      },
+      "--shadow-md": {
+        "value": "0 4px 20px rgba(212, 175, 55, 0.15)",
+        "source": "src/index.css"
+      },
+      "--shadow-lg": {
+        "value": "0 8px 40px rgba(212, 175, 55, 0.2)",
+        "source": "src/index.css"
+      },
+      "--shadow-gold": {
+        "value": "0 0 30px rgba(212, 175, 55, 0.3)",
+        "source": "src/index.css"
+      }
+    },
+    "motion": {},
+    "density": "unknown"
+  },
+  "components": {
+    "installed": [
+      "accordion",
+      "alert",
+      "alert-dialog",
+      "aspect-ratio",
+      "avatar",
+      "badge",
+      "breadcrumb",
+      "button",
+      "button-group",
+      "calendar",
+      "card",
+      "carousel",
+      "chart",
+      "checkbox",
+      "collapsible",
+      "command",
+      "context-menu",
+      "dialog",
+      "drawer",
+      "dropdown-menu",
+      "empty",
+      "field",
+      "form",
+      "glow-button",
+      "hover-card",
+      "input",
+      "input-group",
+      "input-otp",
+      "item",
+      "kbd",
+      "label",
+      "menubar",
+      "navigation-menu",
+      "pagination",
+      "popover",
+      "progress",
+      "radio-group",
+      "resizable",
+      "scroll-area",
+      "select",
+      "separator",
+      "sheet",
+      "sidebar",
+      "skeleton",
+      "slider",
+      "sonner",
+      "spinner",
+      "switch",
+      "table",
+      "tabs",
+      "textarea",
+      "toast",
+      "toaster",
+      "toggle",
+      "toggle-group",
+      "tooltip",
+      "use-mobile",
+      "use-toast"
+    ],
+    "preferredPrimitives": [
+      "radix-ui"
+    ],
+    "patterns": []
+  },
+  "constraints": {
+    "must": [],
+    "avoid": []
+  },
+  "decisions": [
+    {
+      "date": "2026-10-03",
+      "area": "arcs",
+      "decision": "Arcs page: sequential treasure-hunt trail map (done/current/sealed gates), minimal #F4F4F2, inspired by 21st onboarding-06 + timeline-05 \u2014 not card grid.",
+      "sources": [
+        "21st:ephraimduncan/onboarding-06",
+        "21st:shadcnui-blocks/timeline-05"
+      ]
+    }
+  ],
+  "evidence": [
+    {
+      "fact": "components.installed",
+      "source": "src/components/ui"
+    },
+    {
+      "fact": "design.colorMode:light",
+      "source": "src/index.css"
+    },
+    {
+      "fact": "design.tokens",
+      "source": "src/index.css"
+    },
+    {
+      "fact": "project.stack:nextjs",
+      "source": "package.json"
+    },
+    {
+      "fact": "project.stack:react",
+      "source": "package.json"
+    },
+    {
+      "fact": "project.stack:shadcn",
+      "source": "components.json"
+    },
+    {
+      "fact": "project.stack:tailwind-v4",
+      "source": "package.json"
+    },
+    {
+      "fact": "project.stack:vite",
+      "source": "package.json"
+    }
+  ],
+  "generatedAt": "2026-10-03T18:39:16.150Z"
+}

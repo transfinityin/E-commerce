@@ -102,7 +102,7 @@ export default function Notifications({ onBack }) {
             <Bell size={18} className="text-gold" />
           </div>
 
-          <h2 className="font-display text-xl sm:text-2xl lg:text-3xl text-white tracking-[0.12em]">
+          <h2 className="font-display text-xl sm:text-2xl lg:text-3xl text-neutral-900 tracking-[0.12em]">
             NOTIFICATIONS
           </h2>
         </div>
@@ -137,7 +137,7 @@ export default function Notifications({ onBack }) {
                 </div>
 
                 <div className="min-w-0">
-                  <h3 className="text-sm sm:text-base font-mono tracking-wider text-white">
+                  <h3 className="text-sm sm:text-base font-mono tracking-wider text-neutral-900">
                     {item.label}
                   </h3>
                   <p className="text-[10px] sm:text-xs text-muted font-mono tracking-wider leading-relaxed mt-0.5">

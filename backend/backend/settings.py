@@ -86,15 +86,25 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'allauth.account.middleware.AccountMiddleware',
 ]
-# Django 5+ kaga puthu Storage system (Ithu thaan Cloudinary-kku force pannum)
-STORAGES = {
-    "default": {
-        "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
-    },
-    "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
-    },
-}
+# Use Cloudinary when credentials exist; otherwise keep media on local disk.
+if os.getenv('CLOUDINARY_CLOUD_NAME'):
+    STORAGES = {
+        "default": {
+            "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
+        },
+        "staticfiles": {
+            "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+        },
+    }
+else:
+    STORAGES = {
+        "default": {
+            "BACKEND": "django.core.files.storage.FileSystemStorage",
+        },
+        "staticfiles": {
+            "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
+        },
+    }
 ROOT_URLCONF = 'backend.urls'
 
 TEMPLATES = [
@@ -187,6 +197,7 @@ SIMPLE_JWT = {
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:5173',
     'http://localhost:3000',
+    'http://localhost:10001',
     'https://transfinity.shop',
     'https://www.transfinity.shop',
     'https://e-commercetransfinity.vercel.app',
@@ -194,7 +205,10 @@ CORS_ALLOWED_ORIGINS = [
     'https://e-commercetransfinity-mrwe0lxmy-transfinityin-1144s-projects.vercel.app',
     'https://e-commercetransfinity-2m08ri7oh-transfinityin-1144s-projects.vercel.app',
 ]
-CORS_ALLOW_ALL_ORIGINS = DEBUG  # 🔥 Production la False, Debug la True
+_frontend = os.getenv('FRONTEND_URL', '').rstrip('/')
+if _frontend and _frontend not in CORS_ALLOWED_ORIGINS:
+    CORS_ALLOWED_ORIGINS.append(_frontend)
+CORS_ALLOW_ALL_ORIGINS = DEBUG  # Production: False; Debug: True
 CORS_ALLOW_CREDENTIALS = True
 
 # ── Email ────────────────────────────────────────────────────

@@ -76,7 +76,7 @@ export default function SearchResults() {
                   onClick={() => setSortBy(opt.value)}
                   className={`text-[10px] sm:text-xs font-medium px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-lg border transition-all whitespace-nowrap cursor-pointer ${
                     sortBy === opt.value
-                      ? 'bg-[var(--color-primary)] text-white border-[var(--color-primary)]'
+                      ? 'bg-[var(--color-primary)] text-neutral-900 border-[var(--color-primary)]'
                       : 'bg-[var(--color-surface)] text-[var(--color-muted)] border-[var(--color-border)] hover:text-[var(--color-text)]'
                   }`}
                 >

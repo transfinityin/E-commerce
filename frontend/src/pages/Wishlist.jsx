@@ -27,18 +27,18 @@ export default function Wishlist() {
 
   if (items.length === 0) {
     return (
-      <div className="min-h-screen bg-[var(--color-bg)] text-[var(--color-text)] font-body flex items-center justify-center px-4 py-8">
+      <div className="min-h-screen bg-[#F4F4F2] text-[var(--color-text)] font-body flex items-center justify-center px-4 py-8">
         <div className="flex flex-col items-center text-center card-dark py-12 sm:py-16 px-6 sm:px-8 max-w-sm sm:max-w-md w-full animate-fadeUp">
           <div className="w-16 h-16 border border-[var(--color-border)] flex items-center justify-center mb-6 animate-gold-pulse">
-            <Heart size={24} className="text-gold" />
+            <Heart size={24} className="text-neutral-900" />
           </div>
-          <p className="label-gold mb-3">
+          <p className="text-[10px] font-medium tracking-[0.28em] uppercase text-neutral-500 mb-3">
             COLLECTION
           </p>
           <h1 className="heading-card text-xl sm:text-2xl mb-3">
             YOUR COLLECTION IS EMPTY
           </h1>
-          <p className="text-muted text-sm mb-8 max-w-xs leading-relaxed">
+          <p className="text-neutral-500 text-sm mb-8 max-w-xs leading-relaxed">
             Curate your artifacts here and return when the signal calls. 
             Your perfect relics are waiting.
           </p>
@@ -55,14 +55,14 @@ export default function Wishlist() {
   }
 
   return (
-    <div className="min-h-screen bg-[var(--color-bg)] text-[var(--color-text)] font-body">
+    <div className="min-h-screen bg-[#F4F4F2] text-[var(--color-text)] font-body">
 
       {/* ===== TRANSFINITY HEADER ===== */}
       <header className="nav-transfinity fixed top-0 left-0 right-0 z-50">
         <div className="page-container flex items-center justify-between py-4">
           <div className="flex items-center gap-3">
-            <span className="text-gold text-2xl">∞</span>
-            <span className="font-display text-gold text-sm tracking-[0.3em]">TRANSFINITY</span>
+            <span className="text-neutral-900 text-2xl">∞</span>
+            <span className="font-sans text-neutral-900 text-sm tracking-[0.3em]">TRANSFINITY</span>
           </div>
           <nav className="hidden sm:flex gap-8">
             <a href="/" className="nav-link">HOME</a>
@@ -81,13 +81,13 @@ export default function Wishlist() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 sm:gap-4 mb-6 sm:mb-8 animate-fadeUp">
           <div>
-            <p className="label-gold mb-2">
+            <p className="text-[10px] font-medium tracking-[0.28em] uppercase text-neutral-500 mb-2">
               SAVED ARTIFACTS
             </p>
             <h1 className="heading-section text-xl sm:text-2xl lg:text-3xl mb-2">
               MY COLLECTION
             </h1>
-            <p className="text-muted text-sm">
+            <p className="text-neutral-500 text-sm">
               {items.length} premium artifact{items.length > 1 ? 's' : ''} preserved for acquisition.
             </p>
           </div>
@@ -112,7 +112,7 @@ export default function Wishlist() {
               {/* Remove Button */}
               <button
                 onClick={() => handleRemove(item.product.id)}
-                className="absolute z-10 top-3 right-3 w-8 h-8 flex items-center justify-center bg-[var(--color-bg)]/80 border border-[var(--color-border)] text-muted hover:text-[var(--color-danger)] hover:border-[var(--color-danger)] transition-all duration-200 cursor-pointer"
+                className="absolute z-10 top-3 right-3 w-8 h-8 flex items-center justify-center bg-[var(--color-bg)]/80 border border-[var(--color-border)] text-neutral-500 hover:text-[var(--color-danger)] hover:border-[var(--color-danger)] transition-all duration-200 cursor-pointer"
                 title="Remove from collection"
               >
                 <Trash2 size={12} />
@@ -127,7 +127,7 @@ export default function Wishlist() {
                     className="w-full h-full object-cover card-image"
                   />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center text-3xl sm:text-4xl bg-[var(--color-surface)] text-muted">
+                  <div className="w-full h-full flex items-center justify-center text-3xl sm:text-4xl bg-[var(--color-surface)] text-neutral-500">
                     ∞
                   </div>
                 )}
@@ -137,7 +137,7 @@ export default function Wishlist() {
               <div className="p-3 sm:p-4 relative z-10">
                 <Link
                   to={`/products/${item.product.slug}`}
-                  className="block text-xs sm:text-sm font-semibold text-white hover:text-gold transition-colors line-clamp-2 mb-1 sm:mb-1.5 min-h-[32px] sm:min-h-[40px] tracking-wide"
+                  className="block text-xs sm:text-sm font-semibold text-neutral-900 hover:text-neutral-900 transition-colors line-clamp-2 mb-1 sm:mb-1.5 min-h-[32px] sm:min-h-[40px] tracking-wide"
                 >
                   {item.product.name}
                 </Link>
@@ -164,7 +164,7 @@ export default function Wishlist() {
         <div className="page-container">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 mb-8">
             <div>
-              <p className="label-gold mb-4">NAVIGATE</p>
+              <p className="text-[10px] font-medium tracking-[0.28em] uppercase text-neutral-500 mb-4">NAVIGATE</p>
               <div className="space-y-2">
                 <a href="/shop" className="footer-link block">Shop All</a>
                 <a href="/arcs" className="footer-link block">Arc Index</a>
@@ -172,14 +172,14 @@ export default function Wishlist() {
               </div>
             </div>
             <div>
-              <p className="label-gold mb-4">ACCOUNT</p>
+              <p className="text-[10px] font-medium tracking-[0.28em] uppercase text-neutral-500 mb-4">ACCOUNT</p>
               <div className="space-y-2">
                 <a href="/login" className="footer-link block">Sign In</a>
                 <a href="/register" className="footer-link block">Create Account</a>
               </div>
             </div>
             <div>
-              <p className="label-gold mb-4">TRANSMIT</p>
+              <p className="text-[10px] font-medium tracking-[0.28em] uppercase text-neutral-500 mb-4">TRANSMIT</p>
               <div className="space-y-2">
                 <a href="#" className="footer-link block">Instagram</a>
                 <a href="#" className="footer-link block">Discord</a>
@@ -190,13 +190,13 @@ export default function Wishlist() {
           <div className="divider-gold mb-6" />
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-2">
-              <span className="text-gold text-lg">∞</span>
-              <span className="font-display text-gold text-xs tracking-[0.3em]">TRANSFINITY</span>
+              <span className="text-neutral-900 text-lg">∞</span>
+              <span className="font-sans text-neutral-900 text-xs tracking-[0.3em]">TRANSFINITY</span>
             </div>
-            <p className="text-muted text-xs tracking-wider">
+            <p className="text-neutral-500 text-xs tracking-wider">
               LONDON // TOKYO // DIGITAL VOID
             </p>
-            <p className="text-muted text-[10px]">
+            <p className="text-neutral-500 text-[10px]">
               © 2104 Transfinity Systems
             </p>
           </div>

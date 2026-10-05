@@ -95,10 +95,10 @@ export default function Security({ onBack }) {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="inline-flex items-center gap-2 bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] text-white text-xs sm:text-sm font-semibold rounded-xl px-5 sm:px-6 py-2.5 sm:py-3 transition-all duration-300 disabled:opacity-50 self-start shadow-md hover:shadow-lg hover:-translate-y-0.5 mt-1"
+            className="inline-flex items-center gap-2 bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] text-neutral-900 text-xs sm:text-sm font-semibold rounded-xl px-5 sm:px-6 py-2.5 sm:py-3 transition-all duration-300 disabled:opacity-50 self-start shadow-md hover:shadow-lg hover:-translate-y-0.5 mt-1"
           >
             {isSubmitting ? (
-              <><span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Updating...</>
+              <><span className="w-4 h-4 border-2 border-neutral-300 border-t-white rounded-full animate-spin" /> Updating...</>
             ) : (
               'Update Password'
             )}

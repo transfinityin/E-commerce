@@ -188,32 +188,32 @@ export default function Checkout() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-black pt-[76px] sm:pt-[88px] lg:pt-[96px] overflow-x-hidden">
+      <div className="min-h-screen bg-[#F4F4F2] pt-[76px] sm:pt-[88px] lg:pt-[96px] overflow-x-hidden">
         <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 lg:py-12">
           <div className="mb-8">
-            <div className="h-3 skeleton-dark w-36 mb-4" />
-            <div className="h-8 skeleton-dark w-56" />
+            <div className="h-3 animate-pulse bg-neutral-200 w-36 mb-4" />
+            <div className="h-8 animate-pulse bg-neutral-200 w-56" />
           </div>
 
-          <div className="h-12 skeleton-dark mb-8" />
-          <div className="bg-[#0A0A0A] border border-gold/10 p-5 sm:p-7 h-72 animate-pulse" />
+          <div className="h-12 animate-pulse bg-neutral-200 mb-8" />
+          <div className="bg-white border border-neutral-200 p-5 sm:p-7 h-72 animate-pulse" />
         </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-black pt-[76px] sm:pt-[88px] lg:pt-[96px] overflow-x-hidden">
+    <div className="min-h-screen bg-[#F4F4F2] pt-[76px] sm:pt-[88px] lg:pt-[96px] overflow-x-hidden">
       {/* Header */}
-      <section className="border-b border-gold/10 bg-[#050505]">
+      <section className="border-b border-neutral-200 bg-[#F4F4F2]">
         <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-10">
-          <p className="label-gold mb-2">Secure Checkout</p>
+          <p className="text-[10px] font-medium tracking-[0.28em] uppercase text-neutral-500 mb-2">Secure Checkout</p>
 
-          <h1 className="font-display text-2xl sm:text-3xl lg:text-4xl text-white tracking-[0.12em] leading-tight">
+          <h1 className="font-sans text-2xl sm:text-3xl lg:text-4xl text-neutral-900 tracking-[0.12em] leading-tight">
             YOUR <span className="text-gradient-gold">ORDER</span>
           </h1>
 
-          <p className="text-xs sm:text-sm text-muted font-mono tracking-wider mt-2 leading-relaxed">
+          <p className="text-xs sm:text-sm text-neutral-500 font-mono tracking-wider mt-2 leading-relaxed">
             Confirm address, review artifacts, and complete transmission.
           </p>
         </div>
@@ -222,10 +222,10 @@ export default function Checkout() {
       <main className="w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-10">
         {/* Stepper */}
         <div className="relative mb-7 sm:mb-10">
-          <div className="absolute top-5 left-0 right-0 h-px bg-gold/15" />
+          <div className="absolute top-5 left-0 right-0 h-px bg-neutral-950/15" />
 
           <div
-            className="absolute top-5 left-0 h-px bg-gold transition-all duration-500"
+            className="absolute top-5 left-0 h-px bg-neutral-950 transition-all duration-500"
             style={{
               width: `${(step / (STEPS.length - 1)) * 100}%`,
             }}
@@ -241,8 +241,8 @@ export default function Checkout() {
                   <div
                     className={`w-10 h-10 flex items-center justify-center border text-xs font-mono transition-all duration-300 ${
                       isDone
-                        ? 'bg-gold text-black border-gold shadow-[0_0_30px_rgba(212,175,55,0.25)]'
-                        : 'bg-black text-muted border-gold/20'
+                        ? 'bg-neutral-950 text-white border-neutral-900 shadow-[0_0_30px_rgba(212,175,55,0.25)]'
+                        : 'bg-[#F4F4F2] text-neutral-500 border-neutral-200'
                     }`}
                   >
                     {isComplete ? <CheckCircle size={17} /> : index + 1}
@@ -250,7 +250,7 @@ export default function Checkout() {
 
                   <span
                     className={`text-[9px] sm:text-[11px] font-mono tracking-wider uppercase text-center leading-tight mt-2 ${
-                      isDone ? 'text-gold' : 'text-muted'
+                      isDone ? 'text-neutral-900' : 'text-neutral-500'
                     }`}
                   >
                     {stepName}
@@ -263,17 +263,17 @@ export default function Checkout() {
 
         {/* Step 0: Address */}
         {step === 0 && (
-          <section className="bg-[#0A0A0A] border border-gold/15 p-4 sm:p-6 lg:p-8 shadow-[0_20px_80px_rgba(0,0,0,0.4)]">
+          <section className="bg-white border border-neutral-200 p-4 sm:p-6 lg:p-8 shadow-[0_20px_80px_rgba(0,0,0,0.4)]">
             <div className="flex items-center gap-3 mb-5 sm:mb-7">
-              <div className="w-10 h-10 border border-gold/20 flex items-center justify-center shrink-0">
-                <MapPin size={18} className="text-gold" />
+              <div className="w-10 h-10 border border-neutral-200 flex items-center justify-center shrink-0">
+                <MapPin size={18} className="text-neutral-900" />
               </div>
 
               <div className="min-w-0">
-                <h2 className="font-display text-base sm:text-lg text-white tracking-[0.12em]">
+                <h2 className="font-sans text-base sm:text-lg text-neutral-900 tracking-[0.12em]">
                   DELIVERY ADDRESS
                 </h2>
-                <p className="text-[10px] sm:text-xs text-muted font-mono tracking-wider mt-1 leading-relaxed">
+                <p className="text-[10px] sm:text-xs text-neutral-500 font-mono tracking-wider mt-1 leading-relaxed">
                   Select where your order should be delivered.
                 </p>
               </div>
@@ -281,13 +281,13 @@ export default function Checkout() {
 
             {addresses.length === 0 ? (
               <div className="flex flex-col items-center text-center py-10 sm:py-12">
-                <div className="w-14 h-14 border border-gold/20 flex items-center justify-center mb-5">
-                  <MapPin size={24} className="text-gold/70" />
+                <div className="w-14 h-14 border border-neutral-200 flex items-center justify-center mb-5">
+                  <MapPin size={24} className="text-neutral-900/70" />
                 </div>
 
-                <p className="label-gold mb-3">No Coordinates</p>
+                <p className="text-[10px] font-medium tracking-[0.28em] uppercase text-neutral-500 mb-3">No Coordinates</p>
 
-                <p className="text-xs sm:text-sm text-muted font-mono tracking-wider max-w-sm mb-6 leading-relaxed">
+                <p className="text-xs sm:text-sm text-neutral-500 font-mono tracking-wider max-w-sm mb-6 leading-relaxed">
                   No saved addresses found. Add a delivery coordinate to continue checkout.
                 </p>
 
@@ -313,48 +313,48 @@ export default function Checkout() {
                         onClick={() => setSelAddr(address.id)}
                         className={`w-full text-left flex items-start gap-3 sm:gap-4 p-4 sm:p-5 border transition-all duration-300 ${
                           isSelected
-                            ? 'border-gold/60 bg-gold/10 shadow-[0_0_30px_rgba(212,175,55,0.08)]'
-                            : 'border-gold/15 bg-black hover:border-gold/35 hover:bg-gold/5'
+                            ? 'border-neutral-900 bg-neutral-100 shadow-[0_0_30px_rgba(212,175,55,0.08)]'
+                            : 'border-neutral-200 bg-[#F4F4F2] hover:border-neutral-300 hover:bg-neutral-50'
                         }`}
                       >
                         {/* Custom radio - avoids global input width issue */}
                         <span
                           className={`mt-1 w-4 h-4 sm:w-5 sm:h-5 border flex items-center justify-center shrink-0 ${
-                            isSelected ? 'border-gold bg-gold' : 'border-gold/30 bg-black'
+                            isSelected ? 'border-neutral-900 bg-neutral-950' : 'border-neutral-300 bg-[#F4F4F2]'
                           }`}
                         >
-                          {isSelected && <span className="w-1.5 h-1.5 bg-black block" />}
+                          {isSelected && <span className="w-1.5 h-1.5 bg-[#F4F4F2] block" />}
                         </span>
 
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center flex-wrap gap-2 mb-2">
-                            <span className="text-sm sm:text-base font-display tracking-[0.12em] text-white break-words">
+                            <span className="text-sm sm:text-base font-sans tracking-[0.12em] text-neutral-900 break-words">
                               {address.full_name}
                             </span>
 
                             {address.is_default && (
-                              <span className="text-[9px] font-mono tracking-wider uppercase text-gold bg-gold/10 border border-gold/20 px-2 py-0.5">
+                              <span className="text-[9px] font-mono tracking-wider uppercase text-neutral-900 bg-neutral-100 border border-neutral-200 px-2 py-0.5">
                                 Default
                               </span>
                             )}
                           </div>
 
-                          <p className="text-xs sm:text-sm text-muted font-mono leading-relaxed break-words">
+                          <p className="text-xs sm:text-sm text-neutral-500 font-mono leading-relaxed break-words">
                             {[address.line1, address.line2].filter(Boolean).join(', ')}
                           </p>
 
-                          <p className="text-xs sm:text-sm text-muted font-mono leading-relaxed mt-1 break-words">
+                          <p className="text-xs sm:text-sm text-neutral-500 font-mono leading-relaxed mt-1 break-words">
                             {[address.city, address.state].filter(Boolean).join(', ')}
                             {address.pincode ? ` — ${address.pincode}` : ''}
                           </p>
 
-                          <p className="text-xs text-muted font-mono mt-1 break-words">
+                          <p className="text-xs text-neutral-500 font-mono mt-1 break-words">
                             {address.phone}
                           </p>
                         </div>
 
                         {isSelected && (
-                          <CheckCircle size={18} className="text-gold shrink-0 mt-0.5" />
+                          <CheckCircle size={18} className="text-neutral-900 shrink-0 mt-0.5" />
                         )}
                       </button>
                     )
@@ -390,13 +390,13 @@ export default function Checkout() {
         {step === 1 && (
           <section className="flex flex-col gap-5">
             {/* Items */}
-            <div className="bg-[#0A0A0A] border border-gold/15 p-4 sm:p-6 lg:p-8">
+            <div className="bg-white border border-neutral-200 p-4 sm:p-6 lg:p-8">
               <div className="flex items-center gap-3 mb-5">
-                <div className="w-10 h-10 border border-gold/20 flex items-center justify-center shrink-0">
-                  <Package size={18} className="text-gold" />
+                <div className="w-10 h-10 border border-neutral-200 flex items-center justify-center shrink-0">
+                  <Package size={18} className="text-neutral-900" />
                 </div>
 
-                <h2 className="font-display text-base sm:text-lg text-white tracking-[0.12em]">
+                <h2 className="font-sans text-base sm:text-lg text-neutral-900 tracking-[0.12em]">
                   ORDER ITEMS
                 </h2>
               </div>
@@ -405,9 +405,9 @@ export default function Checkout() {
                 {cart?.items?.map((item) => (
                   <div
                     key={item.id}
-                    className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 bg-black border border-gold/10"
+                    className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 bg-[#F4F4F2] border border-neutral-200"
                   >
-                    <div className="w-14 h-16 sm:w-16 sm:h-20 overflow-hidden bg-[#0A0A0A] border border-gold/10 shrink-0">
+                    <div className="w-14 h-16 sm:w-16 sm:h-20 overflow-hidden bg-white border border-neutral-200 shrink-0">
                       <img
                         src={item.product.primary_image?.image || item.product.image || ''}
                         alt={item.product.name}
@@ -416,25 +416,25 @@ export default function Checkout() {
                     </div>
 
                     <div className="flex-1 min-w-0">
-                      <p className="text-xs sm:text-sm font-display tracking-wider text-white truncate">
+                      <p className="text-xs sm:text-sm font-sans tracking-wider text-neutral-900 truncate">
                         {item.product.name}
                       </p>
 
-                      <p className="text-[10px] sm:text-xs text-muted font-mono mt-1">
-                        Qty: <span className="text-white">{item.quantity}</span>
+                      <p className="text-[10px] sm:text-xs text-neutral-500 font-mono mt-1">
+                        Qty: <span className="text-neutral-900">{item.quantity}</span>
                         {item.size && (
                           <span className="ml-2">
-                            Size: <span className="text-white">{item.size}</span>
+                            Size: <span className="text-neutral-900">{item.size}</span>
                           </span>
                         )}
                       </p>
 
-                      <p className="text-[10px] sm:text-xs text-muted font-mono mt-1">
+                      <p className="text-[10px] sm:text-xs text-neutral-500 font-mono mt-1">
                         ₹{Number(item.product.effective_price).toLocaleString('en-IN')} each
                       </p>
                     </div>
 
-                    <span className="text-xs sm:text-sm font-mono text-gold whitespace-nowrap">
+                    <span className="text-xs sm:text-sm font-mono text-neutral-900 whitespace-nowrap">
                       ₹{Number(item.line_total).toLocaleString('en-IN')}
                     </span>
                   </div>
@@ -443,17 +443,17 @@ export default function Checkout() {
             </div>
 
             {/* Coupon */}
-            <div className="bg-[#0A0A0A] border border-gold/15 p-4 sm:p-6 lg:p-8">
+            <div className="bg-white border border-neutral-200 p-4 sm:p-6 lg:p-8">
               <div className="flex items-center gap-3 mb-5">
-                <div className="w-10 h-10 border border-gold/20 flex items-center justify-center shrink-0">
-                  <Percent size={18} className="text-gold" />
+                <div className="w-10 h-10 border border-neutral-200 flex items-center justify-center shrink-0">
+                  <Percent size={18} className="text-neutral-900" />
                 </div>
 
                 <div className="min-w-0">
-                  <h3 className="font-display text-base sm:text-lg text-white tracking-[0.12em]">
+                  <h3 className="font-sans text-base sm:text-lg text-neutral-900 tracking-[0.12em]">
                     APPLY COUPON
                   </h3>
-                  <p className="text-[10px] sm:text-xs text-muted font-mono tracking-wider mt-1">
+                  <p className="text-[10px] sm:text-xs text-neutral-500 font-mono tracking-wider mt-1">
                     Enter a valid discount signal.
                   </p>
                 </div>
@@ -465,7 +465,7 @@ export default function Checkout() {
                   value={couponCode}
                   onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
                   placeholder="ENTER CODE"
-                  className="flex-1 bg-black border border-gold/15 text-white placeholder:text-muted/50 text-sm font-mono tracking-wider uppercase outline-none px-4 py-3.5 focus:border-gold/60 focus:shadow-[0_0_0_3px_rgba(212,175,55,0.12)] transition-all duration-300"
+                  className="flex-1 bg-[#F4F4F2] border border-neutral-200 text-neutral-900 placeholder:text-neutral-500/50 text-sm font-mono tracking-wider uppercase outline-none px-4 py-3.5 focus:border-neutral-900 focus:shadow-[0_0_0_3px_rgba(0,0,0,0.08)] transition-all duration-300"
                 />
 
                 <button
@@ -486,7 +486,7 @@ export default function Checkout() {
               </div>
 
               {couponData && (
-                <div className="flex items-center gap-2 mt-4 text-xs font-mono tracking-wider text-gold bg-gold/10 border border-gold/20 px-3 py-2">
+                <div className="flex items-center gap-2 mt-4 text-xs font-mono tracking-wider text-neutral-900 bg-neutral-100 border border-neutral-200 px-3 py-2">
                   <CheckCircle size={15} />
                   <span>{couponData.message}</span>
                 </div>
@@ -494,50 +494,50 @@ export default function Checkout() {
             </div>
 
             {/* Price Summary */}
-            <div className="bg-[#0A0A0A] border border-gold/15 p-4 sm:p-6 lg:p-8">
+            <div className="bg-white border border-neutral-200 p-4 sm:p-6 lg:p-8">
               <div className="flex items-center gap-3 mb-5">
-                <div className="w-10 h-10 border border-gold/20 flex items-center justify-center shrink-0">
-                  <CreditCard size={18} className="text-gold" />
+                <div className="w-10 h-10 border border-neutral-200 flex items-center justify-center shrink-0">
+                  <CreditCard size={18} className="text-neutral-900" />
                 </div>
 
-                <h3 className="font-display text-base sm:text-lg text-white tracking-[0.12em]">
+                <h3 className="font-sans text-base sm:text-lg text-neutral-900 tracking-[0.12em]">
                   PRICE SUMMARY
                 </h3>
               </div>
 
               <div className="flex flex-col gap-3.5">
                 <div className="flex justify-between items-center text-sm">
-                  <span className="text-muted font-mono">Subtotal</span>
-                  <span className="text-white font-mono">₹{subtotal.toFixed(2)}</span>
+                  <span className="text-neutral-500 font-mono">Subtotal</span>
+                  <span className="text-neutral-900 font-mono">₹{subtotal.toFixed(2)}</span>
                 </div>
 
                 {discount > 0 && (
                   <div className="flex justify-between items-center text-sm">
-                    <span className="text-gold font-mono">Coupon Discount</span>
-                    <span className="text-gold font-mono">−₹{discount.toFixed(2)}</span>
+                    <span className="text-neutral-900 font-mono">Coupon Discount</span>
+                    <span className="text-neutral-900 font-mono">−₹{discount.toFixed(2)}</span>
                   </div>
                 )}
 
                 <div className="flex justify-between items-center text-sm">
-                  <span className="text-muted font-mono">Delivery</span>
+                  <span className="text-neutral-500 font-mono">Delivery</span>
 
                   {delivery === 0 ? (
-                    <span className="text-[10px] font-mono tracking-wider uppercase text-gold bg-gold/10 border border-gold/20 px-2.5 py-1">
+                    <span className="text-[10px] font-mono tracking-wider uppercase text-neutral-900 bg-neutral-100 border border-neutral-200 px-2.5 py-1">
                       FREE
                     </span>
                   ) : (
-                    <span className="text-white font-mono">₹{delivery}</span>
+                    <span className="text-neutral-900 font-mono">₹{delivery}</span>
                   )}
                 </div>
 
                 <div className="divider-gold my-2" />
 
                 <div className="flex justify-between items-end">
-                  <span className="text-base font-mono text-white uppercase tracking-wider">
+                  <span className="text-base font-mono text-neutral-900 uppercase tracking-wider">
                     Total
                   </span>
 
-                  <span className="font-display text-3xl sm:text-4xl text-gradient-gold">
+                  <span className="font-sans text-3xl sm:text-4xl text-gradient-gold">
                     ₹{total.toFixed(2)}
                   </span>
                 </div>
@@ -562,7 +562,7 @@ export default function Checkout() {
                 )}
               </button>
 
-              <div className="flex flex-wrap items-center justify-center gap-4 mt-4 text-[10px] sm:text-xs text-muted font-mono">
+              <div className="flex flex-wrap items-center justify-center gap-4 mt-4 text-[10px] sm:text-xs text-neutral-500 font-mono">
                 <span className="flex items-center gap-1">
                   <ShieldCheck size={12} /> Secure
                 </span>
@@ -576,27 +576,27 @@ export default function Checkout() {
 
         {/* Step 2: Payment */}
         {step === 2 && order && (
-          <section className="bg-[#0A0A0A] border border-gold/15 p-6 sm:p-8 lg:p-12 text-center shadow-[0_20px_80px_rgba(0,0,0,0.45)]">
-            <div className="w-20 h-20 border border-gold/30 flex items-center justify-center mx-auto mb-6 animate-gold-pulse">
-              <CheckCircle size={38} className="text-gold" />
+          <section className="bg-white border border-neutral-200 p-6 sm:p-8 lg:p-12 text-center shadow-[0_20px_80px_rgba(0,0,0,0.45)]">
+            <div className="w-20 h-20 border border-neutral-300 flex items-center justify-center mx-auto mb-6 animate-gold-pulse">
+              <CheckCircle size={38} className="text-neutral-900" />
             </div>
 
-            <p className="label-gold mb-3">Order Confirmed</p>
+            <p className="text-[10px] font-medium tracking-[0.28em] uppercase text-neutral-500 mb-3">Order Confirmed</p>
 
-            <h2 className="font-display text-2xl sm:text-3xl text-white tracking-[0.12em] mb-2">
+            <h2 className="font-sans text-2xl sm:text-3xl text-neutral-900 tracking-[0.12em] mb-2">
               ORDER <span className="text-gradient-gold">PLACED</span>
             </h2>
 
-            <p className="text-xs sm:text-sm font-mono text-muted tracking-wider mb-6">
+            <p className="text-xs sm:text-sm font-mono text-neutral-500 tracking-wider mb-6">
               Order #{order.id?.slice(0, 8).toUpperCase()}
             </p>
 
-            <div className="bg-black border border-gold/15 p-5 mb-6">
-              <p className="text-[10px] sm:text-xs uppercase tracking-[0.25em] font-mono text-muted mb-2">
+            <div className="bg-[#F4F4F2] border border-neutral-200 p-5 mb-6">
+              <p className="text-[10px] sm:text-xs uppercase tracking-[0.25em] font-mono text-neutral-500 mb-2">
                 Amount Due
               </p>
 
-              <p className="font-display text-4xl sm:text-5xl text-gradient-gold">
+              <p className="font-sans text-4xl sm:text-5xl text-gradient-gold">
                 ₹{Number(order.total).toLocaleString('en-IN')}
               </p>
             </div>
@@ -622,13 +622,13 @@ export default function Checkout() {
               <button
                 type="button"
                 onClick={() => navigate('/products')}
-                className="text-xs sm:text-sm text-muted hover:text-gold transition-colors py-2 font-mono tracking-wider"
+                className="text-xs sm:text-sm text-neutral-500 hover:text-neutral-900 transition-colors py-2 font-mono tracking-wider"
               >
                 ← Continue Shopping
               </button>
             </div>
 
-            <div className="flex items-center justify-center gap-2 text-[10px] sm:text-xs text-muted mt-5 font-mono tracking-wider">
+            <div className="flex items-center justify-center gap-2 text-[10px] sm:text-xs text-neutral-500 mt-5 font-mono tracking-wider">
               <Lock size={13} />
               Secure & Encrypted Checkout
             </div>

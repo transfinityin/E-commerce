@@ -461,6 +461,27 @@ class AdminProductDetailView(generics.RetrieveUpdateDestroyAPIView):
     def get_serializer_class(self):
         return ProductWriteSerializer if self.request.method in ['PUT','PATCH'] else ProductDetailSerializer
 
+    def destroy(self, request, *args, **kwargs):
+        """Hard-delete when possible; archive (hide) when order history protects the row."""
+        from django.db.models.deletion import ProtectedError
+
+        instance = self.get_object()
+        try:
+            self.perform_destroy(instance)
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except ProtectedError:
+            instance.is_active = False
+            instance.is_featured = False
+            instance.save(update_fields=['is_active', 'is_featured', 'updated_at'])
+            return Response(
+                {
+                    'message': 'Product has order history so it was archived (hidden from shop/home) instead of deleted.',
+                    'archived': True,
+                    'id': str(instance.id),
+                },
+                status=status.HTTP_200_OK,
+            )
+
 
 # class ProductImageUploadView(APIView):
 #     permission_classes = [IsAdmin]

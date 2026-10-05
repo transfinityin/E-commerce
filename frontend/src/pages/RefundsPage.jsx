@@ -12,8 +12,8 @@ export default function RefundsPage() {
       <header className="nav-transfinity fixed top-0 left-0 right-0 z-50">
         <div className="page-container flex items-center justify-between py-4">
           <div className="flex items-center gap-3">
-            <span className="text-gold text-2xl">∞</span>
-            <span className="font-display text-gold text-sm tracking-[0.3em]">TRANSFINITY</span>
+            <span className="text-neutral-900 text-2xl">∞</span>
+            <span className="font-sans text-neutral-900 text-sm tracking-[0.3em]">TRANSFINITY</span>
           </div>
           <nav className="hidden sm:flex gap-8">
             <a href="/" className="nav-link">HOME</a>
@@ -32,8 +32,8 @@ export default function RefundsPage() {
 
         {/* Page Header */}
         <div className="mb-8 sm:mb-12 animate-fadeUp">
-          <p className="label-gold mb-3">PAYMENTS</p>
-          <h1 className="heading-section text-white">REFUND POLICY</h1>
+          <p className="text-[10px] font-medium tracking-[0.28em] uppercase text-neutral-500 mb-3">PAYMENTS</p>
+          <h1 className="heading-section text-neutral-900">REFUND POLICY</h1>
           <div className="divider-gold mt-6" />
         </div>
 
@@ -44,11 +44,11 @@ export default function RefundsPage() {
           <div className="card-dark p-5 sm:p-8 animate-fadeUp" style={{ animationDelay: '0.1s' }}>
             <div className="flex items-center gap-3 mb-4">
               <div className="w-8 h-8 border border-[var(--color-border)] flex items-center justify-center flex-shrink-0">
-                <span className="text-gold text-xs">◆</span>
+                <span className="text-neutral-900 text-xs">◆</span>
               </div>
               <h3 className="heading-card text-sm sm:text-base">Refund Eligibility</h3>
             </div>
-            <p className="text-muted text-sm leading-relaxed">
+            <p className="text-neutral-500 text-sm leading-relaxed">
               Refunds are processed for returned artifacts that meet our return protocol criteria. 
               Prepaid orders are refunded to the original payment method.
             </p>
@@ -58,7 +58,7 @@ export default function RefundsPage() {
           <div className="card-dark p-5 sm:p-8 animate-fadeUp" style={{ animationDelay: '0.2s' }}>
             <div className="flex items-center gap-3 mb-6">
               <div className="w-8 h-8 border border-[var(--color-border)] flex items-center justify-center flex-shrink-0">
-                <span className="text-gold text-xs">◆</span>
+                <span className="text-neutral-900 text-xs">◆</span>
               </div>
               <h3 className="heading-card text-sm sm:text-base">Refund Timeline</h3>
             </div>
@@ -69,8 +69,8 @@ export default function RefundsPage() {
                   key={i} 
                   className="flex flex-col sm:flex-row sm:justify-between sm:items-center py-4 first:pt-0 last:pb-0 gap-1 sm:gap-0 group"
                 >
-                  <span className="text-sm font-medium text-white tracking-wide">{m.method}</span>
-                  <span className="text-xs sm:text-sm text-muted font-mono group-hover:text-gold transition-colors">
+                  <span className="text-sm font-medium text-neutral-900 tracking-wide">{m.method}</span>
+                  <span className="text-xs sm:text-sm text-neutral-500 font-mono group-hover:text-neutral-900 transition-colors">
                     {m.days}
                   </span>
                 </div>
@@ -82,11 +82,11 @@ export default function RefundsPage() {
           <div className="card-dark p-5 sm:p-8 animate-fadeUp" style={{ animationDelay: '0.3s' }}>
             <div className="flex items-center gap-3 mb-4">
               <div className="w-8 h-8 border border-[var(--color-border)] flex items-center justify-center flex-shrink-0">
-                <span className="text-gold text-xs">◆</span>
+                <span className="text-neutral-900 text-xs">◆</span>
               </div>
               <h3 className="heading-card text-sm sm:text-base">COD Refunds</h3>
             </div>
-            <p className="text-muted text-sm leading-relaxed">
+            <p className="text-neutral-500 text-sm leading-relaxed">
               For Cash on Delivery returns, refunds are processed to your bank account via NEFT/IMPS 
               within 7 business days after we receive the returned artifact.
             </p>
@@ -96,21 +96,21 @@ export default function RefundsPage() {
           <div className="card-dark p-5 sm:p-8 animate-fadeUp" style={{ animationDelay: '0.4s' }}>
             <div className="flex items-center gap-3 mb-4">
               <div className="w-8 h-8 border border-[var(--color-border)] flex items-center justify-center flex-shrink-0">
-                <span className="text-gold text-xs">◆</span>
+                <span className="text-neutral-900 text-xs">◆</span>
               </div>
               <h3 className="heading-card text-sm sm:text-base">Processing Protocol</h3>
             </div>
             <ul className="space-y-3">
-              <li className="flex items-start gap-3 text-muted text-sm">
-                <span className="text-gold mt-1 text-xs">→</span>
+              <li className="flex items-start gap-3 text-neutral-500 text-sm">
+                <span className="text-neutral-900 mt-1 text-xs">→</span>
                 <span>Refund initiation occurs within 24 hours of return acceptance</span>
               </li>
-              <li className="flex items-start gap-3 text-muted text-sm">
-                <span className="text-gold mt-1 text-xs">→</span>
+              <li className="flex items-start gap-3 text-neutral-500 text-sm">
+                <span className="text-neutral-900 mt-1 text-xs">→</span>
                 <span>Bank processing times vary by institution</span>
               </li>
-              <li className="flex items-start gap-3 text-muted text-sm">
-                <span className="text-gold mt-1 text-xs">→</span>
+              <li className="flex items-start gap-3 text-neutral-500 text-sm">
+                <span className="text-neutral-900 mt-1 text-xs">→</span>
                 <span>Contact support for delays exceeding stated timelines</span>
               </li>
             </ul>
@@ -119,12 +119,12 @@ export default function RefundsPage() {
 
         {/* Contact Section */}
         <div className="mt-12 text-center animate-fadeUp" style={{ animationDelay: '0.5s' }}>
-          <p className="text-muted text-sm mb-4">
+          <p className="text-neutral-500 text-sm mb-4">
             Questions about your refund? Contact our support channel.
           </p>
           <a 
             href="mailto:support@transfinity.shop" 
-            className="inline-flex items-center gap-2 text-gold text-sm hover:text-gold-light transition-colors"
+            className="inline-flex items-center gap-2 text-neutral-900 text-sm hover:text-neutral-700 transition-colors"
           >
             <span className="font-mono">signal@transfinity.shop</span>
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -139,7 +139,7 @@ export default function RefundsPage() {
         <div className="page-container">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 mb-8">
             <div>
-              <p className="label-gold mb-4">NAVIGATE</p>
+              <p className="text-[10px] font-medium tracking-[0.28em] uppercase text-neutral-500 mb-4">NAVIGATE</p>
               <div className="space-y-2">
                 <a href="/shop" className="footer-link block">Shop All</a>
                 <a href="/arcs" className="footer-link block">Arc Index</a>
@@ -147,14 +147,14 @@ export default function RefundsPage() {
               </div>
             </div>
             <div>
-              <p className="label-gold mb-4">ACCOUNT</p>
+              <p className="text-[10px] font-medium tracking-[0.28em] uppercase text-neutral-500 mb-4">ACCOUNT</p>
               <div className="space-y-2">
                 <a href="/login" className="footer-link block">Sign In</a>
                 <a href="/register" className="footer-link block">Create Account</a>
               </div>
             </div>
             <div>
-              <p className="label-gold mb-4">TRANSMIT</p>
+              <p className="text-[10px] font-medium tracking-[0.28em] uppercase text-neutral-500 mb-4">TRANSMIT</p>
               <div className="space-y-2">
                 <a href="#" className="footer-link block">Instagram</a>
                 <a href="#" className="footer-link block">Discord</a>
@@ -165,13 +165,13 @@ export default function RefundsPage() {
           <div className="divider-gold mb-6" />
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-2">
-              <span className="text-gold text-lg">∞</span>
-              <span className="font-display text-gold text-xs tracking-[0.3em]">TRANSFINITY</span>
+              <span className="text-neutral-900 text-lg">∞</span>
+              <span className="font-sans text-neutral-900 text-xs tracking-[0.3em]">TRANSFINITY</span>
             </div>
-            <p className="text-muted text-xs tracking-wider">
+            <p className="text-neutral-500 text-xs tracking-wider">
               LONDON // TOKYO // DIGITAL VOID
             </p>
-            <p className="text-muted text-[10px]">
+            <p className="text-neutral-500 text-[10px]">
               © 2104 Transfinity Systems
             </p>
           </div>

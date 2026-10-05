@@ -39,7 +39,7 @@ export default function Cosmic() {
         }
       `}</style>
 
-      <main className="relative min-h-screen overflow-x-hidden bg-black text-white">
+      <main className="relative min-h-screen overflow-x-hidden bg-black text-neutral-900">
         <Navbar />
         <VideoHeader />
         <StorySection />
@@ -77,7 +77,7 @@ function VideoHeader() {
           </div>
         </div>
 
-        <h1 className="animate-fade-in-up font-serif text-5xl sm:text-6xl md:text-7xl lg:text-8xl uppercase leading-none tracking-[0.02em] text-white drop-shadow-[0_0_30px_rgba(0,0,0,0.9)]" style={{ animationDelay: '0.2s' }}>
+        <h1 className="animate-fade-in-up font-serif text-5xl sm:text-6xl md:text-7xl lg:text-8xl uppercase leading-none tracking-[0.02em] text-neutral-900 drop-shadow-[0_0_30px_rgba(0,0,0,0.9)]" style={{ animationDelay: '0.2s' }}>
           The <span className="normal-case italic text-gold text-shimmer">Cosmic</span>
         </h1>
 
@@ -86,7 +86,7 @@ function VideoHeader() {
         </p>
 
         <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 animate-fade-in-up" style={{ animationDelay: '0.6s' }}>
-          <span className="font-mono text-[10px] uppercase tracking-[0.3em] text-white/40">Scroll</span>
+          <span className="font-mono text-[10px] uppercase tracking-[0.3em] text-neutral-400">Scroll</span>
           <div className="w-px h-8 bg-[repeating-linear-gradient(to_bottom,rgba(212,175,55,0.6)_0_4px,transparent_4px_8px)]" />
         </div>
       </div>
@@ -114,7 +114,7 @@ function AudioControls() {
 
   return (
     <div className="absolute top-24 sm:top-28 right-4 sm:right-8 z-30">
-      <button onClick={toggleAudio} className={`flex items-center gap-2 px-4 py-2 rounded-none border backdrop-blur-sm transition-all duration-300 ${isMuted ? 'border-white/20 bg-black/40 text-white/50 hover:text-white/80 hover:border-white/40' : 'border-gold/50 bg-gold/10 text-gold hover:bg-gold/20 animate-pulse-glow'}`}>
+      <button onClick={toggleAudio} className={`flex items-center gap-2 px-4 py-2 rounded-none border backdrop-blur-sm transition-all duration-300 ${isMuted ? 'border-neutral-200 bg-black/40 text-neutral-500 hover:text-white/80 hover:border-white/40' : 'border-gold/50 bg-gold/10 text-gold hover:bg-gold/20 animate-pulse-glow'}`}>
         <div className="flex items-end gap-[2px] h-4">
           {[1,2,3,4].map(bar => (
             <div key={bar} className={`w-[3px] bg-current rounded-full transition-all duration-300 ${isPlaying ? 'animate-pulse' : 'h-1'}`} style={{height: isPlaying ? `${Math.random()*12+4}px` : '4px', animationDelay: `${bar*0.1}s`}} />
@@ -136,17 +136,17 @@ function StorySection() {
             <span className="font-mono text-[10px] uppercase tracking-[0.5em] text-gold">The Lore</span>
             <div className="h-px w-12 bg-gold/40" />
           </div>
-          <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl uppercase tracking-[0.08em] text-white/90">
+          <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl uppercase tracking-[0.08em] text-neutral-900">
             The Battle <span className="italic text-gold">For Legacy</span>
           </h2>
         </div>
 
         <div className="space-y-8">
           <div className="animate-fade-in-up border-l-2 border-gold/30 pl-6 sm:pl-8" style={{ animationDelay: '0.0s' }}>
-            <p className="text-sm sm:text-base leading-[1.9] text-white/70 font-light">As celestial structures descended from the fractured skies and cosmic energy spread across the planet, the world fell into chaos. Governments collapsed, cities divided, and humanity entered its most dangerous era since the birth of TRANSFINITY. Fearful of losing control forever, the remaining leaders of "The Frame" united with powerful military factions and formed an organization known as The Dominion, a force dedicated to erasing Kairos, the Founders, and every trace of the infinity symbol from existence. Thus began the Shadow War Arc — "The Battle For Legacy." Massive conflicts erupted across cities illuminated by black-and-gold skies, where Founder squads fought against Dominion forces in brutal battles that blurred the line between humanity and transcendence. For the first time, the future of the world depended entirely on who would survive the coming war.</p>
+            <p className="text-sm sm:text-base leading-[1.9] text-neutral-900/70 font-light">As celestial structures descended from the fractured skies and cosmic energy spread across the planet, the world fell into chaos. Governments collapsed, cities divided, and humanity entered its most dangerous era since the birth of TRANSFINITY. Fearful of losing control forever, the remaining leaders of "The Frame" united with powerful military factions and formed an organization known as The Dominion, a force dedicated to erasing Kairos, the Founders, and every trace of the infinity symbol from existence. Thus began the Shadow War Arc — "The Battle For Legacy." Massive conflicts erupted across cities illuminated by black-and-gold skies, where Founder squads fought against Dominion forces in brutal battles that blurred the line between humanity and transcendence. For the first time, the future of the world depended entirely on who would survive the coming war.</p>
           </div>
-          <div className="animate-fade-in-up border-l-2 border-white/10 pl-6 sm:pl-8" style={{ animationDelay: '0.15s' }}>
-            <p className="text-sm sm:text-base leading-[1.9] text-white/70 font-light">As the Shadow War intensified, Kairos revealed a terrifying truth to the Founders: the cosmic force awakening beyond reality was feeding on humanity's fear, hatred, and division. Every battle made its arrival closer. Realizing the war could destroy the world before infinity ever arrived, Kairos assembled the strongest Founders for one final mission deep within the heart of the Infinite Dimension. There, amid collapsing realities and endless darkness, the Founders faced sacrifices that would decide the fate of humanity itself. Across the planet, people began choosing sides — some joining TRANSFINITY in pursuit of evolution, others clinging desperately to the old world. But regardless of allegiance, everyone understood one thing: the Shadow War was not simply a fight for power anymore. It was the final battle for humanity's legacy.</p>
+          <div className="animate-fade-in-up border-l-2 border-neutral-200 pl-6 sm:pl-8" style={{ animationDelay: '0.15s' }}>
+            <p className="text-sm sm:text-base leading-[1.9] text-neutral-900/70 font-light">As the Shadow War intensified, Kairos revealed a terrifying truth to the Founders: the cosmic force awakening beyond reality was feeding on humanity's fear, hatred, and division. Every battle made its arrival closer. Realizing the war could destroy the world before infinity ever arrived, Kairos assembled the strongest Founders for one final mission deep within the heart of the Infinite Dimension. There, amid collapsing realities and endless darkness, the Founders faced sacrifices that would decide the fate of humanity itself. Across the planet, people began choosing sides — some joining TRANSFINITY in pursuit of evolution, others clinging desperately to the old world. But regardless of allegiance, everyone understood one thing: the Shadow War was not simply a fight for power anymore. It was the final battle for humanity's legacy.</p>
           </div>
           
           <div className="animate-fade-in-up my-10 sm:my-12 py-8 px-6 sm:px-8 border border-gold/20 bg-gold/[0.03] text-center" style={{ animationDelay: '0.3s' }}>
@@ -176,10 +176,10 @@ function ShopSection() {
             <span className="font-mono text-[10px] uppercase tracking-[0.5em] text-gold">The Collection</span>
             <div className="h-px w-12 bg-gold/40" />
           </div>
-          <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl uppercase tracking-[0.08em] text-white/90">
+          <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl uppercase tracking-[0.08em] text-neutral-900">
             Cosmic <span className="italic text-gold">Essentials</span>
           </h2>
-          <p className="mt-4 text-sm text-white/50 max-w-lg mx-auto">
+          <p className="mt-4 text-sm text-neutral-500 max-w-lg mx-auto">
             Warriors of the shadow. Every piece is battle-worn.
           </p>
         </div>
@@ -195,7 +195,7 @@ function ShopSection() {
             Visit Full Shop
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
           </Link>
-          <Link to="/arcs/zenith-court" className="inline-flex items-center gap-2 px-6 py-3 border border-white/10 text-white/50 font-mono text-[10px] uppercase tracking-[0.3em] hover:border-gold/40 hover:text-gold transition-all duration-300">
+          <Link to="/arcs/zenith-court" className="inline-flex items-center gap-2 px-6 py-3 border border-neutral-200 text-neutral-500 font-mono text-[10px] uppercase tracking-[0.3em] hover:border-gold/40 hover:text-gold transition-all duration-300">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
             Previous Arc
           </Link>
@@ -212,13 +212,13 @@ function ShopSection() {
 
 function ProductCard({ product, index }) {
   return (
-    <div className="group relative border border-white/10 bg-black/40 backdrop-blur-sm overflow-hidden transition-all duration-500 hover:border-gold/40 hover:bg-black/60 hover:-translate-y-2" style={{ animationDelay: `${index*0.1}s` }}>
+    <div className="group relative border border-neutral-200 bg-black/40 backdrop-blur-sm overflow-hidden transition-all duration-500 hover:border-gold/40 hover:bg-black/60 hover:-translate-y-2" style={{ animationDelay: `${index*0.1}s` }}>
       <div className="relative aspect-[3/4] overflow-hidden bg-white/5">
         <img src={product.image} alt={product.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" onError={(e) => { e.target.style.display='none'; e.target.nextSibling.style.display='flex' }} />
         <div className="absolute inset-0 hidden items-center justify-center bg-black/60">
           <div className="text-center">
             <div className="font-serif text-4xl text-gold/30 mb-2">∞</div>
-            <span className="font-mono text-[10px] uppercase tracking-wider text-white/30">{product.name}</span>
+            <span className="font-mono text-[10px] uppercase tracking-wider text-neutral-400">{product.name}</span>
           </div>
         </div>
         <div className="absolute inset-0 bg-[linear-gradient(180deg,transparent_50%,rgba(0,0,0,0.8)_100%)] opacity-60 group-hover:opacity-80 transition-opacity" />
@@ -227,11 +227,11 @@ function ProductCard({ product, index }) {
         </button>
       </div>
       <div className="p-4 sm:p-5">
-        <h3 className="font-serif text-sm sm:text-base uppercase tracking-[0.08em] text-white/90 mb-1">{product.name}</h3>
-        <p className="text-xs text-white/40 mb-3">{product.description}</p>
+        <h3 className="font-serif text-sm sm:text-base uppercase tracking-[0.08em] text-neutral-900 mb-1">{product.name}</h3>
+        <p className="text-xs text-neutral-400 mb-3">{product.description}</p>
         <div className="flex items-center justify-between">
           <span className="font-mono text-sm text-gold">₹{product.price}</span>
-          <span className="font-mono text-[10px] uppercase tracking-wider text-white/30">Arc 10</span>
+          <span className="font-mono text-[10px] uppercase tracking-wider text-neutral-400">Arc 10</span>
         </div>
       </div>
     </div>

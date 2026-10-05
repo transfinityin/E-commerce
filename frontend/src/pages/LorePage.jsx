@@ -100,13 +100,13 @@ export default function LorePage() {
     }
   };
 
-  if (loading) return <div className="min-h-screen bg-black flex items-center justify-center text-white">Loading...</div>;
+  if (loading) return <div className="min-h-screen bg-black flex items-center justify-center text-neutral-900">Loading...</div>;
   if (!lore) return <div className="min-h-screen bg-black flex items-center justify-center text-red-500">Arc not found</div>;
 
   const theme = ARC_THEMES[arcName] || ARC_THEMES.founder;
 
   return (
-    <div className={`min-h-screen bg-gradient-to-b ${theme.bg} text-white relative overflow-hidden`}>
+    <div className={`min-h-screen bg-gradient-to-b ${theme.bg} text-neutral-900 relative overflow-hidden`}>
       {/* Ambient Particles Background */}
       <div className="absolute inset-0 opacity-30">
         {/* Add particle effect based on theme */}

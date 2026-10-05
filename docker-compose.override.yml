@@ -1,0 +1,5 @@
+# Frontend is started with local Node (Vite 8 needs Node 22+).
+services:
+  frontend:
+    profiles:
+      - full

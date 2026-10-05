@@ -15,7 +15,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy project
 COPY . .
 
-# Collect static files for production
+# Collect static files for production (placeholder key is only for image build)
+ENV SECRET_KEY=build-placeholder
+ENV DEBUG=True
 RUN python manage.py collectstatic --noinput
 
 EXPOSE 8000

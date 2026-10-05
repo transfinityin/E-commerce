@@ -104,16 +104,52 @@ class ProductDetailSerializer(serializers.ModelSerializer):
 
 
 class ProductWriteSerializer(serializers.ModelSerializer):
+    id = serializers.UUIDField(read_only=True)
+    category = serializers.PrimaryKeyRelatedField(
+        queryset=Category.objects.all(), allow_null=True, required=False
+    )
+    sale_price = serializers.DecimalField(
+        max_digits=10, decimal_places=2, allow_null=True, required=False
+    )
+    sku = serializers.CharField(allow_blank=True, required=False)
+
     class Meta:
         model  = Product
-        fields = ('name','slug','description','category','price','sale_price',
+        fields = ('id','name','slug','description','category','price','sale_price',
                   'stock','sku','weight','is_active','is_featured','available_sizes')
+        read_only_fields = ('id',)
+
+    def validate_sku(self, value):
+        value = (value or '').strip()
+        if not value:
+            # unique=True + blank='' collides in Postgres — mint a unique SKU
+            import uuid
+            return f'SKU-{uuid.uuid4().hex[:10].upper()}'
+        qs = Product.objects.filter(sku=value)
+        if self.instance:
+            qs = qs.exclude(pk=self.instance.pk)
+        if qs.exists():
+            raise serializers.ValidationError('SKU already exists.')
+        return value
+
+    def validate_sale_price(self, value):
+        if value in ('', None):
+            return None
+        return value
+
+    def validate_category(self, value):
+        if value in ('', None):
+            return None
+        return value
+
     def validate(self, attrs):
-        if attrs.get('sale_price') and attrs.get('price'):
-            if attrs['sale_price'] >= attrs['price']:
-                raise serializers.ValidationError(
-                    {'sale_price': 'Sale price must be less than original price.'})
+        sale = attrs.get('sale_price', getattr(self.instance, 'sale_price', None))
+        price = attrs.get('price', getattr(self.instance, 'price', None))
+        if sale is not None and price is not None and sale >= price:
+            raise serializers.ValidationError(
+                {'sale_price': 'Sale price must be less than original price.'})
         return attrs
+
     def create(self, validated_data):
         validated_data['owner'] = self.context['request'].user
         return super().create(validated_data)

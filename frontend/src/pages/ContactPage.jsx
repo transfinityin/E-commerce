@@ -27,21 +27,21 @@ export default function ContactPage() {
   ]
 
   return (
-    <div className="min-h-screen bg-black pt-[76px] sm:pt-[88px] lg:pt-[96px] text-white overflow-x-hidden">
+    <div className="min-h-screen bg-[#F4F4F2] pt-[76px] sm:pt-[88px] lg:pt-[96px] text-neutral-900 overflow-x-hidden">
       <main className="w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
         {/* Header */}
         <section className="mb-10 sm:mb-14 text-center animate-fadeUp">
-          <div className="w-12 h-12 sm:w-14 sm:h-14 border border-gold/25 bg-gold/5 flex items-center justify-center mx-auto mb-5">
-            <Radio size={22} className="text-gold" />
+          <div className="w-12 h-12 sm:w-14 sm:h-14 border border-neutral-300 bg-neutral-50 flex items-center justify-center mx-auto mb-5">
+            <Radio size={22} className="text-neutral-900" />
           </div>
 
-          <p className="label-gold mb-3">Transmit</p>
+          <p className="text-[10px] font-medium tracking-[0.28em] uppercase text-neutral-500 mb-3">Transmit</p>
 
-          <h1 className="font-display text-2xl sm:text-3xl lg:text-5xl text-white tracking-[0.12em] leading-tight mb-4">
+          <h1 className="font-sans text-2xl sm:text-3xl lg:text-5xl text-neutral-900 tracking-[0.12em] leading-tight mb-4">
             CONTACT <span className="text-gradient-gold">NETWORK</span>
           </h1>
 
-          <p className="text-xs sm:text-sm lg:text-base text-muted font-mono tracking-wider leading-relaxed max-w-2xl mx-auto">
+          <p className="text-xs sm:text-sm lg:text-base text-neutral-500 font-mono tracking-wider leading-relaxed max-w-2xl mx-auto">
             Establish communication with the Transfinity network. All signals are encrypted,
             routed, and monitored for faster response.
           </p>
@@ -61,25 +61,25 @@ export default function ContactPage() {
                 className="group card-dark p-5 sm:p-6 lg:p-8 flex items-start gap-4 sm:gap-6 animate-fadeUp"
                 style={{ animationDelay: `${0.1 * (index + 1)}s` }}
               >
-                <div className="w-12 h-12 sm:w-14 sm:h-14 border border-gold/20 bg-black flex items-center justify-center shrink-0 group-hover:border-gold/50 group-hover:bg-gold/5 transition-all duration-300">
-                  <Icon size={21} className="text-gold" />
+                <div className="w-12 h-12 sm:w-14 sm:h-14 border border-neutral-200 bg-[#F4F4F2] flex items-center justify-center shrink-0 group-hover:border-neutral-400 group-hover:bg-neutral-50 transition-all duration-300">
+                  <Icon size={21} className="text-neutral-900" />
                 </div>
 
                 <div className="flex-1 min-w-0">
-                  <p className="label-gold text-[10px] mb-2">{contact.label}</p>
+                  <p className="text-[10px] font-medium tracking-[0.28em] uppercase text-neutral-500 text-[10px] mb-2">{contact.label}</p>
 
-                  <p className="text-white text-sm sm:text-base lg:text-lg font-mono tracking-wider break-words">
+                  <p className="text-neutral-900 text-sm sm:text-base lg:text-lg font-mono tracking-wider break-words">
                     {contact.value}
                   </p>
 
                   {contact.sub && (
-                    <p className="text-muted text-xs sm:text-sm font-mono tracking-wider leading-relaxed mt-1">
+                    <p className="text-neutral-500 text-xs sm:text-sm font-mono tracking-wider leading-relaxed mt-1">
                       {contact.sub}
                     </p>
                   )}
                 </div>
 
-                <div className="hidden sm:flex items-center text-muted group-hover:text-gold transition-colors duration-300">
+                <div className="hidden sm:flex items-center text-neutral-500 group-hover:text-neutral-900 transition-colors duration-300">
                   <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform duration-300" />
                 </div>
               </a>
@@ -93,11 +93,11 @@ export default function ContactPage() {
           style={{ animationDelay: '0.4s' }}
         >
           <div className="flex items-center gap-3 mb-5">
-            <div className="w-9 h-9 border border-gold/20 bg-gold/5 flex items-center justify-center shrink-0">
-              <span className="text-gold text-xs">◆</span>
+            <div className="w-9 h-9 border border-neutral-200 bg-neutral-50 flex items-center justify-center shrink-0">
+              <span className="text-neutral-900 text-xs">◆</span>
             </div>
 
-            <h2 className="heading-card text-white text-sm sm:text-base">
+            <h2 className="heading-card text-neutral-900 text-sm sm:text-base">
               Communication Protocol
             </h2>
           </div>
@@ -110,9 +110,9 @@ export default function ContactPage() {
             ].map((item) => (
               <li
                 key={item}
-                className="flex items-start gap-3 text-muted text-xs sm:text-sm font-mono tracking-wider leading-relaxed"
+                className="flex items-start gap-3 text-neutral-500 text-xs sm:text-sm font-mono tracking-wider leading-relaxed"
               >
-                <span className="text-gold mt-1 text-xs shrink-0">◆</span>
+                <span className="text-neutral-900 mt-1 text-xs shrink-0">◆</span>
                 <span>{item}</span>
               </li>
             ))}
@@ -123,7 +123,7 @@ export default function ContactPage() {
         <section className="mt-10 sm:mt-14 text-center">
           <div className="divider-gold mb-6" />
 
-          <p className="text-[10px] sm:text-xs text-muted font-mono tracking-[0.18em] uppercase leading-relaxed">
+          <p className="text-[10px] sm:text-xs text-neutral-500 font-mono tracking-[0.18em] uppercase leading-relaxed">
             Transfinity Systems // London // Tokyo // Digital Void
           </p>
 

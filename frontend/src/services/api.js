@@ -61,8 +61,25 @@ api.interceptors.response.use(
         localStorage.removeItem("refresh_token");
         localStorage.removeItem("user");
 
-        if (window.location.pathname !== "/login") {
+        // Only bounce to login on protected routes — public pages (shop/home) stay put.
+        const path = window.location.pathname;
+        const protectedPrefix = [
+          "/cart",
+          "/checkout",
+          "/profile",
+          "/wishlist",
+          "/addresses",
+          "/orders",
+          "/order-success",
+        ];
+        const needsAuth = protectedPrefix.some(
+          (p) => path === p || path.startsWith(`${p}/`),
+        );
+        if (needsAuth && path !== "/login") {
           window.location.href = "/login";
+        } else {
+          // Soft-reset auth UI without a hard navigation
+          window.dispatchEvent(new Event("tf:auth-cleared"));
         }
 
         return Promise.reject(refreshError);

@@ -1,26 +1,19 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { toast } from 'react-hot-toast'
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import {
-  ShoppingBag,
+  ArrowRight,
   Heart,
-  ChevronLeft,
-  ChevronRight,
   ChevronDown,
   ChevronUp,
   Truck,
-  RefreshCw,
   Banknote,
-  Zap,
-  Star,
-  Ruler,
-  Sparkles,
-  MapPin,
+  ShieldCheck,
   ZoomIn,
   ZoomOut,
   X,
   Loader2,
-  CheckCircle2,
 } from 'lucide-react'
 import api from '../services/api'
 import useCartStore from '../store/cartStore'
@@ -28,85 +21,32 @@ import useWishlistStore from '../store/wishlistStore'
 import useAuthStore from '../store/authStore'
 import ProductCard from '../components/ProductCard'
 
-function SaleTimer() {
-  const [time, setTime] = useState({ h: 10, m: 49, s: 59 })
+const GALLERY_AUTO_MS = 4200
+const SWIPE_THRESHOLD = 56
 
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setTime((prev) => {
-        let { h, m, s } = prev
-
-        s -= 1
-
-        if (s < 0) {
-          s = 59
-          m -= 1
-        }
-
-        if (m < 0) {
-          m = 59
-          h -= 1
-        }
-
-        if (h < 0) return { h: 23, m: 59, s: 59 }
-
-        return { h, m, s }
-      })
-    }, 1000)
-
-    return () => clearInterval(timer)
-  }, [])
-
-  const pad = (value) => String(value).padStart(2, '0')
+function AccordionItem({ title, content, defaultOpen = false }) {
+  const [open, setOpen] = useState(defaultOpen)
 
   return (
-    <div className="bg-gold/10 border border-gold/20 px-4 py-3 flex items-center justify-between gap-3">
-      <span className="text-[10px] sm:text-xs font-mono tracking-wider uppercase text-gold flex items-center gap-2">
-        <Sparkles size={14} />
-        Sale Ends In
-      </span>
-
-      <div className="flex items-center gap-1">
-        {[pad(time.h), pad(time.m), pad(time.s)].map((value, index, arr) => (
-          <span key={index} className="flex items-center gap-1">
-            <span className="bg-black border border-gold/20 text-gold px-2 py-1 text-xs font-mono min-w-[30px] text-center">
-              {value}
-            </span>
-            {index < arr.length - 1 && (
-              <span className="text-gold text-xs font-bold">:</span>
-            )}
-          </span>
-        ))}
-      </div>
-    </div>
-  )
-}
-
-function AccordionItem({ title, content }) {
-  const [open, setOpen] = useState(false)
-
-  return (
-    <div className="border-b border-gold/10 last:border-b-0">
+    <div className="border-b border-neutral-300/70">
       <button
         type="button"
         onClick={() => setOpen(!open)}
-        className="w-full py-4 flex justify-between items-center bg-transparent border-none cursor-pointer text-left text-white hover:text-gold transition-colors"
+        className="w-full py-5 flex justify-between items-center text-left bg-transparent"
       >
-        <span className="text-xs sm:text-sm font-mono tracking-wider uppercase">
+        <span className="text-[11px] font-medium tracking-[0.22em] uppercase text-neutral-800">
           {title}
         </span>
-
         {open ? (
-          <ChevronUp size={15} className="text-gold" />
+          <ChevronUp size={16} strokeWidth={1.4} className="text-neutral-500" />
         ) : (
-          <ChevronDown size={15} className="text-muted" />
+          <ChevronDown size={16} strokeWidth={1.4} className="text-neutral-400" />
         )}
       </button>
-
       {open && (
-        <div className="pb-4 text-xs sm:text-sm text-muted font-mono tracking-wider leading-relaxed animate-fadeIn">
+        <p className="pb-5 text-[13px] leading-[1.75] text-neutral-600 max-w-xl">
           {content || 'Information will be updated soon.'}
-        </div>
+        </p>
       )}
     </div>
   )
@@ -115,18 +55,24 @@ function AccordionItem({ title, content }) {
 function StarRatingInput({ value, onChange }) {
   return (
     <div className="flex items-center gap-1">
-      {[1, 2, 3, 4, 5].map((star) => (
-        <button
-          key={star}
-          type="button"
-          onClick={() => onChange(star)}
-          className="bg-transparent border-none cursor-pointer text-xl transition-transform hover:scale-110"
-          style={{ color: star <= value ? '#D4AF37' : 'rgba(212,175,55,0.18)' }}
-          aria-label={`Rate ${star} star${star > 1 ? 's' : ''}`}
-        >
-          ★
-        </button>
-      ))}
+      {[1, 2, 3, 4, 5].map((star) => {
+        const active = star <= value
+        return (
+          <button
+            key={star}
+            type="button"
+            onClick={() => onChange(star)}
+            className="bg-transparent px-0.5 text-[1.65rem] leading-none transition-transform hover:scale-110 sm:text-[1.85rem]"
+            style={{
+              color: active ? '#C9A227' : 'rgba(201, 162, 39, 0.28)',
+              textShadow: active ? '0 0 12px rgba(201, 162, 39, 0.35)' : 'none',
+            }}
+            aria-label={`Rate ${star}`}
+          >
+            ★
+          </button>
+        )
+      })}
     </div>
   )
 }
@@ -141,7 +87,6 @@ export default function ProductDetail() {
   const [quantity, setQuantity] = useState(1)
   const [selSize, setSelSize] = useState(null)
   const [loading, setLoading] = useState(true)
-  const [pincode, setPincode] = useState('')
   const [addingCart, setAddingCart] = useState(false)
   const [buyingNow, setBuyingNow] = useState(false)
 
@@ -155,6 +100,9 @@ export default function ProductDetail() {
 
   const [zoomOpen, setZoomOpen] = useState(false)
   const [zoomLevel, setZoomLevel] = useState(1)
+  const [galleryPaused, setGalleryPaused] = useState(false)
+  const [slideDir, setSlideDir] = useState(1)
+  const reduceMotion = useReducedMotion()
 
   const { addToCart } = useCartStore()
   const { toggle, isWishlisted } = useWishlistStore()
@@ -166,7 +114,6 @@ export default function ProductDetail() {
 
   useEffect(() => {
     let mounted = true
-
     setLoading(true)
     setSelImage(0)
     setSelSize(null)
@@ -180,10 +127,15 @@ export default function ProductDetail() {
     ])
       .then(([productRes, relatedRes]) => {
         if (!mounted) return
-
-        setProduct(productRes.data)
+        const data = productRes.data
+        setProduct(data)
         setRelated(relatedRes.data.results || relatedRes.data || [])
-        setReviews(productRes.data.reviews || [])
+        setReviews(data.reviews || [])
+        const available = Array.isArray(data.available_sizes) ? data.available_sizes : []
+        // Prefer S so Buy Now / Add to Cart never fail on missing size
+        const preferred =
+          available.find((s) => String(s).toUpperCase() === 'S') || available[0] || null
+        setSelSize(preferred)
       })
       .catch(() => navigate('/products'))
       .finally(() => {
@@ -197,7 +149,6 @@ export default function ProductDetail() {
 
   const fetchReviews = async () => {
     if (!product?.id) return
-
     try {
       const { data } = await api.get(`/reviews/product/${product.id}/`)
       setReviews(data.results || data || [])
@@ -212,18 +163,15 @@ export default function ProductDetail() {
 
   useEffect(() => {
     if (!isAuthenticated || !product?.id) return
-
     api
       .get('/orders/my/')
       .then((res) => {
         const orders = res.data.results || res.data || []
-
         const purchased = orders.some((order) =>
           order.items?.some(
-            (item) => item.product?.id === product.id || item.product_id === product.id
-          )
+            (item) => item.product?.id === product.id || item.product_id === product.id,
+          ),
         )
-
         setHasPurchased(purchased)
       })
       .catch(() => setHasPurchased(false))
@@ -234,22 +182,32 @@ export default function ProductDetail() {
   const hasSizes = sizes.length > 0
   const wishlisted = isWishlisted(product?.id)
 
-  const prevImage = () => {
+  const goToImage = (next, dir = 1) => {
     if (!images.length) return
-    setSelImage((index) => (index - 1 + images.length) % images.length)
+    const len = images.length
+    const index = ((next % len) + len) % len
+    setSlideDir(dir)
+    setSelImage(index)
   }
 
-  const nextImage = () => {
-    if (!images.length) return
-    setSelImage((index) => (index + 1) % images.length)
-  }
+  const prevImage = () => goToImage(selImage - 1, -1)
+  const nextImage = () => goToImage(selImage + 1, 1)
+
+  // Auto-advance gallery
+  useEffect(() => {
+    if (images.length < 2 || galleryPaused || zoomOpen || reduceMotion) return
+    const id = window.setInterval(() => {
+      setSlideDir(1)
+      setSelImage((i) => (i + 1) % images.length)
+    }, GALLERY_AUTO_MS)
+    return () => window.clearInterval(id)
+  }, [images.length, galleryPaused, zoomOpen, reduceMotion, selImage])
 
   const validateAndAdd = () => {
     if (!isAuthenticated) {
       toast.error('Please sign in first')
       return false
     }
-
     if (hasSizes && !selSize) {
       toast.error('Please select a size first')
       document
@@ -257,30 +215,25 @@ export default function ProductDetail() {
         ?.scrollIntoView({ behavior: 'smooth', block: 'center' })
       return false
     }
-
     return true
   }
 
   const handleAddToCart = async () => {
     if (!validateAndAdd()) return
-
     setAddingCart(true)
-
     try {
       await addToCart(product.id, quantity, selSize)
-      toast.success(selSize ? `Added to cart! Size: ${selSize}` : 'Added to cart!')
+      toast.success(selSize ? `Added to cart · ${selSize}` : 'Added to cart')
     } catch {
       toast.error('Failed to add')
     } finally {
-      setTimeout(() => setAddingCart(false), 900)
+      setTimeout(() => setAddingCart(false), 700)
     }
   }
 
   const handleBuyNow = async () => {
     if (!validateAndAdd()) return
-
     setBuyingNow(true)
-
     try {
       await addToCart(product.id, quantity, selSize)
       navigate('/checkout')
@@ -295,9 +248,8 @@ export default function ProductDetail() {
       toast.error('Please sign in first')
       return
     }
-
     await toggle(product.id)
-    toast.success(isWishlisted(product.id) ? 'Removed from wishlist' : 'Saved to wishlist!')
+    toast.success(isWishlisted(product.id) ? 'Removed from wishlist' : 'Saved')
   }
 
   const submitReview = async () => {
@@ -305,26 +257,21 @@ export default function ProductDetail() {
       toast.error('Please sign in first')
       return
     }
-
     if (!newRating) {
       toast.error('Please select a rating')
       return
     }
-
     if (!newComment.trim()) {
       toast.error('Please write a review')
       return
     }
-
     setSubmittingReview(true)
-
     try {
       await api.post(`/reviews/product/${product.id}/create/`, {
         rating: newRating,
         comment: newComment.trim(),
       })
-
-      toast.success('Review submitted!')
+      toast.success('Review submitted')
       setNewRating(0)
       setNewComment('')
       fetchReviews()
@@ -337,13 +284,11 @@ export default function ProductDetail() {
 
   const submitAdminReply = async (reviewId) => {
     if (!replyText.trim()) return
-
     try {
       await api.patch(`/reviews/${reviewId}/reply/`, {
         admin_reply: replyText.trim(),
       })
-
-      toast.success('Reply posted!')
+      toast.success('Reply posted')
       setReplyingTo(null)
       setReplyText('')
       fetchReviews()
@@ -354,26 +299,13 @@ export default function ProductDetail() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-black pt-[76px] sm:pt-[88px] lg:pt-[96px] overflow-x-hidden">
-        <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
-          <div className="grid grid-cols-1 lg:grid-cols-[88px_1fr_420px] gap-6 animate-pulse">
-            <div className="hidden lg:flex flex-col gap-3">
-              {[1, 2, 3, 4].map((item) => (
-                <div key={item} className="w-[76px] h-[92px] skeleton-dark" />
-              ))}
-            </div>
-
-            <div className="skeleton-dark aspect-[3/4]" />
-
-            <div className="flex flex-col gap-4 pt-2">
-              {[80, 45, 60, 35, 100, 50, 70].map((width, index) => (
-                <div
-                  key={index}
-                  className="h-4 skeleton-dark"
-                  style={{ width: `${width}%` }}
-                />
-              ))}
-            </div>
+      <div className="min-h-screen bg-[#EFEFEF] pt-[64px] sm:pt-[76px] lg:pt-[88px]">
+        <div className="mx-auto grid max-w-[1180px] grid-cols-1 gap-8 px-4 py-6 sm:px-6 md:px-8 md:py-8 lg:grid-cols-[1.15fr_0.85fr]">
+          <div className="aspect-[4/3] animate-pulse bg-neutral-200/70" />
+          <div className="flex flex-col gap-5 pt-4">
+            {[40, 70, 30, 55, 45].map((w, i) => (
+              <div key={i} className="h-3 animate-pulse bg-neutral-200/70" style={{ width: `${w}%` }} />
+            ))}
           </div>
         </div>
       </div>
@@ -383,277 +315,184 @@ export default function ProductDetail() {
   if (!product) return null
 
   return (
-    <div className="min-h-screen bg-black pt-[76px] sm:pt-[88px] lg:pt-[96px] pb-12 overflow-x-hidden">
-      {/* Breadcrumb */}
-      <div className="border-b border-gold/10 bg-[#050505]">
-        <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
-          <nav className="text-[10px] sm:text-xs text-muted font-mono tracking-wider flex items-center gap-1.5 flex-wrap">
-            <Link to="/" className="hover:text-gold transition-colors">
-              Home
-            </Link>
-            <span>›</span>
+    <div className="min-h-screen bg-[#EFEFEF] pt-[64px] sm:pt-[76px] lg:pt-[88px] pb-14 text-neutral-900">
+      <main className="mx-auto max-w-[1180px] px-4 pt-2 sm:px-6 sm:pt-3 md:px-8 md:pt-4">
+        <nav className="mb-3 flex flex-wrap items-center gap-2 text-[10px] font-medium tracking-[0.2em] uppercase text-neutral-400 sm:mb-4">
+          <Link to="/" className="hover:text-neutral-700 transition-colors">
+            Home
+          </Link>
+          <span className="opacity-40">/</span>
+          <Link to="/products" className="hover:text-neutral-700 transition-colors">
+            Shop
+          </Link>
+          <span className="opacity-40">/</span>
+          <span className="text-neutral-700 truncate max-w-[240px]">{product.name}</span>
+        </nav>
 
-            <Link to="/products" className="hover:text-gold transition-colors">
-              Products
-            </Link>
-            <span>›</span>
-
-            {product.category && (
-              <>
-                <Link
-                  to={`/products?category_slug=${product.category.slug}`}
-                  className="hover:text-gold transition-colors"
-                >
-                  {product.category.name}
-                </Link>
-                <span>›</span>
-              </>
-            )}
-
-            <span className="text-white truncate max-w-[220px] sm:max-w-md">
-              {product.name}
-            </span>
-          </nav>
-        </div>
-      </div>
-
-      <main className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 sm:py-6 lg:py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-[88px_minmax(0,1fr)_420px] gap-5 sm:gap-6 lg:gap-8 items-start">
-          {/* Desktop thumbnails */}
-          <aside className="hidden lg:flex flex-col gap-3 sticky top-28">
-            {images.length > 0 ? (
-              images.map((img, index) => (
-                <button
-                  key={index}
-                  type="button"
-                  onClick={() => setSelImage(index)}
-                  className={`w-[76px] h-[92px] overflow-hidden border transition-all bg-black p-0 cursor-pointer ${
-                    selImage === index
-                      ? 'border-gold opacity-100 shadow-[0_0_22px_rgba(212,175,55,0.25)]'
-                      : 'border-gold/15 opacity-60 hover:opacity-100 hover:border-gold/45'
-                  }`}
-                >
-                  <img
-                    src={img.image}
-                    alt={`${product.name} view ${index + 1}`}
-                    className="w-full h-full object-cover"
-                  />
-                </button>
-              ))
-            ) : (
-              <div className="w-[76px] h-[92px] bg-[#0A0A0A] border border-gold/10 flex items-center justify-center text-2xl">
-                🛍️
-              </div>
-            )}
-          </aside>
-
-          {/* Main Image */}
-          <section className="lg:sticky lg:top-28">
-            <div className="relative overflow-hidden bg-[#0A0A0A] border border-gold/15">
+        {/* Compact 2-col: image + buy panel close together */}
+        <div className="grid grid-cols-1 items-start gap-5 md:gap-7 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:gap-9">
+          {/* Gallery — auto slider + drag/swipe, no arrows */}
+          <section className="w-full">
+            <div
+              className="relative aspect-[4/5] w-full overflow-hidden rounded-2xl shadow-[0_14px_40px_rgba(17,17,17,0.12)] touch-pan-y sm:aspect-[5/6]"
+              onMouseEnter={() => setGalleryPaused(true)}
+              onMouseLeave={() => setGalleryPaused(false)}
+            >
               {images.length > 0 ? (
-                <img
-                  key={selImage}
-                  src={images[selImage].image}
-                  alt={product.name}
-                  onClick={() => {
-                    setZoomOpen(true)
-                    setZoomLevel(1)
-                  }}
-                  className="w-full h-[420px] sm:h-[560px] lg:h-[680px] object-cover block cursor-zoom-in"
-                />
+                <AnimatePresence initial={false} custom={slideDir} mode="popLayout">
+                  <motion.img
+                    key={selImage}
+                    src={images[selImage].image}
+                    alt={`${product.name} ${selImage + 1}`}
+                    custom={slideDir}
+                    variants={{
+                      enter: (dir) => ({ x: dir > 0 ? '28%' : '-28%', opacity: 0 }),
+                      center: { x: 0, opacity: 1 },
+                      exit: (dir) => ({ x: dir > 0 ? '-28%' : '28%', opacity: 0 }),
+                    }}
+                    initial="enter"
+                    animate="center"
+                    exit="exit"
+                    transition={{ duration: reduceMotion ? 0 : 0.35, ease: [0.22, 1, 0.36, 1] }}
+                    drag={images.length > 1 ? 'x' : false}
+                    dragConstraints={{ left: 0, right: 0 }}
+                    dragElastic={0.18}
+                    onDragStart={() => setGalleryPaused(true)}
+                    onDragEnd={(_, info) => {
+                      const offset = info.offset.x
+                      const velocity = info.velocity.x
+                      if (offset < -SWIPE_THRESHOLD || velocity < -500) nextImage()
+                      else if (offset > SWIPE_THRESHOLD || velocity > 500) prevImage()
+                      window.setTimeout(() => setGalleryPaused(false), 2200)
+                    }}
+                    onDoubleClick={() => {
+                      setZoomOpen(true)
+                      setZoomLevel(1)
+                    }}
+                    className="absolute inset-0 h-full w-full rounded-2xl object-cover object-center cursor-grab active:cursor-grabbing select-none"
+                    draggable={false}
+                  />
+                </AnimatePresence>
               ) : (
-                <div className="w-full h-[420px] sm:h-[560px] lg:h-[680px] flex items-center justify-center text-7xl bg-[#0A0A0A]">
-                  🛍️
+                <div className="absolute inset-0 flex items-center justify-center rounded-2xl bg-neutral-200/50 text-neutral-400 text-sm tracking-[0.3em] uppercase">
+                  No image
                 </div>
               )}
 
-              {images.length > 0 && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    setZoomOpen(true)
-                    setZoomLevel(1)
-                  }}
-                  className="absolute top-3 right-3 w-10 h-10 bg-black/80 backdrop-blur-sm border border-gold/20 flex items-center justify-center text-gold hover:border-gold/50 hover:bg-gold/10 transition-all"
-                  aria-label="Zoom image"
-                >
-                  <ZoomIn size={17} />
-                </button>
-              )}
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  handleWishlist()
+                }}
+                className={`absolute top-3 right-3 z-20 flex h-10 w-10 items-center justify-center rounded-full transition-all duration-300 ${
+                  wishlisted
+                    ? 'bg-white text-neutral-950 shadow-sm'
+                    : 'bg-transparent text-neutral-900 hover:bg-white hover:text-neutral-900 hover:shadow-sm'
+                }`}
+                aria-label="Wishlist"
+              >
+                <Heart
+                  size={18}
+                  strokeWidth={1.5}
+                  fill={wishlisted ? 'currentColor' : 'none'}
+                />
+              </button>
 
               {images.length > 1 && (
-                <>
-                  <button
-                    type="button"
-                    onClick={prevImage}
-                    className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-black/75 backdrop-blur-sm border border-gold/20 flex items-center justify-center text-gold hover:bg-gold/10 hover:border-gold/50 transition-all"
-                    aria-label="Previous image"
-                  >
-                    <ChevronLeft size={20} />
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={nextImage}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-black/75 backdrop-blur-sm border border-gold/20 flex items-center justify-center text-gold hover:bg-gold/10 hover:border-gold/50 transition-all"
-                    aria-label="Next image"
-                  >
-                    <ChevronRight size={20} />
-                  </button>
-
-                  <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5">
-                    {images.map((_, index) => (
-                      <button
-                        key={index}
-                        type="button"
-                        onClick={() => setSelImage(index)}
-                        className={`h-[2px] transition-all duration-300 ${
-                          selImage === index
-                            ? 'w-8 bg-gold'
-                            : 'w-4 bg-gold/35 hover:bg-gold/60'
-                        }`}
-                        aria-label={`Go to image ${index + 1}`}
-                      />
-                    ))}
-                  </div>
-                </>
+                <div className="pointer-events-none absolute inset-x-0 bottom-3 flex justify-center gap-1.5">
+                  {images.map((_, i) => (
+                    <span
+                      key={i}
+                      className={`h-1 rounded-full transition-all duration-300 ${
+                        i === selImage ? 'w-5 bg-white' : 'w-1.5 bg-white/45'
+                      }`}
+                    />
+                  ))}
+                </div>
               )}
             </div>
 
-            {/* Mobile thumbnails */}
             {images.length > 1 && (
-              <div className="flex lg:hidden gap-2 overflow-x-auto mt-3 pb-1 scrollbar-hide">
-                {images.map((img, index) => (
-                  <button
-                    key={index}
-                    type="button"
-                    onClick={() => setSelImage(index)}
-                    className={`w-16 h-20 shrink-0 overflow-hidden border bg-black p-0 ${
-                      selImage === index
-                        ? 'border-gold'
-                        : 'border-gold/15 opacity-65'
-                    }`}
-                  >
-                    <img
-                      src={img.image}
-                      alt={`${product.name} thumbnail ${index + 1}`}
-                      className="w-full h-full object-cover"
-                    />
-                  </button>
-                ))}
+              <div className="mt-3 flex items-center gap-2.5 overflow-x-auto pb-1">
+                {images.map((img, i) => {
+                  const active = i === selImage
+                  return (
+                    <button
+                      key={i}
+                      type="button"
+                      onClick={() => goToImage(i, i > selImage ? 1 : -1)}
+                      className={`relative h-14 w-14 shrink-0 overflow-hidden rounded-xl bg-white transition-all sm:h-16 sm:w-16 ${
+                        active
+                          ? 'ring-2 ring-neutral-900 shadow-sm'
+                          : 'ring-1 ring-black/5 opacity-80 hover:opacity-100'
+                      }`}
+                      aria-label={`Thumbnail ${i + 1}`}
+                    >
+                      <img
+                        src={img.image}
+                        alt=""
+                        className="h-full w-full object-cover object-center"
+                        draggable={false}
+                      />
+                    </button>
+                  )
+                })}
               </div>
             )}
           </section>
 
-          {/* Product Info */}
-          <section className="flex flex-col gap-4">
-            {product.sale_price && <SaleTimer />}
-
-            <div className="flex items-start gap-3 flex-wrap">
-              <div className="flex-1 min-w-0">
-                <p className="label-gold mb-2">
-                  {product.category?.name || 'Artifact'}
-                </p>
-
-                <h1 className="font-display text-xl sm:text-2xl lg:text-3xl text-white tracking-[0.12em] leading-tight">
-                  {product.name}
-                </h1>
-              </div>
-
-              <button
-                type="button"
-                onClick={handleWishlist}
-                className={`w-11 h-11 shrink-0 flex items-center justify-center border transition-all duration-300 ${
-                  wishlisted
-                    ? 'bg-red-400/10 border-red-400/40 text-red-400'
-                    : 'bg-[#0A0A0A] border-gold/15 text-muted hover:border-red-400/40 hover:text-red-400'
-                }`}
-                aria-label="Toggle wishlist"
-              >
-                <Heart size={18} fill={wishlisted ? 'currentColor' : 'none'} />
-              </button>
-            </div>
-
-            <div className="bg-[#0A0A0A] border border-gold/15 p-4">
-              <div className="flex items-center gap-3 flex-wrap">
-                <span className="font-display text-3xl sm:text-4xl text-gradient-gold">
-                  ₹{Number(product.effective_price).toLocaleString('en-IN')}
-                </span>
-
-                {product.sale_price && (
-                  <>
-                    <span className="text-sm text-muted line-through font-mono">
-                      ₹{Number(product.price).toLocaleString('en-IN')}
-                    </span>
-
-                    <span className="text-[10px] font-mono tracking-wider uppercase text-red-400 bg-red-400/10 border border-red-400/25 px-2 py-1">
-                      {product.discount_percent}% OFF
-                    </span>
-                  </>
-                )}
-              </div>
-
-              <p className="text-[10px] sm:text-xs text-muted font-mono tracking-wider mt-2">
-                Inclusive of all taxes.
+          {/* Buy panel — tighter stack, decision path first */}
+          <section className="relative lg:sticky lg:top-28 lg:pt-1">
+            <div className="min-w-0">
+              <p className="text-[10px] font-medium tracking-[0.28em] text-neutral-500 uppercase">
+                {product.category?.name || 'Tee'}
               </p>
+              <h1 className="mt-2 font-sans text-[clamp(1.55rem,2.8vw,2.25rem)] font-semibold tracking-[0.03em] text-neutral-900 uppercase leading-[1.15]">
+                {product.name}
+              </h1>
             </div>
 
-            {product.rating_count > 0 && (
-              <div className="flex items-center gap-2 flex-wrap">
-                <div className="flex items-center gap-1 bg-gold/10 border border-gold/20 px-2.5 py-1">
-                  <Star size={13} className="text-gold fill-gold" />
-                  <span className="text-xs font-mono text-gold">
-                    {product.rating_avg?.toFixed(1)}
-                  </span>
-                </div>
-
-                <span className="text-xs text-muted font-mono">
-                  {product.rating_count} reviews
+            <div className="mt-4 flex items-baseline gap-3">
+              <p className="font-sans text-[1.65rem] font-semibold tracking-wide text-neutral-900 sm:text-[1.85rem]">
+                ₹ {Number(product.effective_price).toLocaleString('en-IN')}
+              </p>
+              {product.sale_price && (
+                <span className="text-sm text-neutral-400 line-through">
+                  ₹{Number(product.price).toLocaleString('en-IN')}
                 </span>
+              )}
+            </div>
+            <p className="mt-1 text-[10px] tracking-[0.14em] text-neutral-400 uppercase">
+              Inclusive of taxes
+              {product.in_stock ? ' · In stock' : ' · Sold out'}
+            </p>
 
-                <span
-                  className={`text-xs font-mono ${
-                    product.in_stock ? 'text-gold' : 'text-red-400'
-                  }`}
-                >
-                  {product.in_stock ? '● In Stock' : '● Out of Stock'}
-                </span>
-              </div>
-            )}
-
-            <div className="divider-gold" />
-
-            {/* Size */}
             {hasSizes && (
-              <div id="size-section" className="bg-[#0A0A0A] border border-gold/15 p-4">
-                <div className="flex justify-between items-center gap-3 mb-3">
-                  <p className="text-xs font-mono tracking-wider uppercase text-white">
-                    Select Size{' '}
-                    {selSize && <span className="text-gold">— {selSize}</span>}
+              <div id="size-section" className="mt-6">
+                <div className="mb-2.5 flex items-end justify-between gap-3">
+                  <p className="text-[9px] font-medium tracking-[0.24em] text-neutral-400 uppercase">
+                    Size{selSize ? ` · ${selSize}` : ''}
                   </p>
-
                   <button
                     type="button"
-                    className="text-[10px] sm:text-xs text-muted hover:text-gold bg-transparent border-none cursor-pointer flex items-center gap-1 font-mono"
+                    className="text-[10px] tracking-[0.16em] uppercase text-neutral-400 hover:text-neutral-700"
                   >
-                    <Ruler size={12} />
-                    Size Guide
+                    Guide
                   </button>
                 </div>
-
                 <div className="flex flex-wrap gap-2">
                   {sizes.map((size) => {
-                    const isSelected = selSize === size
-
+                    const active = selSize === size
                     return (
                       <button
                         key={size}
                         type="button"
                         onClick={() => setSelSize(size)}
-                        className={`min-w-[44px] h-10 px-3 text-xs font-mono tracking-wider border transition-all duration-300 ${
-                          isSelected
-                            ? 'bg-gold border-gold text-black'
-                            : 'bg-black border-gold/15 text-white hover:border-gold/45 hover:text-gold'
+                        className={`min-w-[2.75rem] rounded-full px-3.5 py-2 text-[11px] font-medium tracking-[0.16em] uppercase transition-all ${
+                          active
+                            ? 'bg-neutral-950 text-white shadow-sm'
+                            : 'bg-white text-neutral-600 ring-1 ring-black/8 hover:text-neutral-900'
                         }`}
                       >
                         {size}
@@ -661,39 +500,34 @@ export default function ProductDetail() {
                     )
                   })}
                 </div>
-
                 {!selSize && (
-                  <p className="text-[10px] sm:text-xs text-muted font-mono mt-3">
-                    Please select a size to continue.
-                  </p>
+                  <p className="mt-2 text-[11px] text-neutral-400">Select a size to continue</p>
                 )}
               </div>
             )}
 
-            {/* Quantity */}
             {product.in_stock && (!hasSizes || selSize) && (
-              <div className="bg-[#0A0A0A] border border-gold/15 p-4">
-                <p className="text-xs font-mono tracking-wider uppercase text-white mb-3">
-                  Quantity
-                </p>
-
-                <div className="flex items-center border border-gold/15 bg-black w-fit">
+              <div className="mt-5 flex items-center gap-4">
+                <span className="text-[9px] font-medium tracking-[0.24em] text-neutral-400 uppercase">
+                  Qty
+                </span>
+                <div className="inline-flex items-center gap-1 rounded-full bg-white px-1 py-1 ring-1 ring-black/8">
                   <button
                     type="button"
                     onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-                    className="w-10 h-10 flex items-center justify-center text-muted hover:text-gold hover:bg-gold/5 transition-all"
+                    className="flex h-8 w-8 items-center justify-center rounded-full text-neutral-500 hover:bg-neutral-100 hover:text-neutral-900"
+                    aria-label="Decrease quantity"
                   >
                     −
                   </button>
-
-                  <span className="w-11 h-10 flex items-center justify-center text-sm font-mono text-white border-x border-gold/15">
+                  <span className="min-w-[1.75rem] text-center text-sm tabular-nums">
                     {quantity}
                   </span>
-
                   <button
                     type="button"
                     onClick={() => setQuantity((q) => Math.min(product.stock, q + 1))}
-                    className="w-10 h-10 flex items-center justify-center text-black bg-gold hover:bg-gold-light transition-all"
+                    className="flex h-8 w-8 items-center justify-center rounded-full text-neutral-500 hover:bg-neutral-100 hover:text-neutral-900"
+                    aria-label="Increase quantity"
                   >
                     +
                   </button>
@@ -701,267 +535,175 @@ export default function ProductDetail() {
               </div>
             )}
 
-            {/* CTA */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <button
-                type="button"
-                onClick={handleAddToCart}
-                disabled={!product.in_stock || addingCart}
-                className={`btn-outline w-full inline-flex items-center justify-center gap-2 min-h-[48px] disabled:opacity-50 disabled:cursor-not-allowed ${
-                  addingCart ? '!bg-gold !text-black !border-gold' : ''
-                }`}
-              >
-                {addingCart ? (
-                  <>
-                    <CheckCircle2 size={16} />
-                    ADDED
-                  </>
-                ) : (
-                  <>
-                    <ShoppingBag size={16} />
-                    {product.in_stock ? 'ADD TO CART' : 'SOLD OUT'}
-                  </>
-                )}
-              </button>
-
+            <div className="mt-6 grid w-full grid-cols-1 gap-2.5 sm:grid-cols-2">
               {product.in_stock && (
                 <button
                   type="button"
                   onClick={handleBuyNow}
                   disabled={buyingNow}
-                  className="btn-primary w-full inline-flex items-center justify-center gap-2 min-h-[48px] disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="tf-buy-now"
                 >
-                  {buyingNow ? (
-                    <>
-                      <Loader2 size={16} className="animate-spin" />
-                      LOADING
-                    </>
-                  ) : (
-                    <>
-                      <Zap size={16} />
-                      BUY NOW
-                    </>
-                  )}
+                  <span>
+                    {buyingNow ? (
+                      <>
+                        <Loader2 size={15} className="animate-spin" />
+                        Loading
+                      </>
+                    ) : (
+                      <>
+                        Buy Now
+                        <ArrowRight className="size-3.5" strokeWidth={1.75} />
+                      </>
+                    )}
+                  </span>
                 </button>
               )}
-            </div>
-
-            {/* Pincode */}
-            <div className="flex gap-2 border border-gold/15 px-3 py-2.5 items-center bg-[#0A0A0A]">
-              <MapPin size={15} className="text-muted shrink-0" />
-
-              <input
-                type="text"
-                value={pincode}
-                onChange={(event) =>
-                  setPincode(event.target.value.replace(/\D/g, '').slice(0, 6))
-                }
-                placeholder="Enter Pincode"
-                className="flex-1 min-w-0 border-none outline-none text-sm bg-transparent text-white placeholder:text-muted/50 font-mono tracking-wider p-0"
-              />
 
               <button
                 type="button"
-                onClick={() =>
-                  pincode.length === 6
-                    ? toast.success('Delivery available!')
-                    : toast.error('Enter valid pincode')
-                }
-                className="bg-transparent border-none text-gold text-xs font-mono tracking-wider cursor-pointer hover:text-gold-light transition-colors"
+                onClick={handleAddToCart}
+                disabled={!product.in_stock || addingCart}
+                className={`inline-flex h-12 w-full items-center justify-center rounded-full px-7 text-[11px] font-semibold tracking-[0.2em] uppercase transition disabled:opacity-45 ${
+                  product.in_stock
+                    ? 'bg-white text-neutral-900 ring-1 ring-neutral-900/12 hover:bg-neutral-50'
+                    : 'bg-neutral-300 text-neutral-600'
+                }`}
               >
-                CHECK
+                {addingCart ? 'Added' : product.in_stock ? 'Add To Cart' : 'Sold Out'}
               </button>
             </div>
 
-            {/* Service badges */}
-            <div className="grid grid-cols-3 gap-2 bg-[#0A0A0A] border border-gold/15 p-3">
+            <div className="mt-5 flex flex-wrap gap-x-5 gap-y-2 text-[10px] tracking-[0.16em] uppercase text-neutral-500">
               {[
-                { icon: Banknote, label: 'Cash On Delivery' },
-                { icon: Truck, label: 'Free Shipping' },
-                { icon: RefreshCw, label: 'Easy Returns' },
-              ].map((badge) => {
-                const Icon = badge.icon
-
-                return (
-                  <div key={badge.label} className="text-center border border-gold/10 p-3">
-                    <div className="text-gold mb-2 flex justify-center">
-                      <Icon size={18} />
-                    </div>
-                    <p className="text-[9px] sm:text-[10px] font-mono text-white tracking-wider uppercase leading-tight">
-                      {badge.label}
-                    </p>
-                  </div>
-                )
-              })}
-            </div>
-
-            {/* Accordion */}
-            <div className="bg-[#0A0A0A] border border-gold/15 p-4">
-              <AccordionItem title="Product Description" content={product.description} />
-              <AccordionItem
-                title="Shipping Info"
-                content="Free shipping on orders above ₹999. Standard delivery in 5–7 business days."
-              />
-              <AccordionItem
-                title="7 Days Returns & Exchange"
-                content="Easy returns within 7 days of delivery. Product must be unworn and in original condition with all tags intact."
-              />
+                { icon: Banknote, label: 'COD' },
+                { icon: Truck, label: 'Free shipping' },
+                { icon: ShieldCheck, label: '100% safe delivery' },
+              ].map(({ icon: Icon, label }) => (
+                <span key={label} className="inline-flex items-center gap-1.5">
+                  <Icon size={13} strokeWidth={1.4} className="text-neutral-700" />
+                  {label}
+                </span>
+              ))}
             </div>
           </section>
         </div>
 
-        {/* Reviews */}
-        <section className="mt-14 sm:mt-16 pt-8 sm:pt-10 border-t border-gold/10">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-10 h-10 border border-gold/20 bg-gold/10 flex items-center justify-center">
-              <Star size={18} className="text-gold" />
-            </div>
+        {/* Details accordion — no card shell */}
+        <section className="mt-12 max-w-2xl border-t border-neutral-300/80 md:mt-16">
+          <AccordionItem title="Product details" content={product.description} defaultOpen />
+          <AccordionItem
+            title="Shipping"
+            content="Free shipping on orders above ₹999. Standard delivery in 5–7 business days. Every order is packed securely for 100% safe delivery."
+          />
+          <AccordionItem
+            title="Care"
+            content="Machine wash cold inside out. Use mild detergent. Do not bleach. Tumble dry low or hang dry. Warm iron inside out if needed."
+          />
+        </section>
 
-            <div>
-              <p className="label-gold mb-1">Community Signal</p>
-              <h2 className="font-display text-lg sm:text-xl text-white tracking-[0.12em]">
-                CUSTOMER REVIEWS ({reviews.length})
-              </h2>
-            </div>
-          </div>
+        {/* Reviews */}
+        <section className="mt-16 border-t border-neutral-300/80 pt-12 md:mt-20">
+          <p className="text-[10px] font-medium tracking-[0.35em] text-neutral-500 uppercase">
+            Reviews
+          </p>
+          <h2 className="mt-3 font-sans text-[clamp(1.4rem,2.4vw,2rem)] font-semibold tracking-[0.06em] uppercase">
+            What people say
+            <span className="ml-3 text-neutral-400 font-medium">({reviews.length})</span>
+          </h2>
 
           {isAuthenticated && (
-            <div className="bg-[#0A0A0A] border border-gold/15 p-4 sm:p-5 mb-8">
-              <p className="text-sm font-mono text-white tracking-wider mb-3">
-                Write a Review
-                {hasPurchased && (
-                  <span className="text-[10px] text-gold ml-2">
-                    ✓ Verified Purchase
-                  </span>
-                )}
-              </p>
+            <div className="mt-8 max-w-xl space-y-4">
+              <div className="flex flex-wrap items-center gap-3">
+                <span className="text-[10px] tracking-[0.2em] uppercase text-neutral-500">
+                  Your rating
+                  {hasPurchased ? ' · Verified' : ''}
+                </span>
+                <StarRatingInput value={newRating} onChange={setNewRating} />
+              </div>
 
-              <div className="flex flex-col gap-3">
-                <div className="flex items-center gap-3 flex-wrap">
-                  <span className="text-xs text-muted font-mono">Your Rating:</span>
-                  <StarRatingInput value={newRating} onChange={setNewRating} />
-                </div>
-
+              <div className="relative flex flex-col overflow-hidden rounded-2xl bg-white shadow-[0_14px_40px_rgba(17,17,17,0.08)] ring-1 ring-black/[0.05]">
                 <textarea
                   value={newComment}
-                  onChange={(event) => setNewComment(event.target.value)}
-                  placeholder="Share your experience with this artifact..."
+                  onChange={(e) => setNewComment(e.target.value)}
+                  placeholder="Share your experience…"
                   rows={4}
-                  className="w-full text-sm bg-black border border-gold/15 text-white px-4 py-3 outline-none focus:border-gold/60 focus:shadow-[0_0_0_3px_rgba(212,175,55,0.12)] transition-all resize-none placeholder:text-muted/50 font-mono tracking-wider"
+                  className="w-full resize-none border-0 bg-transparent px-4 pt-4 text-sm leading-relaxed text-neutral-800 outline-none placeholder:text-neutral-400 sm:px-5 sm:pt-5"
                 />
-
-                <div className="flex justify-end">
+                <div className="flex justify-end px-3 pb-3 pt-1 sm:px-4 sm:pb-4">
                   <button
                     type="button"
                     onClick={submitReview}
                     disabled={submittingReview}
-                    className="btn-primary inline-flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="tf-review-submit disabled:opacity-45"
                   >
-                    {submittingReview ? (
-                      <>
-                        <Loader2 size={16} className="animate-spin" />
-                        SUBMITTING
-                      </>
-                    ) : (
-                      'SUBMIT REVIEW'
-                    )}
+                    <span>
+                      {submittingReview ? (
+                        <>
+                          <Loader2 size={14} className="animate-spin" />
+                          Sending
+                        </>
+                      ) : (
+                        <>
+                          Submit
+                          <ArrowRight className="size-3.5" strokeWidth={1.75} />
+                        </>
+                      )}
+                    </span>
                   </button>
                 </div>
               </div>
             </div>
           )}
 
-          {reviews.length === 0 ? (
-            <div className="text-center p-8 bg-[#0A0A0A] border border-gold/15">
-              <Star size={34} className="text-gold/35 mx-auto mb-3" />
-              <p className="text-sm text-muted font-mono">
-                No reviews yet. Be the first to review.
-              </p>
-            </div>
-          ) : (
-            <div className="flex flex-col gap-4">
-              {reviews.map((review) => (
-                <div
-                  key={review.id}
-                  className="p-4 bg-[#0A0A0A] border border-gold/15"
-                >
-                  <div className="flex items-center gap-3 mb-3">
-                    <div className="w-9 h-9 bg-gold text-black flex items-center justify-center font-mono text-xs">
-                      {review.user?.name?.[0] || 'U'}
-                    </div>
-
-                    <div className="flex-1 min-w-0">
-                      <p className="text-xs font-mono text-white tracking-wider">
-                        {review.user?.name || 'Anonymous'}
-                      </p>
-
-                      <div className="flex gap-0.5">
-                        {[1, 2, 3, 4, 5].map((star) => (
-                          <span
-                            key={star}
-                            className={`text-xs ${
-                              star <= review.rating ? 'text-gold' : 'text-gold/20'
-                            }`}
-                          >
-                            ★
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-
-                    {review.is_verified && (
-                      <span className="text-[10px] font-mono tracking-wider uppercase px-2 py-1 border border-gold/20 bg-gold/10 text-gold">
-                        Verified
-                      </span>
-                    )}
+          <div className="mt-10 space-y-8 max-w-2xl">
+            {reviews.length === 0 ? (
+              <p className="text-sm text-neutral-500">No reviews yet. Be the first.</p>
+            ) : (
+              reviews.map((review) => (
+                <article key={review.id} className="border-b border-neutral-200/80 pb-8 last:border-0">
+                  <div className="flex items-baseline justify-between gap-3">
+                    <p className="text-[12px] font-medium tracking-[0.16em] uppercase text-neutral-800">
+                      {review.user?.name || 'Anonymous'}
+                    </p>
+                    <span className="text-[11px] tracking-[0.1em] text-neutral-400">
+                      {'★'.repeat(review.rating)}
+                      <span className="text-neutral-300">{'★'.repeat(5 - review.rating)}</span>
+                    </span>
                   </div>
-
-                  <p className="text-xs sm:text-sm leading-relaxed text-muted font-mono tracking-wider">
-                    {review.comment}
-                  </p>
-
-                  <p className="text-[10px] mt-2 text-muted font-mono">
+                  <p className="mt-3 text-[13px] leading-[1.7] text-neutral-600">{review.comment}</p>
+                  <p className="mt-2 text-[10px] tracking-[0.14em] uppercase text-neutral-400">
                     {new Date(review.created_at).toLocaleDateString('en-IN')}
+                    {review.is_verified ? ' · Verified' : ''}
                   </p>
-
                   {review.admin_reply && (
-                    <div className="mt-3 p-3 bg-gold/10 border border-gold/20">
-                      <p className="text-[10px] font-mono uppercase tracking-wider mb-1 text-gold">
-                        Admin Response
-                      </p>
-                      <p className="text-xs text-muted font-mono leading-relaxed">
-                        {review.admin_reply}
-                      </p>
-                    </div>
+                    <p className="mt-4 text-[12px] leading-relaxed text-neutral-500 pl-4 border-l border-neutral-300">
+                      <span className="block text-[9px] tracking-[0.2em] uppercase text-neutral-400 mb-1">
+                        Transfinity
+                      </span>
+                      {review.admin_reply}
+                    </p>
                   )}
-
                   {user?.is_staff && (
                     <div className="mt-3">
                       {replyingTo === review.id ? (
-                        <div className="flex flex-col gap-2">
+                        <div className="space-y-2">
                           <textarea
                             value={replyText}
-                            onChange={(event) => setReplyText(event.target.value)}
-                            placeholder="Write admin reply..."
+                            onChange={(e) => setReplyText(e.target.value)}
                             rows={2}
-                            className="w-full text-xs bg-black border border-gold/15 text-white px-3 py-2 outline-none focus:border-gold resize-none placeholder:text-muted/50"
+                            className="w-full resize-none border-b border-neutral-300 bg-transparent py-2 text-sm outline-none focus:border-neutral-900"
+                            placeholder="Write reply…"
                           />
-
-                          <div className="flex gap-2 justify-end">
-                            <button
-                              type="button"
-                              onClick={() => setReplyingTo(null)}
-                              className="btn-outline !px-4 !py-2 text-xs"
-                            >
+                          <div className="flex gap-4 text-[10px] tracking-[0.2em] uppercase">
+                            <button type="button" onClick={() => setReplyingTo(null)} className="text-neutral-400">
                               Cancel
                             </button>
-
                             <button
                               type="button"
                               onClick={() => submitAdminReply(review.id)}
-                              className="btn-primary !px-4 !py-2 text-xs"
+                              className="text-neutral-900 underline underline-offset-4"
                             >
-                              Post Reply
+                              Post
                             </button>
                           </div>
                         </div>
@@ -972,135 +714,95 @@ export default function ProductDetail() {
                             setReplyingTo(review.id)
                             setReplyText('')
                           }}
-                          className="text-[11px] font-mono tracking-wider cursor-pointer bg-transparent border-none text-gold hover:text-gold-light transition-colors"
+                          className="text-[10px] tracking-[0.2em] uppercase text-neutral-400 hover:text-neutral-800"
                         >
-                          Reply as Admin
+                          Reply
                         </button>
                       )}
                     </div>
                   )}
-                </div>
-              ))}
-            </div>
-          )}
+                </article>
+              ))
+            )}
+          </div>
         </section>
 
         {/* Related */}
         {related.length > 0 && (
-          <section className="mt-14 sm:mt-16 pt-8 sm:pt-10 border-t border-gold/10">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 border border-gold/20 bg-gold/10 flex items-center justify-center">
-                <Sparkles size={18} className="text-gold" />
-              </div>
-
-              <div>
-                <p className="label-gold mb-1">Similar Signals</p>
-                <h2 className="font-display text-lg sm:text-xl text-white tracking-[0.12em]">
-                  SIMILAR PRODUCTS
-                </h2>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-5">
-              {related.slice(0, 4).map((item, index) => (
-                <ProductCard key={item.id} product={item} index={index} />
+          <section className="mt-16 border-t border-neutral-300/80 pt-12 md:mt-20">
+            <p className="text-[10px] font-medium tracking-[0.35em] text-neutral-500 uppercase">
+              More from the drop
+            </p>
+            <h2 className="mt-3 mb-8 font-sans text-[clamp(1.4rem,2.4vw,2rem)] font-semibold tracking-[0.06em] uppercase">
+              Similar pieces
+            </h2>
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 lg:gap-6">
+              {related.slice(0, 4).map((item) => (
+                <ProductCard key={item.id} product={item} />
               ))}
             </div>
           </section>
         )}
       </main>
 
-      {/* Zoom Modal */}
+      {/* Zoom — light, minimal chrome */}
       {zoomOpen && images.length > 0 && (
         <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-[#EFEFEF]/92 backdrop-blur-[2px] p-4"
           onClick={() => {
             setZoomOpen(false)
             setZoomLevel(1)
           }}
-          className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-3 sm:p-5"
         >
           <div
-            onClick={(event) => event.stopPropagation()}
-            className="relative bg-[#0A0A0A] border border-gold/20 shadow-[0_30px_120px_rgba(0,0,0,0.75)] flex flex-col w-full max-w-5xl max-h-[92vh]"
+            className="relative flex w-full max-w-5xl max-h-[90vh] flex-col"
+            onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between gap-3 px-4 py-3 border-b border-gold/10">
-              <span className="text-xs sm:text-sm font-mono text-white tracking-wider truncate">
+            <div className="mb-3 flex items-center justify-between">
+              <p className="text-[10px] tracking-[0.28em] uppercase text-neutral-500">
                 {product.name}
-              </span>
-
+              </p>
               <button
                 type="button"
                 onClick={() => {
                   setZoomOpen(false)
                   setZoomLevel(1)
                 }}
-                className="w-9 h-9 flex items-center justify-center hover:bg-gold/10 text-gold transition-colors bg-transparent border border-gold/15"
-                aria-label="Close zoom"
+                className="p-1 text-neutral-600 hover:text-neutral-950"
+                aria-label="Close"
               >
-                <X size={17} />
+                <X size={18} strokeWidth={1.4} />
               </button>
             </div>
-
-            <div className="overflow-auto flex-1 flex items-center justify-center bg-black min-h-[320px] sm:min-h-[480px]">
+            <div className="flex flex-1 items-center justify-center overflow-auto">
               <img
                 src={images[selImage].image}
                 alt={product.name}
                 style={{
                   transform: `scale(${zoomLevel})`,
-                  transformOrigin: 'center center',
                   transition: 'transform 0.2s ease',
+                  maxHeight: '70vh',
                   maxWidth: '100%',
-                  display: 'block',
                 }}
               />
             </div>
-
-            <div className="flex items-center justify-center gap-3 px-4 py-3 border-t border-gold/10 bg-[#0A0A0A]">
-              <button
-                type="button"
-                onClick={zoomOut}
-                disabled={zoomLevel <= 1}
-                className="w-10 h-10 border border-gold/15 flex items-center justify-center bg-black hover:bg-gold/10 text-gold transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-              >
-                <ZoomOut size={17} />
+            <div className="mt-4 flex items-center justify-center gap-6 text-neutral-700">
+              <button type="button" onClick={zoomOut} disabled={zoomLevel <= 1} className="disabled:opacity-30">
+                <ZoomOut size={18} strokeWidth={1.4} />
               </button>
-
-              <span className="text-xs font-mono text-white min-w-[52px] text-center">
+              <span className="text-[11px] tracking-[0.2em] tabular-nums">
                 {Math.round(zoomLevel * 100)}%
               </span>
-
-              <button
-                type="button"
-                onClick={zoomIn}
-                disabled={zoomLevel >= 3}
-                className="w-10 h-10 border border-gold/15 flex items-center justify-center bg-black hover:bg-gold/10 text-gold transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-              >
-                <ZoomIn size={17} />
+              <button type="button" onClick={zoomIn} disabled={zoomLevel >= 3} className="disabled:opacity-30">
+                <ZoomIn size={18} strokeWidth={1.4} />
               </button>
-
-              <button
-                type="button"
-                onClick={zoomReset}
-                className="w-10 h-10 border border-gold/15 flex items-center justify-center bg-black hover:bg-gold/10 text-gold transition-colors"
-                title="Reset zoom"
-              >
-                <RefreshCw size={15} />
+              <button type="button" onClick={zoomReset} className="text-[10px] tracking-[0.2em] uppercase">
+                Reset
               </button>
             </div>
           </div>
         </div>
       )}
-
-      <style>{`
-        @keyframes fadeIn {
-          from { opacity: 0; transform: translateY(4px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-
-        .animate-fadeIn {
-          animation: fadeIn 0.25s ease;
-        }
-      `}</style>
     </div>
   )
 }

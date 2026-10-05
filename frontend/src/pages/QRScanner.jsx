@@ -118,20 +118,20 @@
 //   }, [])
 
 //   return (
-//     <div className="min-h-screen bg-black text-[var(--color-text)] font-body overflow-x-hidden">
+//     <div className="min-h-screen bg-[#F4F4F2] text-[var(--color-text)] font-body overflow-x-hidden">
 //       {/* Header */}
-//       <header className="fixed top-0 left-0 right-0 z-[9999] bg-black/95 border-b border-gold/10 backdrop-blur-md">
+//       <header className="fixed top-0 left-0 right-0 z-[9999] bg-[#F4F4F2]/95 border-b border-neutral-200 backdrop-blur-md">
 //         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8 h-16">
 //           <div className="flex items-center gap-3">
-//             <span className="text-gold text-xl">∞</span>
-//             <span className="font-display text-gold text-xs sm:text-sm tracking-[0.28em]">
+//             <span className="text-neutral-900 text-xl">∞</span>
+//             <span className="font-sans text-neutral-900 text-xs sm:text-sm tracking-[0.28em]">
 //               TRANSFINITY
 //             </span>
 //           </div>
 
 //           <button
 //             onClick={() => navigate('/hunt')}
-//             className="text-muted hover:text-gold transition-colors bg-transparent border-none cursor-pointer"
+//             className="text-neutral-500 hover:text-neutral-900 transition-colors bg-transparent border-none cursor-pointer"
 //             aria-label="Close scanner"
 //           >
 //             <svg
@@ -155,21 +155,21 @@
 //       <main className="mx-auto w-full max-w-[760px] px-4 sm:px-6 pt-24 sm:pt-28 pb-12">
 //         {/* Title */}
 //         <section className="text-center mb-6 sm:mb-8 animate-fadeUp">
-//           <p className="label-gold mb-2 text-[10px] sm:text-xs">
+//           <p className="text-[10px] font-medium tracking-[0.28em] uppercase text-neutral-500 mb-2 text-[10px] sm:text-xs">
 //             SCANNER PROTOCOL
 //           </p>
 
-//           <h1 className="font-display text-3xl sm:text-4xl lg:text-5xl tracking-[0.18em] text-white mb-2">
+//           <h1 className="font-sans text-3xl sm:text-4xl lg:text-5xl tracking-[0.18em] text-neutral-900 mb-2">
 //             QR SCANNER
 //           </h1>
 
-//           <p className="text-muted text-xs sm:text-sm">
+//           <p className="text-neutral-500 text-xs sm:text-sm">
 //             Scan your artifact or location beacon
 //           </p>
 //         </section>
 
 //         {/* Mode Toggle */}
-//         <section className="flex bg-[#080808] border border-gold/15 p-1 mb-5 sm:mb-6">
+//         <section className="flex bg-[#080808] border border-neutral-200 p-1 mb-5 sm:mb-6">
 //           <button
 //             onClick={() => {
 //               stopScanner()
@@ -177,8 +177,8 @@
 //             }}
 //             className={`flex-1 py-3 text-[10px] sm:text-xs font-semibold tracking-[0.15em] uppercase transition-all duration-300 border-none cursor-pointer ${
 //               scanMode === 'tshirt'
-//                 ? 'bg-gold text-black'
-//                 : 'bg-transparent text-muted hover:text-gold'
+//                 ? 'bg-neutral-950 text-black'
+//                 : 'bg-transparent text-neutral-500 hover:text-neutral-900'
 //             }`}
 //           >
 //             ARTIFACT QR
@@ -191,8 +191,8 @@
 //             }}
 //             className={`flex-1 py-3 text-[10px] sm:text-xs font-semibold tracking-[0.15em] uppercase transition-all duration-300 border-none cursor-pointer ${
 //               scanMode === 'location'
-//                 ? 'bg-gold text-black'
-//                 : 'bg-transparent text-muted hover:text-gold'
+//                 ? 'bg-neutral-950 text-black'
+//                 : 'bg-transparent text-neutral-500 hover:text-neutral-900'
 //             }`}
 //           >
 //             BEACON QR
@@ -200,19 +200,19 @@
 //         </section>
 
 //         {/* Scanner Container */}
-//         <section className="relative overflow-hidden border border-gold/15 bg-[#050505] mb-6 animate-fadeUp shadow-[0_20px_80px_rgba(0,0,0,0.45)]">
+//         <section className="relative overflow-hidden border border-neutral-200 bg-[#F4F4F2] mb-6 animate-fadeUp shadow-[0_20px_80px_rgba(0,0,0,0.45)]">
 //           <div
 //             id="qr-reader"
-//             className="w-full h-[280px] sm:h-[340px] md:h-[380px] bg-black"
+//             className="w-full h-[280px] sm:h-[340px] md:h-[380px] bg-[#F4F4F2]"
 //             ref={scannerRef}
 //           />
 
 //           {!isScanning && (
-//             <div className="absolute inset-0 flex items-center justify-center bg-black/92 backdrop-blur-sm">
+//             <div className="absolute inset-0 flex items-center justify-center bg-[#F4F4F2]/92 backdrop-blur-sm">
 //               <div className="text-center px-4">
-//                 <div className="w-16 h-16 sm:w-20 sm:h-20 border border-gold/20 flex items-center justify-center mx-auto mb-5 animate-gold-pulse">
+//                 <div className="w-16 h-16 sm:w-20 sm:h-20 border border-neutral-200 flex items-center justify-center mx-auto mb-5 animate-gold-pulse">
 //                   <svg
-//                     className="w-7 h-7 sm:w-8 sm:h-8 text-gold"
+//                     className="w-7 h-7 sm:w-8 sm:h-8 text-neutral-900"
 //                     fill="none"
 //                     stroke="currentColor"
 //                     viewBox="0 0 24 24"
@@ -244,19 +244,19 @@
 //               <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/50" />
 
 //               <div className="absolute top-1/2 left-1/2 w-52 h-52 sm:w-60 sm:h-60 -translate-x-1/2 -translate-y-1/2">
-//                 <div className="absolute -top-1 -left-1 w-8 h-8 border-t border-l border-gold" />
-//                 <div className="absolute -top-1 -right-1 w-8 h-8 border-t border-r border-gold" />
-//                 <div className="absolute -bottom-1 -left-1 w-8 h-8 border-b border-l border-gold" />
-//                 <div className="absolute -bottom-1 -right-1 w-8 h-8 border-b border-r border-gold" />
+//                 <div className="absolute -top-1 -left-1 w-8 h-8 border-t border-l border-neutral-900" />
+//                 <div className="absolute -top-1 -right-1 w-8 h-8 border-t border-r border-neutral-900" />
+//                 <div className="absolute -bottom-1 -left-1 w-8 h-8 border-b border-l border-neutral-900" />
+//                 <div className="absolute -bottom-1 -right-1 w-8 h-8 border-b border-r border-neutral-900" />
 
 //                 <div className="absolute top-1/2 left-1/2 w-4 h-4 -translate-x-1/2 -translate-y-1/2">
-//                   <div className="absolute top-1/2 left-0 right-0 h-px bg-gold/50" />
-//                   <div className="absolute left-1/2 top-0 bottom-0 w-px bg-gold/50" />
+//                   <div className="absolute top-1/2 left-0 right-0 h-px bg-neutral-500" />
+//                   <div className="absolute left-1/2 top-0 bottom-0 w-px bg-neutral-500" />
 //                 </div>
 //               </div>
 
 //               <div className="absolute bottom-6 left-0 right-0 text-center">
-//                 <p className="label-gold animate-pulse text-[10px]">
+//                 <p className="text-[10px] font-medium tracking-[0.28em] uppercase text-neutral-500 animate-pulse text-[10px]">
 //                   {scanMode === 'tshirt'
 //                     ? 'SCAN ARTIFACT CODE'
 //                     : 'SCAN BEACON CODE'}
@@ -270,7 +270,7 @@
 //         <section className="mb-6 animate-fadeUp">
 //           <div className="flex items-center gap-4 mb-4">
 //             <div className="flex-1 h-px bg-gradient-to-r from-transparent via-gold/15 to-transparent" />
-//             <span className="label-gold text-[9px] sm:text-[10px]">
+//             <span className="text-[10px] font-medium tracking-[0.28em] uppercase text-neutral-500 text-[9px] sm:text-[10px]">
 //               OR ENTER MANUALLY
 //             </span>
 //             <div className="flex-1 h-px bg-gradient-to-r from-transparent via-gold/15 to-transparent" />
@@ -280,10 +280,10 @@
 //         </section>
 
 //         {/* Instructions */}
-//         <section className="border border-gold/15 bg-[#050505] p-4 sm:p-5 animate-fadeUp">
+//         <section className="border border-neutral-200 bg-[#F4F4F2] p-4 sm:p-5 animate-fadeUp">
 //           <div className="flex items-center gap-3 mb-4">
-//             <div className="w-8 h-8 border border-gold/20 flex items-center justify-center">
-//               <span className="text-gold text-xs">∞</span>
+//             <div className="w-8 h-8 border border-neutral-200 flex items-center justify-center">
+//               <span className="text-neutral-900 text-xs">∞</span>
 //             </div>
 
 //             <h3 className="heading-card text-sm">
@@ -314,8 +314,8 @@
 
 // function Instruction({ text }) {
 //   return (
-//     <li className="flex items-start gap-3 text-muted text-xs sm:text-sm">
-//       <span className="text-gold mt-1 text-xs">◆</span>
+//     <li className="flex items-start gap-3 text-neutral-500 text-xs sm:text-sm">
+//       <span className="text-neutral-900 mt-1 text-xs">◆</span>
 //       <span>{text}</span>
 //     </li>
 //   )
@@ -387,7 +387,7 @@
 //             ? 'Enter artifact code (th-xxx)'
 //             : 'Enter beacon code (loc-xxx)'
 //         }
-//         className="input-gold flex-1 px-4 py-3 text-sm"
+//         className="w-full border border-neutral-300 bg-white px-3 py-2.5 text-sm text-neutral-900 outline-none focus:border-neutral-900 flex-1 px-4 py-3 text-sm"
 //       />
 
 //       <button type="submit" className="btn-primary btn-mobile-full">
@@ -577,20 +577,20 @@ const handleMysteryScan = async (code) => {
   }, [])
 
   return (
-    <div className="min-h-screen bg-black text-[var(--color-text)] font-body overflow-x-hidden">
+    <div className="min-h-screen bg-[#F4F4F2] text-[var(--color-text)] font-body overflow-x-hidden">
       {/* Header */}
-      <header className="fixed top-0 left-0 right-0 z-[9999] bg-black/95 border-b border-gold/10 backdrop-blur-md">
+      <header className="fixed top-0 left-0 right-0 z-[9999] bg-[#F4F4F2]/95 border-b border-neutral-200 backdrop-blur-md">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8 h-16">
           <div className="flex items-center gap-3">
-            <span className="text-gold text-xl">∞</span>
-            <span className="font-display text-gold text-xs sm:text-sm tracking-[0.28em]">
+            <span className="text-neutral-900 text-xl">∞</span>
+            <span className="font-sans text-neutral-900 text-xs sm:text-sm tracking-[0.28em]">
               TRANSFINITY
             </span>
           </div>
 
           <button
             onClick={() => navigate('/hunt')}
-            className="text-muted hover:text-gold transition-colors bg-transparent border-none cursor-pointer"
+            className="text-neutral-500 hover:text-neutral-900 transition-colors bg-transparent border-none cursor-pointer"
             aria-label="Close scanner"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -604,38 +604,38 @@ const handleMysteryScan = async (code) => {
       <main className="mx-auto w-full max-w-[760px] px-4 sm:px-6 pt-24 sm:pt-28 pb-12">
         {/* Title */}
         <section className="text-center mb-6 sm:mb-8 animate-fadeUp">
-          <p className="label-gold mb-2 text-[10px] sm:text-xs">SCANNER PROTOCOL</p>
-          <h1 className="font-display text-3xl sm:text-4xl lg:text-5xl tracking-[0.18em] text-white mb-2">
+          <p className="text-[10px] font-medium tracking-[0.28em] uppercase text-neutral-500 mb-2 text-[10px] sm:text-xs">SCANNER PROTOCOL</p>
+          <h1 className="font-sans text-3xl sm:text-4xl lg:text-5xl tracking-[0.18em] text-neutral-900 mb-2">
             QR SCANNER
           </h1>
-          <p className="text-muted text-xs sm:text-sm">Scan artifact, location beacon, or offer codes</p>
+          <p className="text-neutral-500 text-xs sm:text-sm">Scan artifact, location beacon, or offer codes</p>
         </section>
 
         {/* Mode Toggle */}
-        <section className="flex bg-[#080808] border border-gold/15 p-1 mb-5 sm:mb-6">
+        <section className="flex bg-[#080808] border border-neutral-200 p-1 mb-5 sm:mb-6">
           <button
             onClick={() => { stopScanner(); setScanMode('tshirt') }}
-            className={`flex-1 py-3 text-[10px] sm:text-xs font-semibold tracking-[0.15em] uppercase transition-all duration-300 border-none cursor-pointer ${scanMode === 'tshirt' ? 'bg-gold text-black' : 'bg-transparent text-muted hover:text-gold'}`}
+            className={`flex-1 py-3 text-[10px] sm:text-xs font-semibold tracking-[0.15em] uppercase transition-all duration-300 border-none cursor-pointer ${scanMode === 'tshirt' ? 'bg-neutral-950 text-black' : 'bg-transparent text-neutral-500 hover:text-neutral-900'}`}
           >
             ARTIFACT QR
           </button>
           <button
             onClick={() => { stopScanner(); setScanMode('location') }}
-            className={`flex-1 py-3 text-[10px] sm:text-xs font-semibold tracking-[0.15em] uppercase transition-all duration-300 border-none cursor-pointer ${scanMode === 'location' ? 'bg-gold text-black' : 'bg-transparent text-muted hover:text-gold'}`}
+            className={`flex-1 py-3 text-[10px] sm:text-xs font-semibold tracking-[0.15em] uppercase transition-all duration-300 border-none cursor-pointer ${scanMode === 'location' ? 'bg-neutral-950 text-black' : 'bg-transparent text-neutral-500 hover:text-neutral-900'}`}
           >
             BEACON QR
           </button>
         </section>
 
         {/* Scanner Container */}
-        <section className="relative overflow-hidden border border-gold/15 bg-[#050505] mb-6 animate-fadeUp shadow-[0_20px_80px_rgba(0,0,0,0.45)]">
-          <div id="qr-reader" className="w-full h-[280px] sm:h-[340px] md:h-[380px] bg-black" ref={scannerRef} />
+        <section className="relative overflow-hidden border border-neutral-200 bg-[#F4F4F2] mb-6 animate-fadeUp shadow-[0_20px_80px_rgba(0,0,0,0.45)]">
+          <div id="qr-reader" className="w-full h-[280px] sm:h-[340px] md:h-[380px] bg-[#F4F4F2]" ref={scannerRef} />
 
           {!isScanning && (
-            <div className="absolute inset-0 flex items-center justify-center bg-black/92 backdrop-blur-sm">
+            <div className="absolute inset-0 flex items-center justify-center bg-[#F4F4F2]/92 backdrop-blur-sm">
               <div className="text-center px-4">
-                <div className="w-16 h-16 sm:w-20 sm:h-20 border border-gold/20 flex items-center justify-center mx-auto mb-5 animate-gold-pulse">
-                  <svg className="w-7 h-7 sm:w-8 sm:h-8 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div className="w-16 h-16 sm:w-20 sm:h-20 border border-neutral-200 flex items-center justify-center mx-auto mb-5 animate-gold-pulse">
+                  <svg className="w-7 h-7 sm:w-8 sm:h-8 text-neutral-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
                   </svg>
@@ -649,17 +649,17 @@ const handleMysteryScan = async (code) => {
             <div className="absolute inset-0 pointer-events-none">
               <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/50" />
               <div className="absolute top-1/2 left-1/2 w-52 h-52 sm:w-60 sm:h-60 -translate-x-1/2 -translate-y-1/2">
-                <div className="absolute -top-1 -left-1 w-8 h-8 border-t border-l border-gold" />
-                <div className="absolute -top-1 -right-1 w-8 h-8 border-t border-r border-gold" />
-                <div className="absolute -bottom-1 -left-1 w-8 h-8 border-b border-l border-gold" />
-                <div className="absolute -bottom-1 -right-1 w-8 h-8 border-b border-r border-gold" />
+                <div className="absolute -top-1 -left-1 w-8 h-8 border-t border-l border-neutral-900" />
+                <div className="absolute -top-1 -right-1 w-8 h-8 border-t border-r border-neutral-900" />
+                <div className="absolute -bottom-1 -left-1 w-8 h-8 border-b border-l border-neutral-900" />
+                <div className="absolute -bottom-1 -right-1 w-8 h-8 border-b border-r border-neutral-900" />
                 <div className="absolute top-1/2 left-1/2 w-4 h-4 -translate-x-1/2 -translate-y-1/2">
-                  <div className="absolute top-1/2 left-0 right-0 h-px bg-gold/50" />
-                  <div className="absolute left-1/2 top-0 bottom-0 w-px bg-gold/50" />
+                  <div className="absolute top-1/2 left-0 right-0 h-px bg-neutral-500" />
+                  <div className="absolute left-1/2 top-0 bottom-0 w-px bg-neutral-500" />
                 </div>
               </div>
               <div className="absolute bottom-6 left-0 right-0 text-center">
-                <p className="label-gold animate-pulse text-[10px]">
+                <p className="text-[10px] font-medium tracking-[0.28em] uppercase text-neutral-500 animate-pulse text-[10px]">
                   {scanMode === 'tshirt' ? 'SCAN ARTIFACT OR OFFER CODE' : 'SCAN BEACON CODE'}
                 </p>
               </div>
@@ -671,7 +671,7 @@ const handleMysteryScan = async (code) => {
         <section className="mb-6 animate-fadeUp">
           <div className="flex items-center gap-4 mb-4">
             <div className="flex-1 h-px bg-gradient-to-r from-transparent via-gold/15 to-transparent" />
-            <span className="label-gold text-[9px] sm:text-[10px]">OR ENTER MANUALLY</span>
+            <span className="text-[10px] font-medium tracking-[0.28em] uppercase text-neutral-500 text-[9px] sm:text-[10px]">OR ENTER MANUALLY</span>
             <div className="flex-1 h-px bg-gradient-to-r from-transparent via-gold/15 to-transparent" />
           </div>
           <ManualEntryForm mode={scanMode} />
@@ -748,7 +748,7 @@ const ManualEntryForm = ({ mode }) => {
         value={code}
         onChange={(e) => setCode(e.target.value)}
         placeholder={mode === 'tshirt' ? 'Enter artifact or offer code' : 'Enter beacon code (loc-xxx)'}
-        className="input-gold flex-1 px-4 py-3 text-sm"
+        className="w-full border border-neutral-300 bg-white px-3 py-2.5 text-sm text-neutral-900 outline-none focus:border-neutral-900 flex-1 px-4 py-3 text-sm"
       />
       <button type="submit" className="btn-primary btn-mobile-full">Submit</button>
     </form>

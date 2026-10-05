@@ -130,21 +130,6 @@ export default function AdminProducts() {
     setProductImages((prev) => [...prev, ...newImages])
   }
 
-  const removeImage = (index) => {
-    setProductImages((prev) => {
-      const updated = prev.filter((_, imageIndex) => imageIndex !== index)
-
-      if (updated.length > 0 && !updated.some((image) => image.isPrimary)) {
-        updated[0] = {
-          ...updated[0],
-          isPrimary: true,
-        }
-      }
-
-      return [...updated]
-    })
-  }
-
   const setPrimaryImage = (index) => {
     setProductImages((prev) =>
       prev.map((image, imageIndex) => ({
@@ -154,14 +139,33 @@ export default function AdminProducts() {
     )
   }
 
+  const buildPayload = () => {
+    const payload = {
+      name: form.name.trim(),
+      slug: (form.slug || autoSlug(form.name)).trim(),
+      description: form.description.trim(),
+      price: form.price === '' ? null : form.price,
+      stock: form.stock === '' ? 0 : Number(form.stock),
+      is_active: Boolean(form.is_active),
+      is_featured: Boolean(form.is_featured),
+      available_sizes: form.available_sizes,
+      sale_price: form.sale_price === '' ? null : form.sale_price,
+      category: form.category === '' ? null : form.category,
+    }
+    const sku = (form.sku || '').trim()
+    if (sku) payload.sku = sku
+    return payload
+  }
+
   const handleSubmit = async (event) => {
     event.preventDefault()
     setUploadingImages(true)
 
     try {
-      const payload = {
-        ...form,
-        available_sizes: form.available_sizes,
+      const payload = buildPayload()
+      if (!payload.name || !payload.price) {
+        toast.error('Name and price are required')
+        return
       }
 
       let productId = editing
@@ -178,8 +182,13 @@ export default function AdminProducts() {
       const newImages = productImages.filter((image) => image.isNew && image.file)
 
       if (newImages.length > 0) {
+        // Upload one-by-one so the chosen primary is first
+        const ordered = [
+          ...newImages.filter((image) => image.isPrimary),
+          ...newImages.filter((image) => !image.isPrimary),
+        ]
         const imageData = new FormData()
-        newImages.forEach((image) => imageData.append('images', image.file))
+        ordered.forEach((image) => imageData.append('images', image.file))
 
         await api.post(`/products/admin/products/${productId}/images/`, imageData, {
           headers: {
@@ -216,15 +225,80 @@ export default function AdminProducts() {
   }
 
   const handleDelete = async (id) => {
-    if (!window.confirm('Delete this product?')) return
+    if (!window.confirm('Delete this product? (Ordered items are archived/hidden instead.)')) return
 
     try {
-      await api.delete(`/products/admin/products/${id}/`)
-      toast.success('Deleted')
+      const { data, status } = await api.delete(`/products/admin/products/${id}/`)
+      if (status === 200 && data?.archived) {
+        toast.success('Archived (has orders) — hidden from shop/home')
+      } else {
+        toast.success('Deleted')
+      }
       load()
     } catch {
       toast.error('Delete failed')
     }
+  }
+
+  const handleDeleteAll = async () => {
+    if (!products.length) {
+      toast.error('No products to delete')
+      return
+    }
+    if (
+      !window.confirm(
+        `Remove ALL ${products.length} products from the store? Items with order history are archived (hidden), not hard-deleted.`,
+      )
+    ) {
+      return
+    }
+
+    try {
+      let archived = 0
+      let deleted = 0
+      for (const product of products) {
+        try {
+          await api.patch(`/products/admin/products/${product.id}/`, {
+            is_active: false,
+            is_featured: false,
+          })
+          const { data, status } = await api.delete(`/products/admin/products/${product.id}/`)
+          if (status === 200 && data?.archived) archived += 1
+          else deleted += 1
+        } catch {
+          /* continue */
+        }
+      }
+      toast.success(`Cleared catalog — deleted ${deleted}, archived ${archived}`)
+      load()
+    } catch {
+      toast.error('Some deletes failed — refresh and retry')
+      load()
+    }
+  }
+
+  const removeImage = async (index) => {
+    const target = productImages[index]
+    if (!target) return
+
+    if (!target.isNew && target.id && editing) {
+      try {
+        await api.delete(`/products/admin/products/${editing}/images/`, {
+          data: { image_id: target.id },
+        })
+      } catch {
+        toast.error('Could not delete image')
+        return
+      }
+    }
+
+    setProductImages((prev) => {
+      const updated = prev.filter((_, imageIndex) => imageIndex !== index)
+      if (updated.length > 0 && !updated.some((image) => image.isPrimary)) {
+        updated[0] = { ...updated[0], isPrimary: true }
+      }
+      return [...updated]
+    })
   }
 
   const openEdit = async (product) => {
@@ -301,14 +375,24 @@ export default function AdminProducts() {
             </p>
           </div>
 
-          <button
-            type="button"
-            onClick={openCreate}
-            className="btn-primary inline-flex items-center justify-center gap-2 w-full sm:w-auto"
-          >
-            <Plus size={16} />
-            ADD PRODUCT
-          </button>
+          <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+            <button
+              type="button"
+              onClick={handleDeleteAll}
+              className="inline-flex items-center justify-center gap-2 w-full sm:w-auto px-4 py-3 border border-red-500/40 text-red-300 text-[11px] font-mono tracking-[0.18em] uppercase hover:bg-red-500/10 transition-colors"
+            >
+              <Trash2 size={16} />
+              DELETE ALL
+            </button>
+            <button
+              type="button"
+              onClick={openCreate}
+              className="btn-primary inline-flex items-center justify-center gap-2 w-full sm:w-auto"
+            >
+              <Plus size={16} />
+              ADD PRODUCT
+            </button>
+          </div>
         </section>
 
         <div className="divider-gold mb-7 sm:mb-9" />

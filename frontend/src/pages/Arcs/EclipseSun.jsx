@@ -39,7 +39,7 @@ export default function EclipseSun() {
         }
       `}</style>
 
-      <main className="relative min-h-screen overflow-x-hidden bg-black text-white">
+      <main className="relative min-h-screen overflow-x-hidden bg-black text-neutral-900">
         <Navbar />
         <VideoHeader />
         <StorySection />
@@ -77,7 +77,7 @@ function VideoHeader() {
           </div>
         </div>
 
-        <h1 className="animate-fade-in-up font-serif text-5xl sm:text-6xl md:text-7xl lg:text-8xl uppercase leading-none tracking-[0.02em] text-white drop-shadow-[0_0_30px_rgba(0,0,0,0.9)]" style={{ animationDelay: '0.2s' }}>
+        <h1 className="animate-fade-in-up font-serif text-5xl sm:text-6xl md:text-7xl lg:text-8xl uppercase leading-none tracking-[0.02em] text-neutral-900 drop-shadow-[0_0_30px_rgba(0,0,0,0.9)]" style={{ animationDelay: '0.2s' }}>
           The <span className="normal-case italic text-gold text-shimmer">EclipseSun</span>
         </h1>
 
@@ -86,7 +86,7 @@ function VideoHeader() {
         </p>
 
         <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 animate-fade-in-up" style={{ animationDelay: '0.6s' }}>
-          <span className="font-mono text-[10px] uppercase tracking-[0.3em] text-white/40">Scroll</span>
+          <span className="font-mono text-[10px] uppercase tracking-[0.3em] text-neutral-400">Scroll</span>
           <div className="w-px h-8 bg-[repeating-linear-gradient(to_bottom,rgba(212,175,55,0.6)_0_4px,transparent_4px_8px)]" />
         </div>
       </div>
@@ -114,7 +114,7 @@ function AudioControls() {
 
   return (
     <div className="absolute top-24 sm:top-28 right-4 sm:right-8 z-30">
-      <button onClick={toggleAudio} className={`flex items-center gap-2 px-4 py-2 rounded-none border backdrop-blur-sm transition-all duration-300 ${isMuted ? 'border-white/20 bg-black/40 text-white/50 hover:text-white/80 hover:border-white/40' : 'border-gold/50 bg-gold/10 text-gold hover:bg-gold/20 animate-pulse-glow'}`}>
+      <button onClick={toggleAudio} className={`flex items-center gap-2 px-4 py-2 rounded-none border backdrop-blur-sm transition-all duration-300 ${isMuted ? 'border-neutral-200 bg-black/40 text-neutral-500 hover:text-white/80 hover:border-white/40' : 'border-gold/50 bg-gold/10 text-gold hover:bg-gold/20 animate-pulse-glow'}`}>
         <div className="flex items-end gap-[2px] h-4">
           {[1,2,3,4].map(bar => (
             <div key={bar} className={`w-[3px] bg-current rounded-full transition-all duration-300 ${isPlaying ? 'animate-pulse' : 'h-1'}`} style={{height: isPlaying ? `${Math.random()*12+4}px` : '4px', animationDelay: `${bar*0.1}s`}} />
@@ -136,17 +136,17 @@ function StorySection() {
             <span className="font-mono text-[10px] uppercase tracking-[0.5em] text-gold">The Lore</span>
             <div className="h-px w-12 bg-gold/40" />
           </div>
-          <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl uppercase tracking-[0.08em] text-white/90">
+          <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl uppercase tracking-[0.08em] text-neutral-900">
             The Blood <span className="italic text-gold">Oath</span>
           </h2>
         </div>
 
         <div className="space-y-8">
           <div className="animate-fade-in-up border-l-2 border-gold/30 pl-6 sm:pl-8" style={{ animationDelay: '0.0s' }}>
-            <p className="text-sm sm:text-base leading-[1.9] text-white/70 font-light">After the rise of the Eclipse generation, TRANSFINITY was no longer just a hidden movement — it had become an empire growing beneath the surface of society. Those who survived the darkness of the previous arcs formed an elite inner circle known as The Crimson Order, warriors bound not by fear or power, but by loyalty to the infinite vision created by Kairos. Each member carried a crimson-marked infinity symbol representing a blood oath: once accepted into the order, betrayal was impossible. This era became known as the Crimson Arc — "The Blood Oath." The streets transformed into battlegrounds between loyalists of TRANSFINITY and forces still trying to protect "The Frame." But unlike before, the Founders were now united, disciplined, and willing to sacrifice everything for the movement.</p>
+            <p className="text-sm sm:text-base leading-[1.9] text-neutral-900/70 font-light">After the rise of the Eclipse generation, TRANSFINITY was no longer just a hidden movement — it had become an empire growing beneath the surface of society. Those who survived the darkness of the previous arcs formed an elite inner circle known as The Crimson Order, warriors bound not by fear or power, but by loyalty to the infinite vision created by Kairos. Each member carried a crimson-marked infinity symbol representing a blood oath: once accepted into the order, betrayal was impossible. This era became known as the Crimson Arc — "The Blood Oath." The streets transformed into battlegrounds between loyalists of TRANSFINITY and forces still trying to protect "The Frame." But unlike before, the Founders were now united, disciplined, and willing to sacrifice everything for the movement.</p>
           </div>
-          <div className="animate-fade-in-up border-l-2 border-white/10 pl-6 sm:pl-8" style={{ animationDelay: '0.15s' }}>
-            <p className="text-sm sm:text-base leading-[1.9] text-white/70 font-light">During the Crimson Arc, Kairos began preparing humanity for something greater than rebellion — transcendence itself. Hidden sanctuaries known as "Infinite Chambers" were built beneath cities where selected followers trained their minds and bodies beyond normal human limits. The Crimson generation believed evolution required sacrifice, and only those who endured suffering deserved to carry the symbol. As their influence spread globally, stories emerged of Founder squads appearing during moments of chaos, protecting people from corruption before disappearing back into the shadows. To the public, they became myths. To TRANSFINITY, they became the first true guardians of the infinite path. But unknown to everyone, Kairos had already begun hearing whispers from a mysterious dimension beyond reality itself — a place later known as The Void.</p>
+          <div className="animate-fade-in-up border-l-2 border-neutral-200 pl-6 sm:pl-8" style={{ animationDelay: '0.15s' }}>
+            <p className="text-sm sm:text-base leading-[1.9] text-neutral-900/70 font-light">During the Crimson Arc, Kairos began preparing humanity for something greater than rebellion — transcendence itself. Hidden sanctuaries known as "Infinite Chambers" were built beneath cities where selected followers trained their minds and bodies beyond normal human limits. The Crimson generation believed evolution required sacrifice, and only those who endured suffering deserved to carry the symbol. As their influence spread globally, stories emerged of Founder squads appearing during moments of chaos, protecting people from corruption before disappearing back into the shadows. To the public, they became myths. To TRANSFINITY, they became the first true guardians of the infinite path. But unknown to everyone, Kairos had already begun hearing whispers from a mysterious dimension beyond reality itself — a place later known as The Void.</p>
           </div>
           
           <div className="animate-fade-in-up my-10 sm:my-12 py-8 px-6 sm:px-8 border border-gold/20 bg-gold/[0.03] text-center" style={{ animationDelay: '0.3s' }}>
@@ -176,10 +176,10 @@ function ShopSection() {
             <span className="font-mono text-[10px] uppercase tracking-[0.5em] text-gold">The Collection</span>
             <div className="h-px w-12 bg-gold/40" />
           </div>
-          <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl uppercase tracking-[0.08em] text-white/90">
+          <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl uppercase tracking-[0.08em] text-neutral-900">
             EclipseSun <span className="italic text-gold">Essentials</span>
           </h2>
-          <p className="mt-4 text-sm text-white/50 max-w-lg mx-auto">
+          <p className="mt-4 text-sm text-neutral-500 max-w-lg mx-auto">
             Sworn in crimson. For the loyal, the fearless, the eternal.
           </p>
         </div>
@@ -195,7 +195,7 @@ function ShopSection() {
             Visit Full Shop
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
           </Link>
-          <Link to="/arcs/rebirth" className="inline-flex items-center gap-2 px-6 py-3 border border-white/10 text-white/50 font-mono text-[10px] uppercase tracking-[0.3em] hover:border-gold/40 hover:text-gold transition-all duration-300">
+          <Link to="/arcs/rebirth" className="inline-flex items-center gap-2 px-6 py-3 border border-neutral-200 text-neutral-500 font-mono text-[10px] uppercase tracking-[0.3em] hover:border-gold/40 hover:text-gold transition-all duration-300">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
             Previous Arc
           </Link>
@@ -212,13 +212,13 @@ function ShopSection() {
 
 function ProductCard({ product, index }) {
   return (
-    <div className="group relative border border-white/10 bg-black/40 backdrop-blur-sm overflow-hidden transition-all duration-500 hover:border-gold/40 hover:bg-black/60 hover:-translate-y-2" style={{ animationDelay: `${index*0.1}s` }}>
+    <div className="group relative border border-neutral-200 bg-black/40 backdrop-blur-sm overflow-hidden transition-all duration-500 hover:border-gold/40 hover:bg-black/60 hover:-translate-y-2" style={{ animationDelay: `${index*0.1}s` }}>
       <div className="relative aspect-[3/4] overflow-hidden bg-white/5">
         <img src={product.image} alt={product.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" onError={(e) => { e.target.style.display='none'; e.target.nextSibling.style.display='flex' }} />
         <div className="absolute inset-0 hidden items-center justify-center bg-black/60">
           <div className="text-center">
             <div className="font-serif text-4xl text-gold/30 mb-2">∞</div>
-            <span className="font-mono text-[10px] uppercase tracking-wider text-white/30">{product.name}</span>
+            <span className="font-mono text-[10px] uppercase tracking-wider text-neutral-400">{product.name}</span>
           </div>
         </div>
         <div className="absolute inset-0 bg-[linear-gradient(180deg,transparent_50%,rgba(0,0,0,0.8)_100%)] opacity-60 group-hover:opacity-80 transition-opacity" />
@@ -227,11 +227,11 @@ function ProductCard({ product, index }) {
         </button>
       </div>
       <div className="p-4 sm:p-5">
-        <h3 className="font-serif text-sm sm:text-base uppercase tracking-[0.08em] text-white/90 mb-1">{product.name}</h3>
-        <p className="text-xs text-white/40 mb-3">{product.description}</p>
+        <h3 className="font-serif text-sm sm:text-base uppercase tracking-[0.08em] text-neutral-900 mb-1">{product.name}</h3>
+        <p className="text-xs text-neutral-400 mb-3">{product.description}</p>
         <div className="flex items-center justify-between">
           <span className="font-mono text-sm text-gold">₹{product.price}</span>
-          <span className="font-mono text-[10px] uppercase tracking-wider text-white/30">Arc 06</span>
+          <span className="font-mono text-[10px] uppercase tracking-wider text-neutral-400">Arc 06</span>
         </div>
       </div>
     </div>

@@ -12,8 +12,8 @@ export default function ShippingPage() {
       <header className="nav-transfinity fixed top-0 left-0 right-0 z-50">
         <div className="page-container flex items-center justify-between py-4">
           <div className="flex items-center gap-3">
-            <span className="text-gold text-2xl">∞</span>
-            <span className="font-display text-gold text-sm tracking-[0.3em]">TRANSFINITY</span>
+            <span className="text-neutral-900 text-2xl">∞</span>
+            <span className="font-sans text-neutral-900 text-sm tracking-[0.3em]">TRANSFINITY</span>
           </div>
           <nav className="hidden sm:flex gap-8">
             <a href="/" className="nav-link">HOME</a>
@@ -32,8 +32,8 @@ export default function ShippingPage() {
 
         {/* Page Header */}
         <div className="mb-8 sm:mb-12 animate-fadeUp">
-          <p className="label-gold mb-3">DELIVERY</p>
-          <h1 className="heading-section text-white">SHIPPING PROTOCOL</h1>
+          <p className="text-[10px] font-medium tracking-[0.28em] uppercase text-neutral-500 mb-3">DELIVERY</p>
+          <h1 className="heading-section text-neutral-900">SHIPPING PROTOCOL</h1>
           <div className="divider-gold mt-6" />
         </div>
 
@@ -44,7 +44,7 @@ export default function ShippingPage() {
           <div className="card-dark p-5 sm:p-8 animate-fadeUp" style={{ animationDelay: '0.1s' }}>
             <div className="flex items-center gap-3 mb-6">
               <div className="w-8 h-8 border border-[var(--color-border)] flex items-center justify-center flex-shrink-0">
-                <span className="text-gold text-xs">◆</span>
+                <span className="text-neutral-900 text-xs">◆</span>
               </div>
               <h3 className="heading-card text-sm sm:text-base">Transit Times</h3>
             </div>
@@ -55,8 +55,8 @@ export default function ShippingPage() {
                   key={i} 
                   className="flex flex-col sm:flex-row sm:justify-between sm:items-center py-4 first:pt-0 last:pb-0 gap-1 sm:gap-0 group"
                 >
-                  <span className="text-sm font-medium text-white tracking-wide">{t.city}</span>
-                  <span className="text-xs sm:text-sm text-muted font-mono group-hover:text-gold transition-colors">
+                  <span className="text-sm font-medium text-neutral-900 tracking-wide">{t.city}</span>
+                  <span className="text-xs sm:text-sm text-neutral-500 font-mono group-hover:text-neutral-900 transition-colors">
                     {t.days}
                   </span>
                 </div>
@@ -68,20 +68,20 @@ export default function ShippingPage() {
           <div className="card-dark p-5 sm:p-8 animate-fadeUp" style={{ animationDelay: '0.2s' }}>
             <div className="flex items-center gap-3 mb-5">
               <div className="w-8 h-8 border border-[var(--color-border)] flex items-center justify-center flex-shrink-0">
-                <span className="text-gold text-xs">◆</span>
+                <span className="text-neutral-900 text-xs">◆</span>
               </div>
               <h3 className="heading-card text-sm sm:text-base">Transit Charges</h3>
             </div>
 
-            <p className="text-muted text-sm leading-relaxed mb-4">
+            <p className="text-neutral-500 text-sm leading-relaxed mb-4">
               Complimentary transit on all orders above ₹499. Orders below ₹499 incur a flat 
-              <span className="text-gold font-mono"> ₹49 </span> 
+              <span className="text-neutral-900 font-mono"> ₹49 </span> 
               transit fee.
             </p>
 
             <div className="border border-[var(--color-border)] p-4 bg-[var(--color-bg-alt)]">
-              <p className="text-gold text-xs tracking-wider uppercase mb-1">Note</p>
-              <p className="text-muted text-xs leading-relaxed">
+              <p className="text-neutral-900 text-xs tracking-wider uppercase mb-1">Note</p>
+              <p className="text-neutral-500 text-xs leading-relaxed">
                 International transit is calculated at checkout based on destination coordinates 
                 and artifact dimensions.
               </p>
@@ -92,27 +92,27 @@ export default function ShippingPage() {
           <div className="card-dark p-5 sm:p-8 animate-fadeUp" style={{ animationDelay: '0.3s' }}>
             <div className="flex items-center gap-3 mb-5">
               <div className="w-8 h-8 border border-[var(--color-border)] flex items-center justify-center flex-shrink-0">
-                <span className="text-gold text-xs">◆</span>
+                <span className="text-neutral-900 text-xs">◆</span>
               </div>
               <h3 className="heading-card text-sm sm:text-base">Signal Tracking</h3>
             </div>
 
-            <p className="text-muted text-sm leading-relaxed mb-4">
+            <p className="text-neutral-500 text-sm leading-relaxed mb-4">
               Monitor your artifact in real-time through the tracking signal transmitted to your 
               registered email and communication channel once the order enters transit.
             </p>
 
             <ul className="space-y-3">
-              <li className="flex items-start gap-3 text-muted text-sm">
-                <span className="text-gold mt-1 text-xs">→</span>
+              <li className="flex items-start gap-3 text-neutral-500 text-sm">
+                <span className="text-neutral-900 mt-1 text-xs">→</span>
                 <span>Real-time GPS coordinates of your package</span>
               </li>
-              <li className="flex items-start gap-3 text-muted text-sm">
-                <span className="text-gold mt-1 text-xs">→</span>
+              <li className="flex items-start gap-3 text-neutral-500 text-sm">
+                <span className="text-neutral-900 mt-1 text-xs">→</span>
                 <span>Transit milestone notifications</span>
               </li>
-              <li className="flex items-start gap-3 text-muted text-sm">
-                <span className="text-gold mt-1 text-xs">→</span>
+              <li className="flex items-start gap-3 text-neutral-500 text-sm">
+                <span className="text-neutral-900 mt-1 text-xs">→</span>
                 <span>Estimated arrival recalibration</span>
               </li>
             </ul>
@@ -121,12 +121,12 @@ export default function ShippingPage() {
 
         {/* Contact Section */}
         <div className="mt-12 text-center animate-fadeUp" style={{ animationDelay: '0.4s' }}>
-          <p className="text-muted text-sm mb-4">
+          <p className="text-neutral-500 text-sm mb-4">
             Transit inquiries? Contact our logistics channel.
           </p>
           <a 
             href="mailto:logistics@transfinity.shop" 
-            className="inline-flex items-center gap-2 text-gold text-sm hover:text-gold-light transition-colors"
+            className="inline-flex items-center gap-2 text-neutral-900 text-sm hover:text-neutral-700 transition-colors"
           >
             <span className="font-mono">logistics@transfinity.shop</span>
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -141,7 +141,7 @@ export default function ShippingPage() {
         <div className="page-container">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 mb-8">
             <div>
-              <p className="label-gold mb-4">NAVIGATE</p>
+              <p className="text-[10px] font-medium tracking-[0.28em] uppercase text-neutral-500 mb-4">NAVIGATE</p>
               <div className="space-y-2">
                 <a href="/shop" className="footer-link block">Shop All</a>
                 <a href="/arcs" className="footer-link block">Arc Index</a>
@@ -149,14 +149,14 @@ export default function ShippingPage() {
               </div>
             </div>
             <div>
-              <p className="label-gold mb-4">ACCOUNT</p>
+              <p className="text-[10px] font-medium tracking-[0.28em] uppercase text-neutral-500 mb-4">ACCOUNT</p>
               <div className="space-y-2">
                 <a href="/login" className="footer-link block">Sign In</a>
                 <a href="/register" className="footer-link block">Create Account</a>
               </div>
             </div>
             <div>
-              <p className="label-gold mb-4">TRANSMIT</p>
+              <p className="text-[10px] font-medium tracking-[0.28em] uppercase text-neutral-500 mb-4">TRANSMIT</p>
               <div className="space-y-2">
                 <a href="#" className="footer-link block">Instagram</a>
                 <a href="#" className="footer-link block">Discord</a>
@@ -167,13 +167,13 @@ export default function ShippingPage() {
           <div className="divider-gold mb-6" />
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-2">
-              <span className="text-gold text-lg">∞</span>
-              <span className="font-display text-gold text-xs tracking-[0.3em]">TRANSFINITY</span>
+              <span className="text-neutral-900 text-lg">∞</span>
+              <span className="font-sans text-neutral-900 text-xs tracking-[0.3em]">TRANSFINITY</span>
             </div>
-            <p className="text-muted text-xs tracking-wider">
+            <p className="text-neutral-500 text-xs tracking-wider">
               LONDON // TOKYO // DIGITAL VOID
             </p>
-            <p className="text-muted text-[10px]">
+            <p className="text-neutral-500 text-[10px]">
               © 2104 Transfinity Systems
             </p>
           </div>

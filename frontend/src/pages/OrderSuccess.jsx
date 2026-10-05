@@ -38,34 +38,34 @@ export default function OrderSuccess() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-black pt-[76px] sm:pt-[88px] lg:pt-[96px] flex items-center justify-center">
-        <Loader2 size={28} className="text-gold animate-spin" />
+      <div className="min-h-screen bg-[#F4F4F2] pt-[76px] sm:pt-[88px] lg:pt-[96px] flex items-center justify-center">
+        <Loader2 size={28} className="text-neutral-900 animate-spin" />
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-black pt-[76px] sm:pt-[88px] lg:pt-[96px] flex items-center justify-center px-4 py-10 sm:py-14 overflow-x-hidden">
+    <div className="min-h-screen bg-[#F4F4F2] pt-[76px] sm:pt-[88px] lg:pt-[96px] flex items-center justify-center px-4 py-10 sm:py-14 overflow-x-hidden">
       <main className="w-full max-w-2xl text-center">
         {/* Icon */}
-        <div className="w-20 h-20 sm:w-24 sm:h-24 border border-gold/30 bg-gold/10 flex items-center justify-center mx-auto mb-6 animate-gold-pulse">
-          <CheckCircle size={44} className="text-gold" strokeWidth={1.8} />
+        <div className="w-20 h-20 sm:w-24 sm:h-24 border border-neutral-300 bg-neutral-100 flex items-center justify-center mx-auto mb-6 animate-gold-pulse">
+          <CheckCircle size={44} className="text-neutral-900" strokeWidth={1.8} />
         </div>
 
         {/* Title */}
         <section className="mb-7 sm:mb-8">
-          <p className="label-gold mb-4 flex items-center justify-center gap-2">
+          <p className="text-[10px] font-medium tracking-[0.28em] uppercase text-neutral-500 mb-4 flex items-center justify-center gap-2">
             <Sparkles size={14} />
             Order Confirmed
           </p>
 
-          <h1 className="font-display text-2xl sm:text-3xl lg:text-4xl text-white tracking-[0.12em] leading-tight mb-4">
+          <h1 className="font-sans text-2xl sm:text-3xl lg:text-4xl text-neutral-900 tracking-[0.12em] leading-tight mb-4">
             THANK YOU FOR
             <br />
             <span className="text-gradient-gold">YOUR PURCHASE</span>
           </h1>
 
-          <p className="text-xs sm:text-sm text-muted font-mono tracking-wider leading-relaxed max-w-md mx-auto">
+          <p className="text-xs sm:text-sm text-neutral-500 font-mono tracking-wider leading-relaxed max-w-md mx-auto">
             Your order has been successfully placed. We will prepare your artifact and send
             tracking updates soon.
           </p>
@@ -73,23 +73,23 @@ export default function OrderSuccess() {
 
         {/* Order Card */}
         {order && (
-          <section className="w-full bg-[#0A0A0A] border border-gold/15 p-4 sm:p-6 text-left shadow-[0_20px_80px_rgba(0,0,0,0.45)] mb-6">
+          <section className="w-full bg-white border border-neutral-200 p-4 sm:p-6 text-left shadow-[0_20px_80px_rgba(0,0,0,0.45)] mb-6">
             {/* Header */}
-            <div className="flex items-center justify-between gap-4 mb-4 pb-4 border-b border-gold/10">
+            <div className="flex items-center justify-between gap-4 mb-4 pb-4 border-b border-neutral-200">
               <div className="flex items-center gap-2 min-w-0">
-                <Receipt size={17} className="text-gold shrink-0" />
-                <span className="text-[10px] sm:text-xs font-mono tracking-wider uppercase text-muted">
+                <Receipt size={17} className="text-neutral-900 shrink-0" />
+                <span className="text-[10px] sm:text-xs font-mono tracking-wider uppercase text-neutral-500">
                   Order ID
                 </span>
               </div>
 
-              <span className="text-xs sm:text-sm font-mono text-white tracking-wider truncate">
+              <span className="text-xs sm:text-sm font-mono text-neutral-900 tracking-wider truncate">
                 #{order.id?.slice(0, 8).toUpperCase()}
               </span>
             </div>
 
             {/* Meta */}
-            <div className="flex flex-wrap items-center gap-3 sm:gap-4 mb-4 text-[10px] sm:text-xs text-muted font-mono tracking-wider">
+            <div className="flex flex-wrap items-center gap-3 sm:gap-4 mb-4 text-[10px] sm:text-xs text-neutral-500 font-mono tracking-wider">
               <span className="flex items-center gap-1.5">
                 <Calendar size={12} />
                 {new Date(order.created_at).toLocaleDateString('en-IN', {
@@ -115,14 +115,14 @@ export default function OrderSuccess() {
               {order.items?.map((item) => (
                 <div
                   key={item.id}
-                  className="flex items-start justify-between gap-3 p-3 bg-black border border-gold/10"
+                  className="flex items-start justify-between gap-3 p-3 bg-[#F4F4F2] border border-neutral-200"
                 >
                   <div className="flex-1 min-w-0">
-                    <p className="text-xs sm:text-sm font-display text-white tracking-wider leading-snug">
+                    <p className="text-xs sm:text-sm font-sans text-neutral-900 tracking-wider leading-snug">
                       {item.product_name}
                     </p>
 
-                    <p className="text-[10px] sm:text-xs text-muted font-mono mt-1">
+                    <p className="text-[10px] sm:text-xs text-neutral-500 font-mono mt-1">
                       Qty: {item.quantity}
                       {item.size && ` • Size: ${item.size}`}
                     </p>
@@ -140,24 +140,24 @@ export default function OrderSuccess() {
             {/* Price Breakdown */}
             <div className="space-y-3 mb-4">
               <div className="flex justify-between text-xs sm:text-sm">
-                <span className="text-muted font-mono">Subtotal</span>
-                <span className="text-white font-mono">
+                <span className="text-neutral-500 font-mono">Subtotal</span>
+                <span className="text-neutral-900 font-mono">
                   ₹{Number(order.subtotal).toLocaleString('en-IN')}
                 </span>
               </div>
 
               {parseFloat(order.discount) > 0 && (
                 <div className="flex justify-between text-xs sm:text-sm">
-                  <span className="text-gold font-mono">Discount</span>
-                  <span className="text-gold font-mono">
+                  <span className="text-neutral-900 font-mono">Discount</span>
+                  <span className="text-neutral-900 font-mono">
                     −₹{Number(order.discount).toLocaleString('en-IN')}
                   </span>
                 </div>
               )}
 
               <div className="flex justify-between text-xs sm:text-sm">
-                <span className="text-muted font-mono">Delivery</span>
-                <span className="text-white font-mono">
+                <span className="text-neutral-500 font-mono">Delivery</span>
+                <span className="text-neutral-900 font-mono">
                   {parseFloat(order.delivery_fee) === 0
                     ? 'FREE'
                     : `₹${Number(order.delivery_fee).toLocaleString('en-IN')}`}
@@ -165,12 +165,12 @@ export default function OrderSuccess() {
               </div>
             </div>
 
-            <div className="flex items-center justify-between pt-4 border-t border-gold/10">
-              <span className="text-sm font-mono text-white uppercase tracking-wider">
+            <div className="flex items-center justify-between pt-4 border-t border-neutral-200">
+              <span className="text-sm font-mono text-neutral-900 uppercase tracking-wider">
                 Total Paid
               </span>
 
-              <span className="font-display text-2xl sm:text-3xl text-gradient-gold">
+              <span className="font-sans text-2xl sm:text-3xl text-gradient-gold">
                 ₹{Number(order.total).toLocaleString('en-IN')}
               </span>
             </div>
@@ -196,10 +196,10 @@ export default function OrderSuccess() {
         </section>
 
         {/* Trust */}
-        <div className="flex items-center justify-center gap-3 text-[10px] sm:text-xs text-muted font-mono tracking-wider leading-relaxed">
-          <span className="w-8 h-px bg-gold/20" />
+        <div className="flex items-center justify-center gap-3 text-[10px] sm:text-xs text-neutral-500 font-mono tracking-wider leading-relaxed">
+          <span className="w-8 h-px bg-neutral-950/20" />
           <span>Email confirmation will be sent shortly</span>
-          <span className="w-8 h-px bg-gold/20" />
+          <span className="w-8 h-px bg-neutral-950/20" />
         </div>
       </main>
     </div>

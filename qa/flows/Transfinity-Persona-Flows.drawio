@@ -1,0 +1,209 @@
+<mxfile host="Electron" agent="Transfinity QA" pages="2">
+  <diagram id="persona-flows" name="Persona Flows">
+    <mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1200" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" value="Transfinity — Persona E2E Flows" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontStyle=1;fontSize=20;" vertex="1" parent="1">
+          <mxGeometry x="40" y="20" width="520" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="sub" value="Guest (non-user) · Registered User · Admin — UI + API" style="text;html=1;strokeColor=none;fillColor=none;align=left;fontSize=12;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="40" y="50" width="520" height="20" as="geometry" />
+        </mxCell>
+        <!-- SHARED ENTRY -->
+        <mxCell id="entry" value="Visit site&#xa;/ (Landing hero)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F4F4F2;strokeColor=#111111;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="620" y="40" width="160" height="60" as="geometry" />
+        </mxCell>
+        <!-- GUEST COLUMN -->
+        <mxCell id="gHead" value="GUEST / NON-USER" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#111111;fontColor=#FFFFFF;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="120" width="360" height="36" as="geometry" />
+        </mxCell>
+        <mxCell id="g1" value="Browse Home / Arcs / Shop / Founder / QR&#xa;(public SiteNav)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="40" y="180" width="360" height="54" as="geometry" />
+        </mxCell>
+        <mxCell id="g2" value="Shop catalog /products&#xa;Product detail /products/:slug" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="40" y="250" width="360" height="54" as="geometry" />
+        </mxCell>
+        <mxCell id="g3" value="Cart / Checkout / Profile&#xa;→ ProtectedRoute → /login" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#B78B00;" vertex="1" parent="1">
+          <mxGeometry x="40" y="320" width="360" height="54" as="geometry" />
+        </mxCell>
+        <mxCell id="g4" value="Register (/register) or Sign In (/login)&#xa;POST /api/auth/register|login" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;" vertex="1" parent="1">
+          <mxGeometry x="40" y="390" width="360" height="54" as="geometry" />
+        </mxCell>
+        <mxCell id="g5" value="JWT stored (access + refresh)&#xa;Becomes USER persona" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="460" width="360" height="54" as="geometry" />
+        </mxCell>
+        <mxCell id="eg1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;" edge="1" parent="1" source="entry" target="g1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="eg2" edge="1" parent="1" source="g1" target="g2" style="endArrow=block;html=1;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="eg3" edge="1" parent="1" source="g2" target="g3" style="endArrow=block;html=1;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="eg4" edge="1" parent="1" source="g3" target="g4" style="endArrow=block;html=1;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="eg5" edge="1" parent="1" source="g4" target="g5" style="endArrow=block;html=1;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <!-- USER COLUMN -->
+        <mxCell id="uHead" value="REGISTERED USER" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#1A1A1A;fontColor=#FFFFFF;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="460" y="120" width="360" height="36" as="geometry" />
+        </mxCell>
+        <mxCell id="u1" value="Authenticated session&#xa;Sign In → Join replaced by Account / Sign Out" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="460" y="180" width="360" height="54" as="geometry" />
+        </mxCell>
+        <mxCell id="u2" value="Add to cart&#xa;POST /api/cart/add/ {product_id, qty, size}" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="460" y="250" width="360" height="54" as="geometry" />
+        </mxCell>
+        <mxCell id="u3" value="Cart → Checkout → Razorpay&#xa;/cart → /checkout → order-success" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="460" y="320" width="360" height="54" as="geometry" />
+        </mxCell>
+        <mxCell id="u4" value="Profile / Orders / Wishlist / Addresses&#xa;Arcs map: Enter gate (Wanderer)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="460" y="390" width="360" height="54" as="geometry" />
+        </mxCell>
+        <mxCell id="u5" value="QR / Treasure hunt&#xa;/scan · /api/hunt/* progress unlocks arcs" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;" vertex="1" parent="1">
+          <mxGeometry x="460" y="460" width="360" height="54" as="geometry" />
+        </mxCell>
+        <mxCell id="u6" value="Cannot open /admin&#xa;AdminRoute: role !== admin → /" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="460" y="530" width="360" height="54" as="geometry" />
+        </mxCell>
+        <mxCell id="eu1" edge="1" parent="1" source="g5" target="u1" style="endArrow=block;html=1;dashed=1;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="eu2" edge="1" parent="1" source="u1" target="u2" style="endArrow=block;html=1;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="eu3" edge="1" parent="1" source="u2" target="u3" style="endArrow=block;html=1;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="eu4" edge="1" parent="1" source="u3" target="u4" style="endArrow=block;html=1;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="eu5" edge="1" parent="1" source="u4" target="u5" style="endArrow=block;html=1;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="eu6" edge="1" parent="1" source="u1" target="u6" style="endArrow=block;html=1;">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="840" y="207" />
+              <mxPoint x="840" y="557" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <!-- ADMIN COLUMN -->
+        <mxCell id="aHead" value="ADMIN" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#000000;fontColor=#F0C040;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="880" y="120" width="360" height="36" as="geometry" />
+        </mxCell>
+        <mxCell id="a1" value="Login as admin&#xa;user.role === &#39;admin&#39; (+ is_staff)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="880" y="180" width="360" height="54" as="geometry" />
+        </mxCell>
+        <mxCell id="a2" value="AdminRoute allows /admin/*" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;" vertex="1" parent="1">
+          <mxGeometry x="880" y="250" width="360" height="54" as="geometry" />
+        </mxCell>
+        <mxCell id="a3" value="Dashboard · Products · Orders · Users&#xa;Hero banners · QR offers" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="880" y="320" width="360" height="54" as="geometry" />
+        </mxCell>
+        <mxCell id="a4" value="Admin APIs&#xa;/api/orders/admin/* · /api/auth/admin/users/&#xa;/api/hunt/admin/*" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="880" y="390" width="360" height="54" as="geometry" />
+        </mxCell>
+        <mxCell id="a5" value="Can also shop as a normal user&#xa;(same cart/checkout flows)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;" vertex="1" parent="1">
+          <mxGeometry x="880" y="460" width="360" height="54" as="geometry" />
+        </mxCell>
+        <mxCell id="ea1" edge="1" parent="1" source="entry" target="a1" style="endArrow=block;html=1;dashed=1;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ea2" edge="1" parent="1" source="a1" target="a2" style="endArrow=block;html=1;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ea3" edge="1" parent="1" source="a2" target="a3" style="endArrow=block;html=1;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ea4" edge="1" parent="1" source="a3" target="a4" style="endArrow=block;html=1;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ea5" edge="1" parent="1" source="a2" target="a5" style="endArrow=block;html=1;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <!-- SYSTEM STRIP -->
+        <mxCell id="sysHead" value="SYSTEM / BACKEND CROSS-CUTTING" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#333333;fontColor=#FFFFFF;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="640" width="1200" height="36" as="geometry" />
+        </mxCell>
+        <mxCell id="s1" value="Vite FE :5173&#xa;React Router + Zustand auth" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F5F5F5;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="40" y="700" width="280" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="s2" value="Django API :8000/api&#xa;JWT access + refresh" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F5F5F5;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="350" y="700" width="280" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="s3" value="Postgres :5433&#xa;Products · Cart · Orders · Hunt" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F5F5F5;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="660" y="700" width="280" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="s4" value="Razorpay + Cloudinary + Google OAuth&#xa;(external)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F5F5F5;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="970" y="700" width="270" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="legend" value="Legend: Yellow = auth gate · Green = allowed · Red = blocked · Purple = hunt/QR" style="text;html=1;strokeColor=none;fillColor=none;align=left;fontSize=11;fontColor=#555555;" vertex="1" parent="1">
+          <mxGeometry x="40" y="780" width="700" height="24" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="checkout-flow" name="Checkout + Hunt Detail">
+    <mxGraphModel dx="150393" dy="84338" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="1000" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="e1" edge="1" parent="1" source="c1" style="endArrow=block;" target="c2" />
+        <mxCell id="e2" edge="1" parent="1" source="c2" style="endArrow=block;" target="c3" />
+        <mxCell id="e3" edge="1" parent="1" source="c3" style="endArrow=block;" target="c4" />
+        <mxCell id="e4" edge="1" parent="1" source="c4" style="endArrow=block;" target="c5" />
+        <mxCell id="e5" edge="1" parent="1" source="c5" style="endArrow=block;" target="c6" />
+        <mxCell id="e6" edge="1" parent="1" source="c6" style="endArrow=block;" target="c7" />
+        <mxCell id="he1" edge="1" parent="1" source="h1" style="endArrow=block;" target="h2" />
+        <mxCell id="he2" edge="1" parent="1" source="h2" style="endArrow=block;" target="h3" />
+        <mxCell id="he3" edge="1" parent="1" source="h3" style="endArrow=block;" target="h4" />
+        <mxCell id="he4" edge="1" parent="1" source="h4" style="endArrow=block;" target="h5" />
+        <mxCell id="yYrG8RI4SVZDL7s-H159-1" parent="1" style="text;html=1;fontStyle=1;fontSize=18;" value="User commerce + hunt detail flow" vertex="1">
+          <mxGeometry height="30" width="400" x="-109980" y="-62360" as="geometry" />
+        </mxCell>
+        <mxCell id="yYrG8RI4SVZDL7s-H159-2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F4F4F2;strokeColor=#111;" value="/products" vertex="1">
+          <mxGeometry height="50" width="120" x="-109980" y="-62300" as="geometry" />
+        </mxCell>
+        <mxCell id="yYrG8RI4SVZDL7s-H159-3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="Product detail&#xa;select size" vertex="1">
+          <mxGeometry height="50" width="140" x="-109820" y="-62300" as="geometry" />
+        </mxCell>
+        <mxCell id="yYrG8RI4SVZDL7s-H159-4" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="Add to cart&#xa;/api/cart/add/" vertex="1">
+          <mxGeometry height="50" width="140" x="-109640" y="-62300" as="geometry" />
+        </mxCell>
+        <mxCell id="yYrG8RI4SVZDL7s-H159-5" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="/cart" vertex="1">
+          <mxGeometry height="50" width="120" x="-109460" y="-62300" as="geometry" />
+        </mxCell>
+        <mxCell id="yYrG8RI4SVZDL7s-H159-6" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="/checkout&#xa;address + coupon" vertex="1">
+          <mxGeometry height="50" width="150" x="-109300" y="-62300" as="geometry" />
+        </mxCell>
+        <mxCell id="yYrG8RI4SVZDL7s-H159-7" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#B78B00;" value="Razorpay pay" vertex="1">
+          <mxGeometry height="50" width="120" x="-109110" y="-62300" as="geometry" />
+        </mxCell>
+        <mxCell id="yYrG8RI4SVZDL7s-H159-8" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;" value="/order-success/:id&#xa;+ /orders" vertex="1">
+          <mxGeometry height="50" width="150" x="-108950" y="-62300" as="geometry" />
+        </mxCell>
+        <mxCell id="yYrG8RI4SVZDL7s-H159-9" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;" value="/arcs map&#xa;You are here: Wanderer" vertex="1">
+          <mxGeometry height="55" width="180" x="-109980" y="-62160" as="geometry" />
+        </mxCell>
+        <mxCell id="yYrG8RI4SVZDL7s-H159-10" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="/arcs/wanderer" vertex="1">
+          <mxGeometry height="55" width="140" x="-109760" y="-62160" as="geometry" />
+        </mxCell>
+        <mxCell id="yYrG8RI4SVZDL7s-H159-11" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="/scan QR&#xa;/api/hunt/scan/" vertex="1">
+          <mxGeometry height="55" width="160" x="-109580" y="-62160" as="geometry" />
+        </mxCell>
+        <mxCell id="yYrG8RI4SVZDL7s-H159-12" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="Progress update&#xa;/api/hunt/hunt-progress/" vertex="1">
+          <mxGeometry height="55" width="180" x="-109380" y="-62160" as="geometry" />
+        </mxCell>
+        <mxCell id="yYrG8RI4SVZDL7s-H159-13" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;" value="Unlock next arc gate&#xa;on map" vertex="1">
+          <mxGeometry height="55" width="160" x="-109160" y="-62160" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

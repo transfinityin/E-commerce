@@ -101,7 +101,7 @@ const TreasureHunt = () => {
                 key={level}
                 className={`relative aspect-square rounded-2xl flex flex-col items-center justify-center transition-all duration-300 shadow-sm ${
                   isUnlocked 
-                    ? 'bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-primary-dark)] text-white shadow-[var(--shadow-gold)]' 
+                    ? 'bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-primary-dark)] text-neutral-900 shadow-[var(--shadow-gold)]' 
                     : isNext
                     ? 'bg-[var(--color-surface)] border-2 border-dashed border-[var(--color-primary)] animate-pulse'
                     : 'bg-[var(--color-bg-alt)] border border-[var(--color-border)] opacity-50'
@@ -111,13 +111,13 @@ const TreasureHunt = () => {
                   {isUnlocked ? '💎' : isNext ? '🔐' : '🔒'}
                 </span>
                 <span className={`text-xs font-bold ${
-                  isUnlocked ? 'text-white' : 'text-[var(--color-muted)]'
+                  isUnlocked ? 'text-neutral-900' : 'text-[var(--color-muted)]'
                 }`}>
                   L{level}
                 </span>
                 {isUnlocked && (
                   <div className="absolute -top-2 -right-2 w-6 h-6 bg-[var(--color-success)] rounded-full flex items-center justify-center shadow-md">
-                    <svg className="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-3.5 h-3.5 text-neutral-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                     </svg>
                   </div>
@@ -136,7 +136,7 @@ const TreasureHunt = () => {
               </div>
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-1">
-                  <span className="bg-[var(--color-primary)] text-white text-xs font-bold px-2.5 py-1 rounded-full">
+                  <span className="bg-[var(--color-primary)] text-neutral-900 text-xs font-bold px-2.5 py-1 rounded-full">
                     LEVEL {progress.next_location.level}
                   </span>
                   <h2 className="text-lg font-bold text-[var(--color-text)]">
@@ -176,7 +176,7 @@ const TreasureHunt = () => {
                   </button>
                   <button
                     onClick={() => navigate('/scan')}
-                    className="flex-1 bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] text-white py-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-all shadow-[var(--shadow-gold)] hover:shadow-lg"
+                    className="flex-1 bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] text-neutral-900 py-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-all shadow-[var(--shadow-gold)] hover:shadow-lg"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
@@ -213,7 +213,7 @@ const TreasureHunt = () => {
                     </div>
                   </div>
                   {reward.coupon_code && (
-                    <div className="bg-[var(--color-primary)] text-white px-4 py-2 rounded-full text-sm font-mono font-bold shadow-sm">
+                    <div className="bg-[var(--color-primary)] text-neutral-900 px-4 py-2 rounded-full text-sm font-mono font-bold shadow-sm">
                       {reward.coupon_code}
                     </div>
                   )}
@@ -257,7 +257,7 @@ const HuntStarter = () => {
               { step: 4, text: 'Win exclusive coupons & rewards!', icon: '🎁' },
             ].map((item) => (
               <div key={item.step} className="flex items-center gap-4 bg-[var(--color-bg-alt)] rounded-xl p-4 border border-[var(--color-border-light)]">
-                <div className="w-10 h-10 bg-[var(--color-primary)] rounded-full flex items-center justify-center text-white font-bold flex-shrink-0">
+                <div className="w-10 h-10 bg-[var(--color-primary)] rounded-full flex items-center justify-center text-neutral-900 font-bold flex-shrink-0">
                   {item.step}
                 </div>
                 <p className="text-[var(--color-text)] text-sm font-medium text-left">{item.text}</p>
@@ -268,7 +268,7 @@ const HuntStarter = () => {
 
           <button
             onClick={() => navigate('/scan')}
-            className="w-full bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] text-white py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-2 transition-all shadow-[var(--shadow-gold)] hover:shadow-lg"
+            className="w-full bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] text-neutral-900 py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-2 transition-all shadow-[var(--shadow-gold)] hover:shadow-lg"
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
@@ -311,7 +311,7 @@ const HuntCompleted = () => {
             </button>
             <button
               onClick={() => navigate('/products')}
-              className="flex-1 bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] text-white py-3 rounded-xl font-bold transition-all shadow-[var(--shadow-gold)]"
+              className="flex-1 bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] text-neutral-900 py-3 rounded-xl font-bold transition-all shadow-[var(--shadow-gold)]"
             >
               Shop More
             </button>

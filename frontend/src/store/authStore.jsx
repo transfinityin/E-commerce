@@ -245,23 +245,26 @@ const useAuthStore = create(
         return data;
       },
 
-      logout: async () => {
-        try {
-          const refresh = localStorage.getItem("refresh_token");
-          await api.post("/auth/logout/", { refresh });
-        } catch (err) {
-          console.error("Google login failed:", err.message);
-          throw new Error(err.response?.data?.detail || "Google login failed", {
-            cause: err,
-          });
-        }
-        localStorage.clear();
+      clearSession: () => {
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("refresh_token");
+        localStorage.removeItem("user");
         set({
           user: null,
           access_token: null,
           refresh_token: null,
           isAuthenticated: false,
         });
+      },
+
+      logout: async () => {
+        try {
+          const refresh = localStorage.getItem("refresh_token");
+          if (refresh) await api.post("/auth/logout/", { refresh });
+        } catch {
+          // ignore network/logout API errors — still clear local session
+        }
+        get().clearSession();
       },
 
       updateUser: (user) => set({ user }),
@@ -389,5 +392,12 @@ const useAuthStore = create(
     },
   ),
 );
+
+// Sync UI when API refresh fails on a public page
+if (typeof window !== "undefined") {
+  window.addEventListener("tf:auth-cleared", () => {
+    useAuthStore.getState().clearSession();
+  });
+}
 
 export default useAuthStore;

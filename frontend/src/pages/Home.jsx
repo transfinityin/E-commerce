@@ -121,7 +121,7 @@ function HeroBannerCarousel({ banners }) {
           {banner.subtitle || '✦ PHASE 01 · WANDERER ARC ✦'}
         </p>
 
-        <h1 className="font-display text-[2rem] sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl text-white tracking-[0.11em] sm:tracking-[0.15em] leading-tight mb-4 sm:mb-6 max-w-5xl">
+        <h1 className="font-display text-[2rem] sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl text-neutral-900 tracking-[0.11em] sm:tracking-[0.15em] leading-tight mb-4 sm:mb-6 max-w-5xl">
           {banner.title || 'THE WANDERER ARC'}
         </h1>
 
@@ -261,7 +261,7 @@ function ProductScroller({ products, loading, title, subtitle, viewAllLink }) {
         <div className="flex items-end justify-between gap-4 mb-6 sm:mb-8 lg:mb-10">
           <div className="min-w-0">
             <p className="label-gold mb-2">{subtitle}</p>
-            <h2 className="heading-section text-white leading-tight">{title}</h2>
+            <h2 className="heading-section text-neutral-900 leading-tight">{title}</h2>
           </div>
 
           {viewAllLink && (
@@ -386,7 +386,7 @@ export default function Home() {
             <div className="relative z-10 text-center max-w-4xl mx-auto">
               <p className="label-gold mb-4">✦ PHASE 01 · WANDERER ARC ✦</p>
 
-              <h1 className="font-display text-[2.25rem] sm:text-5xl md:text-6xl lg:text-7xl text-white tracking-[0.14em] leading-tight mb-5 sm:mb-6">
+              <h1 className="font-display text-[2.25rem] sm:text-5xl md:text-6xl lg:text-7xl text-neutral-900 tracking-[0.14em] leading-tight mb-5 sm:mb-6">
                 TRANS<span className="text-gradient-gold">FINITY</span>
               </h1>
 
@@ -466,7 +466,7 @@ export default function Home() {
 
                 <h3
                   className={`font-display text-sm sm:text-base tracking-[0.15em] uppercase mb-2 ${
-                    arc.active ? 'text-white' : 'text-muted'
+                    arc.active ? 'text-neutral-900' : 'text-muted'
                   }`}
                 >
                   {arc.name}
@@ -502,7 +502,7 @@ export default function Home() {
                 </div>
 
                 <div className="min-w-0">
-                  <p className="text-[11px] sm:text-xs font-semibold text-white tracking-wider uppercase truncate">
+                  <p className="text-[11px] sm:text-xs font-semibold text-neutral-900 tracking-wider uppercase truncate">
                     {item.title}
                   </p>
                   <p className="text-[10px] text-muted font-mono tracking-wider truncate mt-0.5">
@@ -550,7 +550,7 @@ export default function Home() {
                 <p className="font-mono text-[10px] sm:text-[11px] tracking-[0.3em] uppercase text-gold mb-2">
                   The Architect
                 </p>
-                <p className="font-display text-2xl sm:text-3xl text-white tracking-wider">
+                <p className="font-display text-2xl sm:text-3xl text-neutral-900 tracking-wider">
                   KAIROS
                 </p>
               </div>
@@ -559,7 +559,7 @@ export default function Home() {
             <div className="space-y-5 sm:space-y-6">
               <p className="label-gold">Encrypted Transmission</p>
 
-              <h2 className="heading-section text-white leading-tight">
+              <h2 className="heading-section text-neutral-900 leading-tight">
                 "TIME IS NOT
                 <br />
                 <span className="text-gradient-gold">A LINE.</span> IT IS
@@ -626,7 +626,7 @@ export default function Home() {
           <div className="page-container">
             <div className="mb-6 sm:mb-8 lg:mb-10">
               <p className="label-gold mb-2">Browse the Archives</p>
-              <h2 className="heading-section text-white">CATEGORIES</h2>
+              <h2 className="heading-section text-neutral-900">CATEGORIES</h2>
             </div>
 
             <div className="grid grid-cols-2 xs:grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-4">
@@ -666,7 +666,7 @@ export default function Home() {
         <div className="page-container relative z-10 text-center">
           <p className="label-gold mb-4 sm:mb-6">The Journey Continues</p>
 
-          <h2 className="heading-section text-white mb-4 sm:mb-6">
+          <h2 className="heading-section text-neutral-900 mb-4 sm:mb-6">
             READY TO <span className="text-gradient-gold">CROSS?</span>
           </h2>
 

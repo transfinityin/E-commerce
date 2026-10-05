@@ -10,8 +10,7 @@ from dj_rest_auth.registration.views import SocialLoginView
 
 class GoogleLogin(SocialLoginView):
     adapter_class = GoogleOAuth2Adapter
-    # callback_url = "http://localhost:5173/login"  # Your React app URL
-    callback_url = "https://transfinity.shop/login"  # ✅ Production URL
+    callback_url = __import__("os").getenv("FRONTEND_URL", "http://localhost:5173").rstrip("/") + "/login"
     client_class = OAuth2Client
 
 urlpatterns = [
