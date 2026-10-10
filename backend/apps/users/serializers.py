@@ -35,12 +35,12 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = (
             'id', 'name', 'email', 'phone', 'avatar', 'role',
-            'is_active', 'date_joined',
+            'is_active', 'is_staff', 'is_superuser', 'date_joined',
             'rank', 'rank_display', 'xp', 'unlocked_arcs',
             'next_rank', 'is_founder'
         )
         read_only_fields = (
-            'id', 'email', 'role', 'is_active', 'date_joined',
+            'id', 'email', 'role', 'is_active', 'is_staff', 'is_superuser', 'date_joined',
             'rank', 'xp', 'unlocked_arcs'
         )
 
@@ -73,11 +73,31 @@ class ChangePasswordSerializer(serializers.Serializer):
             raise serializers.ValidationError('Old password incorrect.')
         return value
 class UserMiniSerializer(serializers.ModelSerializer):
-    """Minimal user info for nested displays"""
+    """Admin list + nested displays"""
     class Meta:
         model = User
-        fields = ('id', 'name', 'email', 'phone', 'avatar')
-        read_only_fields = ('id',)
+        fields = (
+            'id', 'name', 'email', 'phone', 'avatar',
+            'role', 'is_active', 'is_staff', 'is_superuser', 'date_joined',
+        )
+        read_only_fields = (
+            'id', 'role', 'is_staff', 'is_superuser', 'date_joined',
+        )
+
+
+class AdminUserUpdateSerializer(serializers.ModelSerializer):
+    """Super-admin can block/unblock customers (not other superusers)."""
+    class Meta:
+        model = User
+        fields = ('is_active',)
+
+    def validate(self, attrs):
+        target = self.instance
+        if target and target.is_superuser:
+            raise serializers.ValidationError('Cannot modify a super admin account.')
+        return attrs
+
+
 class AddressSerializer(serializers.ModelSerializer):
     class Meta:
         model  = Address

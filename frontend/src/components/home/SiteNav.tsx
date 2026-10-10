@@ -1,10 +1,11 @@
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { ShoppingBag, Menu, X } from "lucide-react";
-import { motion } from "framer-motion";
+import { ShoppingBag, Menu, X, Shield } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import useAuthStore from "@/store/authStore";
 import useCartStore from "@/store/cartStore";
+import { ADMIN_NAV_LINKS, isSuperAdmin } from "@/lib/admin";
 
 const LINKS = [
   { href: "/", label: "Home" },
@@ -23,11 +24,13 @@ type SiteNavProps = {
 export function SiteNav({ tone = "light", overlay = false }: SiteNavProps) {
   const isLight = tone === "light";
   const [open, setOpen] = useState(false);
+  const [adminOpen, setAdminOpen] = useState(false);
   const { isAuthenticated, user, logout } = useAuthStore();
   const cart = useCartStore((s) => s.cart);
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const cartCount = cart?.total_items || 0;
+  const showAdmin = isSuperAdmin(user);
 
   const linkClass = (href: string) =>
     cn(
@@ -74,6 +77,50 @@ export function SiteNav({ tone = "light", overlay = false }: SiteNavProps) {
                 {link.label}
               </Link>
             ))}
+            {showAdmin && (
+              <div
+                className="relative"
+                onMouseEnter={() => setAdminOpen(true)}
+                onMouseLeave={() => setAdminOpen(false)}
+              >
+                <Link
+                  to="/admin"
+                  className={cn(
+                    linkClass("/admin"),
+                    "inline-flex items-center gap-1.5 font-semibold",
+                  )}
+                >
+                  <Shield className="size-3" strokeWidth={1.75} />
+                  Admin
+                </Link>
+                <AnimatePresence>
+                  {adminOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 6 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: 4 }}
+                      transition={{ duration: 0.18 }}
+                      className="absolute top-full left-1/2 z-50 mt-2 w-48 -translate-x-1/2 overflow-hidden rounded-2xl bg-white py-2 shadow-[0_18px_48px_rgba(17,17,17,0.12)] ring-1 ring-black/6"
+                    >
+                      {ADMIN_NAV_LINKS.map((link) => (
+                        <Link
+                          key={link.href}
+                          to={link.href}
+                          className={cn(
+                            "block px-4 py-2.5 text-[11px] font-semibold tracking-[0.16em] uppercase transition-colors",
+                            pathname === link.href || pathname.startsWith(`${link.href}/`)
+                              ? "bg-neutral-950 text-white"
+                              : "text-neutral-700 hover:bg-neutral-100",
+                          )}
+                        >
+                          {link.label}
+                        </Link>
+                      ))}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            )}
           </nav>
 
           <div
@@ -115,23 +162,21 @@ export function SiteNav({ tone = "light", overlay = false }: SiteNavProps) {
                 </button>
               </div>
             ) : (
-              <div className="hidden items-center gap-4 md:flex">
+              <div className="hidden items-center gap-3 md:flex">
                 <Link
                   to="/login"
-                  className="text-[11px] tracking-[0.22em] uppercase opacity-80 hover:opacity-100"
+                  className={cn(
+                    "tf-sign-in",
+                    !isLight && "tf-sign-in--on-dark",
+                  )}
                 >
                   Sign In
                 </Link>
                 <Link
                   to="/register"
-                  className={cn(
-                    "inline-flex h-9 items-center px-4 text-[11px] font-semibold tracking-[0.22em] uppercase",
-                    isLight
-                      ? "bg-neutral-950 text-white hover:bg-neutral-800"
-                      : "bg-white text-neutral-950 hover:bg-neutral-100",
-                  )}
+                  className={cn("tf-join", !isLight && "tf-join--light")}
                 >
-                  Join
+                  <span>Join</span>
                 </Link>
               </div>
             )}
@@ -160,6 +205,23 @@ export function SiteNav({ tone = "light", overlay = false }: SiteNavProps) {
                   {link.label}
                 </Link>
               ))}
+              {showAdmin && (
+                <>
+                  <p className="pt-1 text-[9px] font-semibold tracking-[0.28em] text-neutral-400 uppercase">
+                    Super admin
+                  </p>
+                  {ADMIN_NAV_LINKS.map((link) => (
+                    <Link
+                      key={link.href}
+                      to={link.href}
+                      onClick={() => setOpen(false)}
+                      className="text-[12px] font-semibold tracking-[0.28em] text-neutral-900 uppercase"
+                    >
+                      {link.label}
+                    </Link>
+                  ))}
+                </>
+              )}
               {isAuthenticated ? (
                 <>
                   <Link to="/profile" onClick={() => setOpen(false)} className="text-[12px] tracking-[0.28em] uppercase">
@@ -179,11 +241,19 @@ export function SiteNav({ tone = "light", overlay = false }: SiteNavProps) {
                 </>
               ) : (
                 <>
-                  <Link to="/login" onClick={() => setOpen(false)} className="text-[12px] tracking-[0.28em] uppercase">
+                  <Link
+                    to="/login"
+                    onClick={() => setOpen(false)}
+                    className="tf-sign-in tf-sign-in--block"
+                  >
                     Sign In
                   </Link>
-                  <Link to="/register" onClick={() => setOpen(false)} className="text-[12px] tracking-[0.28em] uppercase">
-                    Join
+                  <Link
+                    to="/register"
+                    onClick={() => setOpen(false)}
+                    className="tf-join tf-join--block"
+                  >
+                    <span>Join</span>
                   </Link>
                 </>
               )}

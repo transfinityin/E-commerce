@@ -114,12 +114,12 @@ from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser, B
 logger = logging.getLogger(__name__)
 
 class IsStaffUser(BasePermission):
-    """JWT-compatible staff check"""
+    """Write access for hero banners — super admin only."""
     def has_permission(self, request, view):
         return bool(
-            request.user and
-            request.user.is_authenticated and
-            request.user.is_staff
+            request.user
+            and request.user.is_authenticated
+            and getattr(request.user, "is_superuser", False)
         )
 class HeroBannerList(APIView):
     def get_permissions(self):
@@ -128,7 +128,7 @@ class HeroBannerList(APIView):
         return [IsStaffUser()]  # IsAdminUser checks is_staff=True
 
     def get(self, request):
-        if request.user and request.user.is_authenticated and request.user.is_staff:
+        if request.user and request.user.is_authenticated and getattr(request.user, "is_superuser", False):
             banners = HeroBanner.objects.all().order_by('display_order')
         else:
             banners = HeroBanner.objects.filter(is_active=True).order_by('display_order')

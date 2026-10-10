@@ -259,7 +259,7 @@ export default function Navbar() {
                         </Link>
                       ))}
 
-                      {user?.role === 'admin' && (
+                      {user?.is_superuser && (
                         <Link 
                           to="/admin" 
                           onClick={() => setProfileOpen(false)} 
@@ -290,19 +290,15 @@ export default function Navbar() {
               <div className="hidden md:flex gap-2">
                 <Link 
                   to="/login" 
-                  className="text-[11px] tracking-[0.15em] uppercase font-medium text-muted 
-                    no-underline border border-neutral-200 transition-all duration-300 
-                    hover:border-gold/50 hover:text-neutral-800 hover:bg-gold/5 px-4 py-2"
+                  className="tf-sign-in no-underline"
                 >
                   Sign In
                 </Link>
                 <Link 
                   to="/register" 
-                  className="text-[11px] tracking-[0.15em] uppercase font-medium text-black 
-                    no-underline bg-gold transition-all duration-300 
-                    hover:bg-gold-light hover:shadow-[0_0_20px_rgba(212,175,55,0.3)] px-4 py-2"
+                  className="tf-join no-underline"
                 >
-                  Join
+                  <span>Join</span>
                 </Link>
               </div>
             )}
@@ -353,20 +349,16 @@ export default function Navbar() {
                   <Link 
                     to="/login" 
                     onClick={() => setMenuOpen(false)}
-                    className="flex-1 text-center text-[11px] tracking-[0.15em] uppercase font-medium 
-                      text-muted border border-neutral-200 py-3 transition-all duration-300 
-                      hover:border-gold/50 hover:text-neutral-800 no-underline"
+                    className="tf-sign-in tf-sign-in--block flex-1 no-underline"
                   >
                     Sign In
                   </Link>
                   <Link 
                     to="/register" 
                     onClick={() => setMenuOpen(false)}
-                    className="flex-1 text-center text-[11px] tracking-[0.15em] uppercase font-medium 
-                      text-black bg-gold py-3 transition-all duration-300 
-                      hover:bg-gold-light no-underline"
+                    className="tf-join tf-join--block flex-1 no-underline"
                   >
-                    Join
+                    <span>Join</span>
                   </Link>
                 </div>
               ) : (
@@ -399,7 +391,7 @@ export default function Navbar() {
                     </Link>
                   ))}
 
-                  {user?.role === 'admin' && (
+                  {user?.is_superuser && (
                     <Link 
                       to="/admin" 
                       onClick={() => setMenuOpen(false)}

@@ -10,38 +10,16 @@ import {
   Activity,
   Star,
   Clock,
-  Image as ImageIcon,
   QrCode,
   Loader2,
 } from 'lucide-react'
 import api from '../../services/api'
 
-
 const METRIC_CARDS = [
-  {
-    key: 'orders',
-    label: 'Total Orders',
-    icon: ShoppingBag,
-    path: '/admin/orders',
-  },
-  {
-    key: 'users',
-    label: 'Total Users',
-    icon: Users,
-    path: '/admin/users',
-  },
-  {
-    key: 'products',
-    label: 'Products',
-    icon: Package,
-    path: '/admin/products',
-  },
-  {
-    key: 'revenue',
-    label: 'Revenue',
-    icon: TrendingUp,
-    path: '/admin/orders',
-  },
+  { key: 'orders', label: 'Total Orders', icon: ShoppingBag, path: '/admin/orders' },
+  { key: 'users', label: 'Total Users', icon: Users, path: '/admin/users' },
+  { key: 'products', label: 'Products', icon: Package, path: '/admin/products' },
+  { key: 'revenue', label: 'Revenue', icon: TrendingUp, path: '/admin/orders' },
 ]
 
 function formatCurrency(value) {
@@ -50,17 +28,16 @@ function formatCurrency(value) {
 
 function StatusBadge({ status }) {
   const normalized = String(status || 'pending').toLowerCase()
-
   const statusClass =
     normalized === 'delivered'
-      ? 'border-gold/30 bg-gold/10 text-gold'
+      ? 'bg-emerald-50 text-emerald-700 ring-emerald-200'
       : normalized === 'cancelled'
-        ? 'border-red-400/30 bg-red-400/10 text-red-400'
-        : 'border-yellow-400/30 bg-yellow-400/10 text-yellow-400'
+        ? 'bg-red-50 text-red-700 ring-red-200'
+        : 'bg-amber-50 text-amber-800 ring-amber-200'
 
   return (
     <span
-      className={`text-[9px] sm:text-[10px] font-mono tracking-wider uppercase px-2.5 py-1 border ${statusClass}`}
+      className={`rounded-full px-2.5 py-1 text-[9px] font-semibold tracking-[0.14em] uppercase ring-1 ${statusClass}`}
     >
       {normalized}
     </span>
@@ -77,20 +54,58 @@ export default function Dashboard() {
     top_products: [],
     revenue_trend: [],
   })
-
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     let mounted = true
 
-    const fetchDashboard = async () => {
-      setLoading(true)
-
+    const fallbackFetchStats = async () => {
       try {
-        const { data } = await api.get('/orders/admin/dashboard-stats/')
-
+        const [ordersRes, productsRes, usersRes] = await Promise.all([
+          api.get('/orders/admin/'),
+          api.get('/products/admin/products/'),
+          api.get('/auth/admin/users/'),
+        ])
         if (!mounted) return
 
+        const orderList = ordersRes.data.results || ordersRes.data || []
+        const productList = productsRes.data.results || productsRes.data || []
+        const userList = usersRes.data.results || usersRes.data || []
+        const completedOrders = orderList.filter((order) =>
+          ['delivered', 'shipped'].includes(order.status),
+        )
+        const revenue = completedOrders.reduce(
+          (sum, order) => sum + parseFloat(order.total || 0),
+          0,
+        )
+
+        setStats({
+          orders: orderList.length,
+          products: productList.length,
+          users: userList.length,
+          revenue,
+          recent_orders: orderList.slice(0, 8),
+          top_products: productList.slice(0, 5).map((product) => ({
+            id: product.id,
+            name: product.name,
+            sold: product.sold_count || 0,
+            revenue:
+              parseFloat(product.effective_price || product.price || 0) *
+              (product.sold_count || 0),
+            primary_image: product.primary_image,
+          })),
+          revenue_trend: [],
+        })
+      } catch (error) {
+        console.error('Fallback API Error:', error)
+      }
+    }
+
+    const fetchDashboard = async () => {
+      setLoading(true)
+      try {
+        const { data } = await api.get('/orders/admin/dashboard-stats/')
+        if (!mounted) return
         setStats({
           orders: data.orders || 0,
           users: data.users || 0,
@@ -110,375 +125,271 @@ export default function Dashboard() {
         })
       } catch (error) {
         console.error('Dashboard API Error:', error)
-        await fallbackFetchStats(mounted)
+        await fallbackFetchStats()
       } finally {
         if (mounted) setLoading(false)
       }
     }
 
     fetchDashboard()
-
     return () => {
       mounted = false
     }
   }, [])
 
-  const fallbackFetchStats = async (mounted = true) => {
-    try {
-      const [ordersRes, productsRes, usersRes] = await Promise.all([
-        api.get('/orders/admin/'),
-        api.get('/products/admin/products/'),
-        api.get('/auth/admin/users/'),
-      ])
-
-      if (!mounted) return
-
-      const orderList = ordersRes.data.results || ordersRes.data || []
-      const productList = productsRes.data.results || productsRes.data || []
-      const userList = usersRes.data.results || usersRes.data || []
-
-      const completedOrders = orderList.filter((order) =>
-        ['delivered', 'shipped'].includes(order.status)
-      )
-
-      const revenue = completedOrders.reduce(
-        (sum, order) => sum + parseFloat(order.total || 0),
-        0
-      )
-
-      setStats({
-        orders: orderList.length,
-        products: productList.length,
-        users: userList.length,
-        revenue,
-        recent_orders: orderList.slice(0, 8),
-        top_products: productList.slice(0, 5).map((product) => ({
-          id: product.id,
-          name: product.name,
-          sold: product.sold_count || 0,
-          revenue:
-            parseFloat(product.effective_price || product.price || 0) *
-            (product.sold_count || 0),
-          primary_image: product.primary_image,
-        })),
-        revenue_trend: [],
-      })
-    } catch (error) {
-      console.error('Fallback API Error:', error)
-    }
-  }
-
   return (
-    <div className="min-h-screen bg-black pt-[76px] sm:pt-[88px] lg:pt-[96px] overflow-x-hidden">
-      <main className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-10">
-        {/* Header */}
-        <section className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-5 mb-7 sm:mb-9">
-          <div>
-            <p className="label-gold mb-2">Admin Overview</p>
+    <div className="space-y-7 sm:space-y-8">
+      <section className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <p className="mb-2 text-[10px] font-semibold tracking-[0.22em] text-neutral-500 uppercase">
+            Overview
+          </p>
+          <h1 className="text-2xl font-semibold tracking-[-0.03em] text-neutral-950 sm:text-3xl">
+            Dashboard
+          </h1>
+          <p className="mt-2 max-w-xl text-sm leading-relaxed text-neutral-500">
+            Orders, revenue, customers, products, and QR offers — without the old banner tooling.
+          </p>
+        </div>
 
-            <h1 className="font-display text-2xl sm:text-3xl lg:text-5xl text-white tracking-[0.12em] leading-tight">
-              DASH<span className="text-gradient-gold">BOARD</span>
-            </h1>
+        <div className="flex flex-wrap gap-2">
+          <Link
+            to="/admin/products"
+            className="inline-flex h-10 items-center gap-2 rounded-full bg-neutral-950 px-4 text-[10px] font-semibold tracking-[0.16em] text-white uppercase shadow-[0_10px_24px_rgba(0,0,0,0.16)]"
+          >
+            <Package size={14} />
+            Products
+          </Link>
+          <Link
+            to="/admin/qr-offers"
+            className="inline-flex h-10 items-center gap-2 rounded-full bg-white px-4 text-[10px] font-semibold tracking-[0.16em] text-neutral-700 uppercase ring-1 ring-black/8"
+          >
+            <QrCode size={14} />
+            QR Offers
+          </Link>
+        </div>
+      </section>
 
-            <p className="text-xs sm:text-sm text-muted font-mono tracking-wider leading-relaxed mt-3 max-w-2xl">
-              Monitor orders, revenue, customers, products, hero banners, and QR offer
-              operations from one command center.
-            </p>
-          </div>
-
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+      <section className="grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-4">
+        {METRIC_CARDS.map((metric) => {
+          const Icon = metric.icon
+          const value = stats[metric.key]
+          return (
             <Link
-              to="/admin/qr-offers"
-              className="btn-primary inline-flex items-center justify-center gap-2 w-full sm:w-auto"
+              key={metric.key}
+              to={metric.path}
+              className="rounded-2xl bg-white p-4 shadow-[0_10px_30px_rgba(17,17,17,0.04)] ring-1 ring-black/5 transition hover:ring-black/10 sm:p-5"
             >
-              <QrCode size={16} />
-              QR OFFERS
-            </Link>
-
-            <Link
-              to="/admin/hero-banners"
-              className="btn-outline inline-flex items-center justify-center gap-2 w-full sm:w-auto"
-            >
-              <ImageIcon size={16} />
-              BANNERS
-            </Link>
-          </div>
-        </section>
-
-        <div className="divider-gold mb-7 sm:mb-9" />
-
-        {/* Metric Cards */}
-        <section className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-5 mb-7 sm:mb-9">
-          {METRIC_CARDS.map((metric, index) => {
-            const Icon = metric.icon
-            const value = stats[metric.key]
-
-            return (
-              <Link
-                key={metric.key}
-                to={metric.path}
-                className="group bg-[#0A0A0A] border border-gold/15 hover:border-gold/40 p-4 sm:p-5 lg:p-6 transition-all duration-500 animate-fadeUp hover:shadow-[0_16px_60px_rgba(212,175,55,0.08)]"
-                style={{ animationDelay: `${index * 0.05}s` }}
-              >
-                <div className="flex items-center justify-between gap-3 mb-4">
-                  <div className="w-10 h-10 sm:w-11 sm:h-11 border border-gold/20 bg-gold/10 flex items-center justify-center text-gold group-hover:bg-gold group-hover:text-black transition-all duration-300">
-                    <Icon size={18} />
-                  </div>
-
-                  <span className="text-[9px] sm:text-[10px] font-mono tracking-wider uppercase border border-gold/20 bg-gold/10 text-gold px-2 py-1">
-                    Live
-                  </span>
+              <div className="mb-4 flex items-center justify-between gap-3">
+                <div className="flex size-10 items-center justify-center rounded-full bg-[#F4F4F2] text-neutral-800">
+                  <Icon size={16} />
                 </div>
-
-                {loading ? (
-                  <div className="h-7 skeleton-dark w-20 mb-2" />
-                ) : (
-                  <p className="font-display text-xl sm:text-2xl lg:text-3xl text-white mb-1">
-                    {metric.key === 'revenue'
-                      ? formatCurrency(value)
-                      : Number(value || 0).toLocaleString('en-IN')}
-                  </p>
-                )}
-
-                <p className="text-[10px] sm:text-xs text-muted font-mono tracking-wider uppercase">
-                  {metric.label}
+                <span className="rounded-full bg-[#F4F4F2] px-2 py-1 text-[9px] font-semibold tracking-[0.14em] text-neutral-500 uppercase">
+                  Live
+                </span>
+              </div>
+              {loading ? (
+                <div className="mb-2 flex h-7 items-center text-neutral-400">
+                  <Loader2 size={16} className="animate-spin" />
+                </div>
+              ) : (
+                <p className="mb-1 text-xl font-semibold tracking-[-0.03em] text-neutral-950 sm:text-2xl">
+                  {metric.key === 'revenue'
+                    ? formatCurrency(value)
+                    : Number(value || 0).toLocaleString('en-IN')}
                 </p>
-              </Link>
-            )
-          })}
-        </section>
+              )}
+              <p className="text-[10px] font-semibold tracking-[0.16em] text-neutral-500 uppercase">
+                {metric.label}
+              </p>
+            </Link>
+          )
+        })}
+      </section>
 
-        {/* Charts Row */}
-        <section className="grid grid-cols-1 lg:grid-cols-2 gap-5 sm:gap-6 mb-7 sm:mb-9">
-          {/* Revenue Chart */}
-          <div className="bg-[#0A0A0A] border border-gold/15 p-4 sm:p-6">
-            <div className="flex items-center justify-between gap-4 mb-6">
-              <div className="flex items-center gap-3">
-                <div className="w-9 h-9 border border-gold/20 bg-gold/10 flex items-center justify-center">
-                  <BarChart3 size={17} className="text-gold" />
-                </div>
-
-                <div>
-                  <p className="label-gold mb-1">Revenue Signal</p>
-                  <h3 className="font-display text-sm sm:text-base text-white tracking-[0.12em]">
-                    REVENUE TREND
-                  </h3>
-                </div>
-              </div>
-
-              <span className="text-[10px] sm:text-xs text-muted font-mono tracking-wider uppercase">
-                7D
-              </span>
-            </div>
-
-            {loading ? (
-              <div className="h-48 skeleton-dark border border-gold/10" />
-            ) : stats.revenue_trend?.length > 0 ? (
-              <div className="h-52 flex items-end gap-2 sm:gap-3 border border-gold/10 bg-black px-3 sm:px-4 py-4">
-                {stats.revenue_trend.map((day, index) => {
-                  const maxRevenue = Math.max(
-                    ...stats.revenue_trend.map((item) => item.revenue),
-                    1
-                  )
-
-                  const height =
-                    maxRevenue > 0 ? (day.revenue / maxRevenue) * 100 : 0
-
-                  return (
-                    <div
-                      key={`${day.day}-${index}`}
-                      className="flex-1 flex flex-col items-center justify-end gap-2 group h-full"
-                    >
-                      <div className="w-full h-full flex items-end">
-                        <div
-                          className="w-full bg-gold/25 group-hover:bg-gold transition-colors duration-300"
-                          style={{
-                            height: `${Math.max(height, 4)}%`,
-                            minHeight: '4px',
-                          }}
-                        />
-                      </div>
-
-                      <span className="text-[8px] sm:text-[9px] text-muted font-mono truncate w-full text-center">
-                        {day.day}
-                      </span>
-                    </div>
-                  )
-                })}
-              </div>
-            ) : (
-              <div className="h-48 flex items-center justify-center border border-gold/10 bg-black text-muted text-xs sm:text-sm font-mono tracking-wider">
-                No revenue data
-              </div>
-            )}
-          </div>
-
-          {/* Top Products */}
-          <div className="bg-[#0A0A0A] border border-gold/15 p-4 sm:p-6">
-            <div className="flex items-center justify-between gap-4 mb-6">
-              <div className="flex items-center gap-3">
-                <div className="w-9 h-9 border border-gold/20 bg-gold/10 flex items-center justify-center">
-                  <Star size={17} className="text-gold" />
-                </div>
-
-                <div>
-                  <p className="label-gold mb-1">Best Signals</p>
-                  <h3 className="font-display text-sm sm:text-base text-white tracking-[0.12em]">
-                    TOP PRODUCTS
-                  </h3>
-                </div>
-              </div>
-
-              <Link
-                to="/admin/products"
-                className="text-[10px] sm:text-xs text-muted hover:text-gold font-mono tracking-wider uppercase transition-colors flex items-center gap-1"
-              >
-                View All <ArrowRight size={12} />
-              </Link>
-            </div>
-
-            {loading ? (
-              <div className="flex flex-col gap-3">
-                {[1, 2, 3, 4, 5].map((item) => (
-                  <div key={item} className="h-14 skeleton-dark border border-gold/10" />
-                ))}
-              </div>
-            ) : stats.top_products?.length > 0 ? (
-              <div className="flex flex-col gap-3">
-                {stats.top_products.map((product, index) => (
-                  <div
-                    key={product.id || index}
-                    className="flex items-center gap-3 p-3 bg-black border border-gold/10 hover:border-gold/30 transition-all"
-                  >
-                    <span className="w-7 h-7 bg-gold text-black flex items-center justify-center text-xs font-mono shrink-0">
-                      {index + 1}
-                    </span>
-
-                    <div className="flex-1 min-w-0">
-                      <p className="text-xs sm:text-sm font-display text-white tracking-wider truncate">
-                        {product.name}
-                      </p>
-
-                      <p className="text-[10px] sm:text-xs text-muted font-mono mt-1">
-                        {product.sold} sold
-                      </p>
-                    </div>
-
-                    <span className="text-xs sm:text-sm font-mono text-gold whitespace-nowrap">
-                      {formatCurrency(product.revenue)}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="h-48 flex items-center justify-center border border-gold/10 bg-black text-muted text-xs sm:text-sm font-mono tracking-wider">
-                No products data
-              </div>
-            )}
-          </div>
-        </section>
-
-        {/* Hunt Admin */}
-        <section className="mb-7 sm:mb-9">
-          {/* <HuntAdminSection /> */}
-        </section>
-
-        {/* Recent Orders */}
-        <section className="bg-[#0A0A0A] border border-gold/15 p-4 sm:p-6">
-          <div className="flex items-center justify-between gap-4 mb-6">
+      <section className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-5">
+        <div className="rounded-2xl bg-white p-4 shadow-[0_10px_30px_rgba(17,17,17,0.04)] ring-1 ring-black/5 sm:p-6">
+          <div className="mb-5 flex items-center justify-between gap-4">
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 border border-gold/20 bg-gold/10 flex items-center justify-center">
-                <Activity size={17} className="text-gold" />
+              <div className="flex size-9 items-center justify-center rounded-full bg-[#F4F4F2]">
+                <BarChart3 size={16} className="text-neutral-800" />
               </div>
-
               <div>
-                <p className="label-gold mb-1">Latest Activity</p>
-                <h3 className="font-display text-sm sm:text-base text-white tracking-[0.12em]">
-                  RECENT ORDERS
+                <p className="text-[10px] font-semibold tracking-[0.18em] text-neutral-500 uppercase">
+                  7 day
+                </p>
+                <h3 className="text-sm font-semibold tracking-[-0.02em] text-neutral-950">
+                  Revenue trend
                 </h3>
               </div>
             </div>
+          </div>
 
+          {loading ? (
+            <div className="flex h-48 items-center justify-center rounded-xl bg-[#F4F4F2] text-neutral-400">
+              <Loader2 size={18} className="animate-spin" />
+            </div>
+          ) : stats.revenue_trend?.length > 0 ? (
+            <div className="flex h-52 items-end gap-2 rounded-xl bg-[#F4F4F2] px-3 py-4 sm:gap-3 sm:px-4">
+              {stats.revenue_trend.map((day, index) => {
+                const maxRevenue = Math.max(
+                  ...stats.revenue_trend.map((item) => item.revenue),
+                  1,
+                )
+                const height = maxRevenue > 0 ? (day.revenue / maxRevenue) * 100 : 0
+                return (
+                  <div
+                    key={`${day.day}-${index}`}
+                    className="group flex h-full flex-1 flex-col items-center justify-end gap-2"
+                  >
+                    <div className="flex h-full w-full items-end">
+                      <div
+                        className="w-full rounded-t-md bg-neutral-900/80 transition group-hover:bg-neutral-950"
+                        style={{ height: `${Math.max(height, 4)}%`, minHeight: '4px' }}
+                      />
+                    </div>
+                    <span className="w-full truncate text-center text-[8px] font-medium tracking-wider text-neutral-500 uppercase">
+                      {day.day}
+                    </span>
+                  </div>
+                )
+              })}
+            </div>
+          ) : (
+            <div className="flex h-48 items-center justify-center rounded-xl bg-[#F4F4F2] text-xs tracking-[0.14em] text-neutral-500 uppercase">
+              No revenue data
+            </div>
+          )}
+        </div>
+
+        <div className="rounded-2xl bg-white p-4 shadow-[0_10px_30px_rgba(17,17,17,0.04)] ring-1 ring-black/5 sm:p-6">
+          <div className="mb-5 flex items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="flex size-9 items-center justify-center rounded-full bg-[#F4F4F2]">
+                <Star size={16} className="text-neutral-800" />
+              </div>
+              <div>
+                <p className="text-[10px] font-semibold tracking-[0.18em] text-neutral-500 uppercase">
+                  Bestsellers
+                </p>
+                <h3 className="text-sm font-semibold tracking-[-0.02em] text-neutral-950">
+                  Top products
+                </h3>
+              </div>
+            </div>
             <Link
-              to="/admin/orders"
-              className="text-[10px] sm:text-xs text-muted hover:text-gold font-mono tracking-wider uppercase transition-colors flex items-center gap-1"
+              to="/admin/products"
+              className="inline-flex items-center gap-1 text-[10px] font-semibold tracking-[0.14em] text-neutral-500 uppercase transition hover:text-neutral-950"
             >
-              View All <ArrowRight size={12} />
+              View all <ArrowRight size={12} />
             </Link>
           </div>
 
           {loading ? (
-            <div className="flex flex-col gap-3">
-              {[1, 2, 3, 4, 5].map((item) => (
-                <div key={item} className="h-16 skeleton-dark border border-gold/10" />
-              ))}
+            <div className="flex h-48 items-center justify-center text-neutral-400">
+              <Loader2 size={18} className="animate-spin" />
             </div>
-          ) : stats.recent_orders?.length > 0 ? (
-            <div className="flex flex-col gap-3">
-              {stats.recent_orders.map((order) => (
-                <Link
-                  key={order.id}
-                  to={`/admin/orders/${order.id}`}
-                  className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 bg-black border border-gold/10 hover:border-gold/35 transition-all"
+          ) : stats.top_products?.length > 0 ? (
+            <div className="flex flex-col gap-2.5">
+              {stats.top_products.map((product, index) => (
+                <div
+                  key={product.id || index}
+                  className="flex items-center gap-3 rounded-xl bg-[#F4F4F2]/80 px-3 py-3"
                 >
-                  <div className="w-10 h-10 border border-gold/20 bg-gold/10 text-gold flex items-center justify-center shrink-0">
-                    <ShoppingBag size={16} />
-                  </div>
-
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center flex-wrap gap-2 mb-1">
-                      <span className="text-xs sm:text-sm font-mono text-white tracking-wider">
-                        #{order.id?.toString().slice(0, 8).toUpperCase()}
-                      </span>
-
-                      <StatusBadge status={order.status} />
-                    </div>
-
-                    <p className="text-[10px] sm:text-xs text-muted font-mono flex items-center gap-1.5">
-                      <Clock size={11} />
-                      {order.created_at
-                        ? new Date(order.created_at).toLocaleDateString('en-IN', {
-                            day: 'numeric',
-                            month: 'short',
-                            year: 'numeric',
-                          })
-                        : 'N/A'}
+                  <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-neutral-950 text-[11px] font-semibold text-white">
+                    {index + 1}
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-medium text-neutral-900">
+                      {product.name}
+                    </p>
+                    <p className="mt-0.5 text-[11px] text-neutral-500">
+                      {product.sold} sold
                     </p>
                   </div>
-
-                  <span className="text-xs sm:text-sm font-mono text-gold whitespace-nowrap">
-                    {formatCurrency(order.total)}
+                  <span className="whitespace-nowrap text-sm font-semibold text-neutral-900">
+                    {formatCurrency(product.revenue)}
                   </span>
-                </Link>
+                </div>
               ))}
             </div>
           ) : (
-            <div className="text-center py-12 border border-gold/10 bg-black">
-              <ShoppingBag size={34} className="text-gold/40 mx-auto mb-3" />
-              <p className="text-sm text-muted font-mono">No recent orders</p>
+            <div className="flex h-48 items-center justify-center rounded-xl bg-[#F4F4F2] text-xs tracking-[0.14em] text-neutral-500 uppercase">
+              No products data
             </div>
           )}
-        </section>
-      </main>
+        </div>
+      </section>
 
-      <style>{`
-        @keyframes fadeUp {
-          from {
-            opacity: 0;
-            transform: translateY(12px);
-          }
+      <section className="rounded-2xl bg-white p-4 shadow-[0_10px_30px_rgba(17,17,17,0.04)] ring-1 ring-black/5 sm:p-6">
+        <div className="mb-5 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="flex size-9 items-center justify-center rounded-full bg-[#F4F4F2]">
+              <Activity size={16} className="text-neutral-800" />
+            </div>
+            <div>
+              <p className="text-[10px] font-semibold tracking-[0.18em] text-neutral-500 uppercase">
+                Latest
+              </p>
+              <h3 className="text-sm font-semibold tracking-[-0.02em] text-neutral-950">
+                Recent orders
+              </h3>
+            </div>
+          </div>
+          <Link
+            to="/admin/orders"
+            className="inline-flex items-center gap-1 text-[10px] font-semibold tracking-[0.14em] text-neutral-500 uppercase transition hover:text-neutral-950"
+          >
+            View all <ArrowRight size={12} />
+          </Link>
+        </div>
 
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-
-        .animate-fadeUp {
-          animation: fadeUp 0.4s ease forwards;
-          opacity: 0;
-        }
-      `}</style>
+        {loading ? (
+          <div className="flex h-40 items-center justify-center text-neutral-400">
+            <Loader2 size={18} className="animate-spin" />
+          </div>
+        ) : stats.recent_orders?.length > 0 ? (
+          <div className="flex flex-col gap-2.5">
+            {stats.recent_orders.map((order) => (
+              <Link
+                key={order.id}
+                to="/admin/orders"
+                className="flex items-center gap-3 rounded-xl bg-[#F4F4F2]/80 px-3 py-3 transition hover:bg-[#ECECE8] sm:gap-4 sm:px-4"
+              >
+                <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-white text-neutral-800 ring-1 ring-black/5">
+                  <ShoppingBag size={15} />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="mb-1 flex flex-wrap items-center gap-2">
+                    <span className="text-xs font-semibold tracking-wider text-neutral-900">
+                      #{order.id?.toString().slice(0, 8).toUpperCase()}
+                    </span>
+                    <StatusBadge status={order.status} />
+                  </div>
+                  <p className="flex items-center gap-1.5 text-[11px] text-neutral-500">
+                    <Clock size={11} />
+                    {order.created_at
+                      ? new Date(order.created_at).toLocaleDateString('en-IN', {
+                          day: 'numeric',
+                          month: 'short',
+                          year: 'numeric',
+                        })
+                      : 'N/A'}
+                  </p>
+                </div>
+                <span className="whitespace-nowrap text-sm font-semibold text-neutral-900">
+                  {formatCurrency(order.total)}
+                </span>
+              </Link>
+            ))}
+          </div>
+        ) : (
+          <div className="rounded-xl bg-[#F4F4F2] py-12 text-center">
+            <ShoppingBag size={28} className="mx-auto mb-3 text-neutral-400" />
+            <p className="text-sm text-neutral-500">No recent orders</p>
+          </div>
+        )}
+      </section>
     </div>
   )
 }

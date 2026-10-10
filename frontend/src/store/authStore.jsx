@@ -269,6 +269,19 @@ const useAuthStore = create(
 
       updateUser: (user) => set({ user }),
 
+      refreshUser: async () => {
+        try {
+          const { data } = await api.get("/auth/profile/");
+          set((state) => ({
+            user: state.user ? { ...state.user, ...data } : data,
+            isAuthenticated: true,
+          }));
+          return data;
+        } catch {
+          return null;
+        }
+      },
+
       // === TRANSFINITY RANK SYSTEM ===
 
       fetchRank: async () => {

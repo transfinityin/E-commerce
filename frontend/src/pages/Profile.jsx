@@ -37,6 +37,12 @@ const MENU_ITEMS = [
   { icon: Bell, label: 'Notifications', section: 'notifications' },
 ]
 
+const FIELD =
+  'w-full !rounded-full !border-0 bg-[#F4F4F2] px-4 py-3.5 text-sm text-neutral-900 outline-none ring-1 ring-black/6 transition focus:bg-white focus:ring-2 focus:ring-neutral-950/15'
+
+const LABEL =
+  'mb-2 block text-[10px] font-semibold tracking-[0.2em] text-neutral-500 uppercase'
+
 export default function Profile() {
   const { user, updateUser, logout } = useAuthStore()
   const navigate = useNavigate()
@@ -78,7 +84,6 @@ export default function Profile() {
 
   useEffect(() => {
     if (!user) return
-
     reset({
       name: user.name || '',
       phone: user.phone || '',
@@ -92,7 +97,6 @@ export default function Profile() {
 
     if (activeSection === 'orders') {
       setLoading(true)
-
       api
         .get('/orders/my/')
         .then((res) => {
@@ -106,7 +110,6 @@ export default function Profile() {
 
     if (activeSection === 'wishlist') {
       setLoading(true)
-
       api
         .get('/wishlist/')
         .then((res) => {
@@ -125,21 +128,18 @@ export default function Profile() {
 
   useEffect(() => {
     let mounted = true
-
     Promise.all([
       api.get('/orders/my/').catch(() => ({ data: { count: 0, results: [] } })),
       api.get('/wishlist/').catch(() => ({ data: { count: 0, results: [] } })),
       api.get('/auth/addresses/').catch(() => ({ data: { count: 0, results: [] } })),
     ]).then(([ordersRes, wishlistRes, addressRes]) => {
       if (!mounted) return
-
       setStats({
         orders: ordersRes.data.count ?? ordersRes.data.results?.length ?? 0,
         wishlist: wishlistRes.data.count ?? wishlistRes.data.results?.length ?? 0,
         addresses: addressRes.data.count ?? addressRes.data.results?.length ?? 0,
       })
     })
-
     return () => {
       mounted = false
     }
@@ -148,19 +148,13 @@ export default function Profile() {
   const handlePhotoUpload = async (event) => {
     const file = event.target.files?.[0]
     if (!file) return
-
     setUploadingPhoto(true)
-
     const formData = new FormData()
     formData.append('avatar', file)
-
     try {
       const { data } = await api.patch('/auth/profile/', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
+        headers: { 'Content-Type': 'multipart/form-data' },
       })
-
       updateUser(data.user)
       toast.success('Profile photo updated!')
     } catch {
@@ -201,62 +195,52 @@ export default function Profile() {
     switch (activeSection) {
       case 'orders':
         return <OrdersSection orders={orders} loading={loading} onBack={goBackToProfile} />
-
       case 'wishlist':
         return <WishlistSection wishlist={wishlist} loading={loading} onBack={goBackToProfile} />
-
       case 'addresses':
         return <Addresses onBack={goBackToProfile} />
-
       case 'coupons':
         return <CouponsSection onBack={goBackToProfile} />
-
       case 'security':
         return <Security onBack={goBackToProfile} />
-
       case 'notifications':
         return <Notifications onBack={goBackToProfile} />
-
       default:
         return (
           <>
-            {/* Account Overview */}
-            <section className="bg-white border border-neutral-200 p-4 sm:p-6 lg:p-8">
-              <p className="text-[10px] font-medium tracking-[0.28em] uppercase text-neutral-500 mb-3">Account Overview</p>
-
-              <h1 className="font-sans text-xl sm:text-2xl lg:text-3xl text-neutral-900 tracking-[0.12em] mb-2">
-                MY <span className="text-gradient-gold">PROFILE</span>
+            <section className="rounded-2xl bg-white p-5 shadow-[0_10px_30px_rgba(17,17,17,0.04)] ring-1 ring-black/5 sm:p-6 lg:p-8">
+              <p className="mb-2 text-[10px] font-semibold tracking-[0.22em] text-neutral-500 uppercase">
+                Account
+              </p>
+              <h1 className="text-2xl font-semibold tracking-[-0.03em] text-neutral-950 sm:text-3xl">
+                My profile
               </h1>
-
-              <p className="text-xs sm:text-sm text-neutral-500 font-mono tracking-wider leading-relaxed mb-5 sm:mb-6">
-                Manage your personal details, orders, wishlist, and account preferences.
+              <p className="mt-2 max-w-xl text-sm leading-relaxed text-neutral-500">
+                Manage your details, orders, wishlist, and preferences.
               </p>
 
-              <div className="grid grid-cols-3 gap-2 sm:gap-3">
+              <div className="mt-6 grid grid-cols-3 gap-2 sm:gap-3">
                 {[
                   { value: stats.orders, label: 'Orders', section: 'orders', icon: Package },
                   { value: stats.wishlist, label: 'Wishlist', section: 'wishlist', icon: Heart },
                   { value: stats.addresses, label: 'Addresses', section: 'addresses', icon: MapPin },
                 ].map((stat) => {
                   const Icon = stat.icon
-
                   return (
                     <button
                       key={stat.label}
                       type="button"
                       onClick={() => handleSectionChange(stat.section)}
-                      className="text-center transition-all duration-300 cursor-pointer border border-neutral-200 bg-[#F4F4F2] hover:border-neutral-300 hover:bg-neutral-50 p-3 sm:p-4 group"
+                      className="group rounded-2xl bg-[#F4F4F2] p-3 text-center transition hover:bg-neutral-950 hover:text-white sm:p-4"
                     >
                       <Icon
-                        size={17}
-                        className="mx-auto mb-2 text-neutral-900 group-hover:scale-110 transition-transform"
+                        size={16}
+                        className="mx-auto mb-2 text-neutral-700 transition group-hover:text-white"
                       />
-
-                      <div className="text-lg sm:text-xl font-sans text-neutral-900">
+                      <div className="text-lg font-semibold tracking-[-0.03em] sm:text-xl">
                         {stat.value}
                       </div>
-
-                      <div className="text-[9px] sm:text-[11px] font-mono tracking-wider mt-1 text-neutral-500 uppercase">
+                      <div className="mt-1 text-[9px] font-semibold tracking-[0.14em] text-neutral-500 uppercase group-hover:text-white/70 sm:text-[10px]">
                         {stat.label}
                       </div>
                     </button>
@@ -265,59 +249,33 @@ export default function Profile() {
               </div>
             </section>
 
-            {/* Profile Form */}
-            <section className="bg-white border border-neutral-200 p-4 sm:p-6 lg:p-8">
-              <div className="flex items-center gap-3 mb-5 sm:mb-6">
-                <div className="w-9 h-9 border border-neutral-200 bg-neutral-100 flex items-center justify-center">
-                  <User size={16} className="text-neutral-900" />
+            <section className="rounded-2xl bg-white p-5 shadow-[0_10px_30px_rgba(17,17,17,0.04)] ring-1 ring-black/5 sm:p-6 lg:p-8">
+              <div className="mb-5 flex items-center gap-3 sm:mb-6">
+                <div className="flex size-9 items-center justify-center rounded-full bg-[#F4F4F2] text-neutral-800">
+                  <User size={15} />
                 </div>
-
-                <h2 className="font-sans text-sm sm:text-base text-neutral-900 tracking-[0.12em]">
-                  PERSONAL INFORMATION
+                <h2 className="text-sm font-semibold tracking-[0.14em] text-neutral-950 uppercase">
+                  Personal information
                 </h2>
               </div>
 
               <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5">
                   <div>
-                    <label className="text-[10px] font-medium tracking-[0.28em] uppercase text-neutral-500 text-[10px] sm:text-[11px] mb-2 block">
-                      Full Name
-                    </label>
-                    <input
-                      {...register('name')}
-                      className="w-full bg-[#F4F4F2] border border-neutral-200 text-neutral-900 text-sm font-mono tracking-wider px-4 py-3.5 outline-none focus:border-neutral-900 focus:shadow-[0_0_0_3px_rgba(0,0,0,0.08)] transition-all"
-                    />
+                    <label className={LABEL}>Full name</label>
+                    <input {...register('name')} className={FIELD} />
                   </div>
-
                   <div>
-                    <label className="text-[10px] font-medium tracking-[0.28em] uppercase text-neutral-500 text-[10px] sm:text-[11px] mb-2 block">
-                      Signal
-                    </label>
-                    <input
-                      {...register('phone')}
-                      className="w-full bg-[#F4F4F2] border border-neutral-200 text-neutral-900 text-sm font-mono tracking-wider px-4 py-3.5 outline-none focus:border-neutral-900 focus:shadow-[0_0_0_3px_rgba(0,0,0,0.08)] transition-all"
-                    />
+                    <label className={LABEL}>Phone</label>
+                    <input {...register('phone')} className={FIELD} />
                   </div>
-
                   <div>
-                    <label className="text-[10px] font-medium tracking-[0.28em] uppercase text-neutral-500 text-[10px] sm:text-[11px] mb-2 block">
-                      Date of Origin
-                    </label>
-                    <input
-                      type="date"
-                      {...register('dob')}
-                      className="w-full bg-[#F4F4F2] border border-neutral-200 text-neutral-900 text-sm font-mono tracking-wider px-4 py-3.5 outline-none focus:border-neutral-900 focus:shadow-[0_0_0_3px_rgba(0,0,0,0.08)] transition-all"
-                    />
+                    <label className={LABEL}>Date of birth</label>
+                    <input type="date" {...register('dob')} className={FIELD} />
                   </div>
-
                   <div>
-                    <label className="text-[10px] font-medium tracking-[0.28em] uppercase text-neutral-500 text-[10px] sm:text-[11px] mb-2 block">
-                      Identity
-                    </label>
-                    <select
-                      {...register('gender')}
-                      className="w-full bg-[#F4F4F2] border border-neutral-200 text-neutral-900 text-sm font-mono tracking-wider px-4 py-3.5 outline-none focus:border-neutral-900 focus:shadow-[0_0_0_3px_rgba(0,0,0,0.08)] transition-all"
-                    >
+                    <label className={LABEL}>Gender</label>
+                    <select {...register('gender')} className={FIELD}>
                       <option value="">Select</option>
                       <option value="male">Male</option>
                       <option value="female">Female</option>
@@ -327,57 +285,50 @@ export default function Profile() {
                 </div>
 
                 <div>
-                  <label className="text-[10px] font-medium tracking-[0.28em] uppercase text-neutral-500 text-[10px] sm:text-[11px] mb-2 block">
-                    Email
-                  </label>
+                  <label className={LABEL}>Email</label>
                   <input
                     value={user?.email || ''}
                     disabled
-                    className="w-full bg-neutral-100 border border-neutral-200 text-neutral-500 text-sm font-mono tracking-wider px-4 py-3.5 outline-none cursor-not-allowed"
+                    className={`${FIELD} cursor-not-allowed opacity-60`}
                   />
                 </div>
 
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="btn-primary w-full sm:w-auto self-start inline-flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="tf-buy-now inline-flex w-full items-center justify-center gap-2 self-start disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
                 >
                   {isSubmitting ? (
                     <>
-                      <Loader2 size={16} className="animate-spin" />
-                      SAVING...
+                      <Loader2 size={15} className="animate-spin" />
+                      <span>Saving…</span>
                     </>
                   ) : (
-                    'SAVE CHANGES'
+                    <span>Save changes</span>
                   )}
                 </button>
               </form>
             </section>
 
-            {/* Danger Zone */}
-            <section className="bg-white border border-red-400/25 p-4 sm:p-6 lg:p-8">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-9 h-9 border border-red-400/25 bg-red-400/10 flex items-center justify-center">
-                  <Trash2 size={16} className="text-red-400" />
+            <section className="rounded-2xl bg-white p-5 ring-1 ring-red-200 sm:p-6 lg:p-8">
+              <div className="mb-4 flex items-center gap-3">
+                <div className="flex size-9 items-center justify-center rounded-full bg-red-50 text-red-600">
+                  <Trash2 size={15} />
                 </div>
-
-                <h3 className="font-sans text-base sm:text-lg text-red-400 tracking-[0.12em]">
-                  DANGER ZONE
+                <h3 className="text-sm font-semibold tracking-[0.14em] text-red-600 uppercase">
+                  Danger zone
                 </h3>
               </div>
-
-              <p className="text-xs sm:text-sm text-neutral-500 font-mono tracking-wider leading-relaxed mb-5 sm:mb-6">
-                Once deleted, all your data including orders, addresses, and wishlist will be
-                permanently removed. This action cannot be undone.
+              <p className="mb-5 max-w-xl text-sm leading-relaxed text-neutral-500">
+                Deleting your account permanently removes orders, addresses, and wishlist data.
               </p>
-
               <button
                 type="button"
                 onClick={() => setShowDeleteModal(true)}
-                className="inline-flex items-center justify-center gap-2 border border-red-400/35 bg-red-400/10 text-red-400 hover:bg-red-400 hover:text-white text-xs sm:text-sm font-mono tracking-wider uppercase px-5 py-3 transition-all duration-300"
+                className="inline-flex h-10 items-center justify-center gap-2 rounded-full bg-red-50 px-4 text-[10px] font-semibold tracking-[0.16em] text-red-700 uppercase ring-1 ring-red-200 transition hover:bg-red-100"
               >
-                <Trash2 size={15} />
-                Delete Account
+                <Trash2 size={13} />
+                Delete account
               </button>
             </section>
           </>
@@ -386,80 +337,82 @@ export default function Profile() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F4F4F2] pt-[76px] sm:pt-[88px] lg:pt-[96px] overflow-x-hidden">
-      <main className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-10">
-        <div className="flex flex-col lg:flex-row gap-5 sm:gap-7 lg:gap-8">
-          {/* Mobile Header */}
-          <section className="lg:hidden bg-white border border-neutral-200 p-4">
+    <div className="min-h-screen bg-[#EFEFEF] pb-16 text-neutral-900 md:pb-20">
+      <main className="mx-auto max-w-[1180px] px-4 pt-4 sm:px-6 sm:pt-5 md:px-8 md:pt-6">
+        <nav className="mb-6 flex flex-wrap items-center gap-2 text-[10px] font-medium tracking-[0.2em] uppercase text-neutral-400 sm:mb-8">
+          <Link to="/" className="transition-colors hover:text-neutral-700">
+            Home
+          </Link>
+          <span className="opacity-40">/</span>
+          <span className="text-neutral-700">Profile</span>
+        </nav>
+
+        <div className="flex flex-col gap-5 lg:flex-row lg:gap-7">
+          {/* Mobile header */}
+          <section className="rounded-2xl bg-white p-4 shadow-[0_10px_30px_rgba(17,17,17,0.04)] ring-1 ring-black/5 lg:hidden">
             <div className="flex items-center justify-between gap-4">
-              <div className="flex items-center gap-3 min-w-0">
+              <div className="flex min-w-0 items-center gap-3">
                 <AvatarBlock
                   user={user}
                   uploadingPhoto={uploadingPhoto}
                   onUploadClick={() => fileInputRef.current?.click()}
                   compact
                 />
-
                 <div className="min-w-0">
-                  <h2 className="font-sans text-sm sm:text-base text-neutral-900 tracking-wider truncate">
-                    {user?.name || 'Wanderer'}
+                  <h2 className="truncate text-sm font-semibold text-neutral-950">
+                    {user?.name || 'Member'}
                   </h2>
-                  <p className="text-[10px] sm:text-xs text-neutral-500 font-mono truncate">
-                    {user?.email}
-                  </p>
+                  <p className="truncate text-[11px] text-neutral-500">{user?.email}</p>
                 </div>
               </div>
-
               <button
                 type="button"
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="w-10 h-10 bg-[#F4F4F2] border border-neutral-200 flex items-center justify-center text-neutral-900"
+                className="flex size-10 items-center justify-center rounded-full bg-[#F4F4F2] text-neutral-800 ring-1 ring-black/5"
+                aria-label="Toggle menu"
               >
-                {mobileMenuOpen ? <X size={18} /> : <Menu size={18} />}
+                {mobileMenuOpen ? <X size={17} /> : <Menu size={17} />}
               </button>
             </div>
 
             {mobileMenuOpen && (
-              <nav className="mt-4 pt-4 border-t border-neutral-200 flex flex-col gap-1 animate-fadeIn">
+              <nav className="mt-4 flex flex-col gap-1 border-t border-neutral-100 pt-4">
                 {MENU_ITEMS.map((item) => {
                   const Icon = item.icon
                   const isActive = activeSection === item.section
-
                   return (
                     <button
                       key={item.label}
                       type="button"
                       onClick={() => handleSectionChange(item.section)}
-                      className={`flex items-center w-full text-left px-3 py-3 gap-3 transition-all ${
+                      className={`flex w-full items-center gap-3 rounded-full px-3.5 py-3 text-left transition ${
                         isActive
                           ? 'bg-neutral-950 text-white'
-                          : 'bg-transparent text-neutral-500 hover:bg-neutral-50 hover:text-neutral-900'
+                          : 'text-neutral-500 hover:bg-[#F4F4F2] hover:text-neutral-900'
                       }`}
                     >
-                      <Icon size={17} />
-                      <span className="flex-1 text-xs sm:text-sm font-mono tracking-wider uppercase">
+                      <Icon size={16} />
+                      <span className="flex-1 text-[11px] font-semibold tracking-[0.14em] uppercase">
                         {item.label}
                       </span>
-                      <ChevronRight size={14} />
+                      <ChevronRight size={13} />
                     </button>
                   )
                 })}
-
                 <button
                   type="button"
                   onClick={handleLogout}
-                  className="flex items-center w-full text-left px-3 py-3 gap-3 text-red-400 hover:bg-red-400/10 transition-all border-t border-neutral-200 mt-2"
+                  className="mt-2 flex w-full items-center gap-3 rounded-full px-3.5 py-3 text-left text-red-600 transition hover:bg-red-50"
                 >
-                  <LogOut size={17} />
-                  <span className="flex-1 text-xs sm:text-sm font-mono tracking-wider uppercase">
-                    Logout
+                  <LogOut size={16} />
+                  <span className="flex-1 text-[11px] font-semibold tracking-[0.14em] uppercase">
+                    Sign out
                   </span>
                 </button>
               </nav>
             )}
           </section>
 
-          {/* Hidden file input */}
           <input
             ref={fileInputRef}
             type="file"
@@ -468,103 +421,88 @@ export default function Profile() {
             className="hidden"
           />
 
-          {/* Desktop Sidebar */}
-          <aside className="hidden lg:flex w-72 shrink-0 flex-col gap-5 sticky top-28 self-start">
-            <section className="bg-white border border-neutral-200 text-center p-6">
+          {/* Desktop sidebar */}
+          <aside className="sticky top-24 hidden w-72 shrink-0 flex-col gap-4 self-start lg:flex">
+            <section className="rounded-2xl bg-white p-6 text-center shadow-[0_10px_30px_rgba(17,17,17,0.04)] ring-1 ring-black/5">
               <AvatarBlock
                 user={user}
                 uploadingPhoto={uploadingPhoto}
                 onUploadClick={() => fileInputRef.current?.click()}
               />
-
-              <h2 className="font-sans text-lg text-neutral-900 tracking-wider mt-4">
-                {user?.name || 'Wanderer'}
+              <h2 className="mt-4 text-base font-semibold text-neutral-950">
+                {user?.name || 'Member'}
               </h2>
-
-              <p className="text-xs text-neutral-500 font-mono tracking-wider mt-1 break-words">
-                {user?.email}
-              </p>
+              <p className="mt-1 break-words text-[12px] text-neutral-500">{user?.email}</p>
             </section>
 
-            <section className="bg-white border border-neutral-200 p-3">
+            <section className="rounded-2xl bg-white p-3 shadow-[0_10px_30px_rgba(17,17,17,0.04)] ring-1 ring-black/5">
               <nav className="flex flex-col gap-1">
                 {MENU_ITEMS.map((item) => {
                   const Icon = item.icon
                   const isActive = activeSection === item.section
-
                   return (
                     <button
                       key={item.label}
                       type="button"
                       onClick={() => handleSectionChange(item.section)}
-                      className={`flex items-center w-full text-left px-4 py-3 gap-3 transition-all ${
+                      className={`flex w-full items-center gap-3 rounded-full px-4 py-3 text-left transition ${
                         isActive
-                          ? 'bg-neutral-950 text-white'
-                          : 'bg-transparent text-neutral-500 hover:bg-neutral-50 hover:text-neutral-900'
+                          ? 'bg-neutral-950 text-white shadow-[0_8px_20px_rgba(0,0,0,0.16)]'
+                          : 'text-neutral-500 hover:bg-[#F4F4F2] hover:text-neutral-900'
                       }`}
                     >
-                      <Icon size={18} />
-                      <span className="flex-1 text-sm font-mono tracking-wider uppercase">
+                      <Icon size={16} />
+                      <span className="flex-1 text-[11px] font-semibold tracking-[0.14em] uppercase">
                         {item.label}
                       </span>
-                      <ChevronRight size={14} />
+                      <ChevronRight size={13} />
                     </button>
                   )
                 })}
-
                 <button
                   type="button"
                   onClick={handleLogout}
-                  className="flex items-center w-full text-left px-4 py-3 gap-3 mt-2 text-red-400 hover:bg-red-400/10 transition-all border-t border-neutral-200"
+                  className="mt-1 flex w-full items-center gap-3 rounded-full px-4 py-3 text-left text-red-600 transition hover:bg-red-50"
                 >
-                  <LogOut size={18} />
-                  <span className="flex-1 text-sm font-mono tracking-wider uppercase">
-                    Logout
+                  <LogOut size={16} />
+                  <span className="flex-1 text-[11px] font-semibold tracking-[0.14em] uppercase">
+                    Sign out
                   </span>
                 </button>
               </nav>
             </section>
           </aside>
 
-          {/* Main Content */}
-          <section className="flex-1 flex flex-col gap-5 sm:gap-6">
-            {renderContent()}
-          </section>
+          <section className="flex flex-1 flex-col gap-5 sm:gap-6">{renderContent()}</section>
         </div>
       </main>
 
-      {/* Delete Modal */}
       {showDeleteModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/90 backdrop-blur-sm px-4">
-          <div className="bg-white border border-red-400/30 w-full max-w-md p-5 sm:p-8 animate-fadeUp shadow-[0_30px_120px_rgba(0,0,0,0.75)]">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 border border-red-400/25 bg-red-400/10 flex items-center justify-center">
-                <Trash2 size={19} className="text-red-400" />
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#EFEFEF]/90 px-4 backdrop-blur-sm">
+          <div className="w-full max-w-md rounded-3xl bg-white p-6 shadow-[0_24px_60px_rgba(17,17,17,0.12)] ring-1 ring-red-200 sm:p-8">
+            <div className="mb-4 flex items-center gap-3">
+              <div className="flex size-10 items-center justify-center rounded-full bg-red-50 text-red-600">
+                <Trash2 size={18} />
               </div>
-
-              <h3 className="font-sans text-lg text-red-400 tracking-[0.12em]">
-                DELETE ACCOUNT?
+              <h3 className="text-lg font-semibold tracking-[-0.02em] text-red-600">
+                Delete account?
               </h3>
             </div>
-
-            <p className="text-xs sm:text-sm text-neutral-500 font-mono tracking-wider leading-relaxed mb-6">
-              This action is permanent and cannot be undone. All your data will be
-              permanently removed from our servers.
+            <p className="mb-6 text-sm leading-relaxed text-neutral-500">
+              This is permanent. All of your data will be removed from our servers.
             </p>
-
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-2.5">
               <button
                 type="button"
                 onClick={handleDeleteAccount}
-                className="bg-red-400 text-neutral-900 hover:bg-red-500 text-xs sm:text-sm font-mono tracking-wider uppercase py-3 transition-all"
+                className="inline-flex h-11 items-center justify-center rounded-full bg-red-600 text-[10px] font-semibold tracking-[0.16em] text-white uppercase transition hover:bg-red-700"
               >
                 Delete
               </button>
-
               <button
                 type="button"
                 onClick={() => setShowDeleteModal(false)}
-                className="btn-outline !py-3"
+                className="inline-flex h-11 items-center justify-center rounded-full bg-white text-[10px] font-semibold tracking-[0.16em] text-neutral-700 uppercase ring-1 ring-black/8 transition hover:text-neutral-950"
               >
                 Cancel
               </button>
@@ -572,42 +510,31 @@ export default function Profile() {
           </div>
         </div>
       )}
-
-      <style>{`
-        @keyframes fadeIn {
-          from { opacity: 0; transform: translateY(8px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-
-        .animate-fadeIn {
-          animation: fadeIn 0.25s ease;
-        }
-      `}</style>
     </div>
   )
 }
 
 function AvatarBlock({ user, uploadingPhoto, onUploadClick, compact = false }) {
   return (
-    <div className={`relative mx-auto ${compact ? 'w-11 h-11' : 'w-20 h-20'}`}>
-      <div className="w-full h-full bg-neutral-950 flex items-center justify-center font-sans text-black overflow-hidden text-xl">
+    <div className={`relative mx-auto ${compact ? 'size-11' : 'size-20'}`}>
+      <div className="flex h-full w-full items-center justify-center overflow-hidden rounded-full bg-neutral-950 text-xl font-semibold text-white">
         {user?.avatar ? (
-          <img src={user.avatar} alt="" className="w-full h-full object-cover" />
+          <img src={user.avatar} alt="" className="h-full w-full object-cover" />
         ) : (
-          user?.name?.[0]?.toUpperCase() || 'W'
+          user?.name?.[0]?.toUpperCase() || 'M'
         )}
       </div>
-
       {!compact && (
         <button
           type="button"
           onClick={onUploadClick}
-          className="absolute bottom-0 right-0 w-8 h-8 flex items-center justify-center border-2 border-[#0A0A0A] cursor-pointer bg-[#F4F4F2] text-neutral-900 hover:bg-neutral-950 hover:text-black transition-colors"
+          className="absolute right-0 bottom-0 flex size-8 items-center justify-center rounded-full bg-white text-neutral-900 ring-2 ring-[#EFEFEF] transition hover:bg-neutral-950 hover:text-white"
+          aria-label="Upload photo"
         >
           {uploadingPhoto ? (
-            <Loader2 size={14} className="animate-spin" />
+            <Loader2 size={13} className="animate-spin" />
           ) : (
-            <Camera size={14} />
+            <Camera size={13} />
           )}
         </button>
       )}
@@ -620,76 +547,65 @@ function BackButton({ onBack }) {
     <button
       type="button"
       onClick={onBack}
-      className="inline-flex items-center gap-2 text-xs sm:text-sm font-mono tracking-wider uppercase text-neutral-500 hover:text-neutral-900 transition-colors bg-transparent border-none cursor-pointer mb-5"
+      className="mb-5 inline-flex items-center gap-1.5 text-[11px] font-semibold tracking-[0.16em] text-neutral-500 uppercase transition hover:text-neutral-950"
     >
-      <ArrowLeft size={16} />
-      Back to Profile
+      <ArrowLeft size={14} />
+      Back to profile
     </button>
   )
 }
 
 function OrdersSection({ orders, loading, onBack }) {
   return (
-    <section className="bg-white border border-neutral-200 p-4 sm:p-6 lg:p-8">
+    <section className="rounded-2xl bg-white p-5 shadow-[0_10px_30px_rgba(17,17,17,0.04)] ring-1 ring-black/5 sm:p-6 lg:p-8">
       <BackButton onBack={onBack} />
-
-      <p className="text-[10px] font-medium tracking-[0.28em] uppercase text-neutral-500 mb-3">Order History</p>
-
-      <h2 className="font-sans text-xl sm:text-2xl text-neutral-900 tracking-[0.12em] mb-2">
-        MY <span className="text-gradient-gold">ORDERS</span>
-      </h2>
-
-      <p className="text-xs sm:text-sm text-neutral-500 font-mono tracking-wider leading-relaxed mb-6">
-        Track and manage your artifact transmissions.
+      <p className="mb-2 text-[10px] font-semibold tracking-[0.22em] text-neutral-500 uppercase">
+        Order history
       </p>
+      <h2 className="text-2xl font-semibold tracking-[-0.03em] text-neutral-950">My orders</h2>
+      <p className="mt-2 mb-6 text-sm text-neutral-500">Track and manage your purchases.</p>
 
       {loading ? (
         <div className="flex flex-col gap-3">
           {[1, 2, 3].map((item) => (
-            <div key={item} className="h-20 animate-pulse bg-neutral-200 border border-neutral-200" />
+            <div key={item} className="h-20 animate-pulse rounded-2xl bg-[#F4F4F2]" />
           ))}
         </div>
       ) : !orders || orders.length === 0 ? (
-        <div className="text-center py-10 sm:py-12">
-          <PackageIcon size={42} className="mx-auto mb-4 text-neutral-400" />
-          <p className="text-sm text-neutral-500 font-mono">No orders yet.</p>
-          <Link
-            to="/products"
-            className="btn-primary inline-flex items-center justify-center gap-2 mt-5"
-          >
-            SHOP NOW
-            <ChevronRight size={15} />
+        <div className="rounded-2xl bg-[#F4F4F2]/80 py-12 text-center">
+          <PackageIcon size={36} className="mx-auto mb-3 text-neutral-400" />
+          <p className="text-sm text-neutral-500">No orders yet.</p>
+          <Link to="/products" className="tf-buy-now mt-5 inline-flex items-center gap-2">
+            <span>Shop the drop</span>
+            <ChevronRight size={14} />
           </Link>
         </div>
       ) : (
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-3">
           {orders.map((order) => (
             <Link
               key={order.id}
               to={`/orders/${order.id}`}
-              className="block bg-[#F4F4F2] border border-neutral-200 hover:border-neutral-300 p-4 transition-all duration-300"
+              className="block rounded-2xl bg-[#F4F4F2]/80 p-4 transition hover:bg-[#ECECE8]"
             >
-              <div className="flex items-start justify-between gap-3 mb-3">
+              <div className="mb-3 flex items-start justify-between gap-3">
                 <div>
-                  <p className="font-mono text-xs sm:text-sm text-neutral-900 tracking-wider">
+                  <p className="text-sm font-semibold tracking-wider text-neutral-950">
                     #{order.id?.slice(0, 8).toUpperCase()}
                   </p>
-                  <p className="text-[10px] sm:text-xs mt-1 text-neutral-500 font-mono">
+                  <p className="mt-1 text-[11px] text-neutral-500">
                     {new Date(order.created_at).toLocaleDateString('en-IN')}
                   </p>
                 </div>
-
-                <span className="text-[10px] sm:text-xs font-mono uppercase tracking-wider px-2.5 py-1 border border-neutral-200 bg-neutral-100 text-neutral-900">
+                <span className="rounded-full bg-white px-2.5 py-1 text-[9px] font-semibold tracking-[0.14em] text-neutral-700 uppercase ring-1 ring-black/6">
                   {order.status}
                 </span>
               </div>
-
               <div className="flex items-center justify-between">
-                <span className="text-xs sm:text-sm text-neutral-500 font-mono">
+                <span className="text-xs text-neutral-500">
                   {order.items?.length || 0} items
                 </span>
-
-                <span className="price-tag text-sm">
+                <span className="text-sm font-semibold text-neutral-950">
                   ₹{Number(order.total).toLocaleString('en-IN')}
                 </span>
               </div>
@@ -703,54 +619,47 @@ function OrdersSection({ orders, loading, onBack }) {
 
 function WishlistSection({ wishlist, loading, onBack }) {
   return (
-    <section className="bg-white border border-neutral-200 p-4 sm:p-6 lg:p-8">
+    <section className="rounded-2xl bg-white p-5 shadow-[0_10px_30px_rgba(17,17,17,0.04)] ring-1 ring-black/5 sm:p-6 lg:p-8">
       <BackButton onBack={onBack} />
-
-      <p className="text-[10px] font-medium tracking-[0.28em] uppercase text-neutral-500 mb-3">Saved Items</p>
-
-      <h2 className="font-sans text-xl sm:text-2xl text-neutral-900 tracking-[0.12em] mb-2">
-        MY <span className="text-gradient-gold">WISHLIST</span>
-      </h2>
-
-      <p className="text-xs sm:text-sm text-neutral-500 font-mono tracking-wider leading-relaxed mb-6">
-        Products you have saved for later.
+      <p className="mb-2 text-[10px] font-semibold tracking-[0.22em] text-neutral-500 uppercase">
+        Saved items
       </p>
+      <h2 className="text-2xl font-semibold tracking-[-0.03em] text-neutral-950">Wishlist</h2>
+      <p className="mt-2 mb-6 text-sm text-neutral-500">Pieces you’ve saved for later.</p>
 
       {loading ? (
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
           {[1, 2, 3].map((item) => (
-            <div key={item} className="h-52 animate-pulse bg-neutral-200 border border-neutral-200" />
+            <div key={item} className="aspect-[4/5] animate-pulse rounded-2xl bg-[#F4F4F2]" />
           ))}
         </div>
       ) : !wishlist || wishlist.length === 0 ? (
-        <div className="text-center py-10 sm:py-12">
-          <Heart size={42} className="mx-auto mb-4 text-neutral-400" />
-          <p className="text-sm text-neutral-500 font-mono">No items in wishlist.</p>
+        <div className="rounded-2xl bg-[#F4F4F2]/80 py-12 text-center">
+          <Heart size={36} className="mx-auto mb-3 text-neutral-400" />
+          <p className="text-sm text-neutral-500">No items in wishlist.</p>
         </div>
       ) : (
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-3 sm:gap-4">
           {wishlist.map((item) => (
             <Link
               key={item.id}
               to={`/products/${item.product?.slug}`}
-              className="bg-[#F4F4F2] border border-neutral-200 hover:border-neutral-300 overflow-hidden transition-all group"
+              className="group overflow-hidden rounded-2xl bg-[#F4F4F2] ring-1 ring-black/5 transition hover:ring-black/10"
             >
-              <div className="w-full aspect-[4/5] bg-white overflow-hidden">
+              <div className="aspect-[4/5] overflow-hidden bg-white">
                 {item.product?.primary_image?.image && (
                   <img
                     src={item.product.primary_image.image}
                     alt={item.product_name}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]"
                   />
                 )}
               </div>
-
               <div className="p-3">
-                <p className="text-xs sm:text-sm font-sans text-neutral-900 tracking-wider truncate">
+                <p className="truncate text-xs font-semibold tracking-[0.04em] text-neutral-950 uppercase sm:text-sm">
                   {item.product_name}
                 </p>
-
-                <p className="text-xs mt-1 text-neutral-900 font-mono">
+                <p className="mt-1 text-xs font-semibold text-neutral-700">
                   ₹{Number(item.product?.effective_price || 0).toLocaleString('en-IN')}
                 </p>
               </div>
@@ -763,35 +672,67 @@ function WishlistSection({ wishlist, loading, onBack }) {
 }
 
 function CouponsSection({ onBack }) {
+  const [coupons, setCoupons] = useState([])
+
+  useEffect(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem('qr_coupons') || '[]')
+      setCoupons(Array.isArray(saved) ? saved : [])
+    } catch {
+      setCoupons([])
+    }
+  }, [])
+
   return (
-    <section className="bg-white border border-neutral-200 p-4 sm:p-6 lg:p-8">
+    <section className="rounded-2xl bg-white p-5 shadow-[0_10px_30px_rgba(17,17,17,0.04)] ring-1 ring-black/5 sm:p-6 lg:p-8">
       <BackButton onBack={onBack} />
-
-      <div className="flex items-center gap-3 mb-3">
-        <div className="w-9 h-9 border border-neutral-200 bg-neutral-100 flex items-center justify-center">
-          <Ticket size={16} className="text-neutral-900" />
+      <div className="mb-2 flex items-center gap-3">
+        <div className="flex size-9 items-center justify-center rounded-full bg-[#F4F4F2] text-neutral-800">
+          <Ticket size={15} />
         </div>
-
-        <h2 className="font-sans text-xl sm:text-2xl text-neutral-900 tracking-[0.12em]">
-          COUPONS
-        </h2>
+        <h2 className="text-2xl font-semibold tracking-[-0.03em] text-neutral-950">Coupons</h2>
       </div>
-
-      <p className="text-xs sm:text-sm text-neutral-500 font-mono tracking-wider leading-relaxed">
-        Available coupons will appear here.
+      <p className="mb-6 text-sm text-neutral-500">
+        Codes from QR scans and campaigns you’ve unlocked.
       </p>
 
-      <div className="mt-8 flex flex-col items-center text-center py-10 sm:py-12 border border-neutral-200 bg-[#F4F4F2]">
-        <Sparkles size={44} className="text-neutral-400 mb-4" />
-
-        <p className="text-sm text-neutral-500 font-mono">
-          No active coupons at the moment.
-        </p>
-
-        <p className="text-xs text-neutral-500 font-mono mt-2">
-          Check back later for exclusive drops.
-        </p>
-      </div>
+      {coupons.length === 0 ? (
+        <div className="flex flex-col items-center rounded-2xl bg-[#F4F4F2]/80 py-12 text-center">
+          <Sparkles size={36} className="mb-3 text-neutral-400" />
+          <p className="text-sm text-neutral-500">No active coupons yet.</p>
+          <p className="mt-1 text-xs text-neutral-400">Scan an offer QR to unlock one.</p>
+          <Link
+            to="/scan"
+            className="mt-5 inline-flex h-10 items-center rounded-full bg-neutral-950 px-4 text-[10px] font-semibold tracking-[0.16em] text-white uppercase"
+          >
+            Open scanner
+          </Link>
+        </div>
+      ) : (
+        <div className="flex flex-col gap-2.5">
+          {coupons.map((c) => (
+            <div
+              key={c.code}
+              className="flex items-center justify-between gap-3 rounded-2xl bg-[#F4F4F2]/80 px-4 py-3.5"
+            >
+              <div className="min-w-0">
+                <p className="truncate text-sm font-semibold tracking-wider text-neutral-950">
+                  {c.code}
+                </p>
+                <p className="mt-0.5 text-[11px] text-neutral-500">
+                  {c.title || 'QR offer'}
+                  {c.expires_at
+                    ? ` · expires ${new Date(c.expires_at).toLocaleDateString('en-IN')}`
+                    : ''}
+                </p>
+              </div>
+              <span className="shrink-0 rounded-full bg-neutral-950 px-2.5 py-1 text-[10px] font-semibold tracking-[0.14em] text-white uppercase">
+                {c.discount}% off
+              </span>
+            </div>
+          ))}
+        </div>
+      )}
     </section>
   )
 }

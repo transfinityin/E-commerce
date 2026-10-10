@@ -189,7 +189,7 @@ body {
   text-transform: uppercase;
   padding: 1rem 2.5rem;
   border: none;
-  border-radius: 0;
+  border-radius: 9999px;
   cursor: pointer;
   transition: all 0.3s ease;
   position: relative;
@@ -223,15 +223,15 @@ body {
 
 .btn-outline {
   background-color: transparent;
-  color: var(--color-gold);
+  color: #171717;
   font-family: var(--font-body);
   font-size: 0.875rem;
   font-weight: 500;
   letter-spacing: 0.15em;
   text-transform: uppercase;
   padding: 1rem 2.5rem;
-  border: 1px solid var(--color-border);
-  border-radius: 0;
+  border: 1px solid rgba(17, 17, 17, 0.12);
+  border-radius: 9999px;
   cursor: pointer;
   transition: all 0.3s ease;
 }
@@ -364,26 +364,32 @@ body {
    FORM ELEMENTS - DARK THEME
    ============================================ */
 input, select, textarea {
-  background-color: var(--color-surface);
-  color: var(--color-text);
-  border: 1px solid var(--color-border);
-  border-radius: 0;
-  padding: 1rem 1.25rem;
+  background-color: #ffffff;
+  color: #171717;
+  border: 1px solid rgba(17, 17, 17, 0.1);
+  border-radius: 9999px;
+  padding: 0.85rem 1.15rem;
   font-family: var(--font-body);
   font-size: 0.875rem;
-  letter-spacing: 0.05em;
-  transition: all 0.3s ease;
+  letter-spacing: 0.02em;
+  transition: all 0.25s ease;
   width: 100%;
 }
 
+textarea {
+  border-radius: 1.25rem;
+  min-height: 6.5rem;
+  resize: vertical;
+}
+
 input::placeholder, textarea::placeholder {
-  color: var(--color-muted);
+  color: #a3a3a3;
 }
 
 input:focus, select:focus, textarea:focus {
   outline: none;
-  border-color: var(--color-gold);
-  box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.15);
+  border-color: rgba(17, 17, 17, 0.28);
+  box-shadow: 0 0 0 3px rgba(17, 17, 17, 0.08);
 }
 
 .input-gold {
@@ -1106,7 +1112,7 @@ input:focus, select:focus, textarea:focus {
   text-transform: uppercase;
   padding: 1rem 2.5rem;
   border: none;
-  border-radius: 0;
+  border-radius: 9999px;
   cursor: pointer;
   transition: all 0.3s ease;
   position: relative;
@@ -1546,6 +1552,140 @@ input:focus, select:focus, textarea:focus {
   }
 }
 
+/* Nav Join — compact pill + slow sheen */
+@keyframes tf-join-sheen {
+  0%, 58% { transform: translateX(-140%) skewX(-16deg); opacity: 0; }
+  68% { opacity: 1; }
+  86%, 100% { transform: translateX(240%) skewX(-16deg); opacity: 0; }
+}
+@keyframes tf-join-glow {
+  0%, 100% {
+    box-shadow:
+      0 6px 16px rgba(0, 0, 0, 0.22),
+      0 0 0 0 rgba(255, 255, 255, 0);
+  }
+  50% {
+    box-shadow:
+      0 8px 22px rgba(0, 0, 0, 0.3),
+      0 0 0 4px rgba(255, 255, 255, 0.12);
+  }
+}
+.tf-join {
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  height: 2.35rem;
+  min-width: 5.5rem;
+  align-items: center;
+  justify-content: center;
+  padding: 0 1.15rem;
+  overflow: hidden;
+  border: none;
+  border-radius: 9999px;
+  background: #0a0a0a;
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  animation: tf-join-glow 3.4s ease-in-out infinite;
+  transition: transform 0.25s ease, background 0.25s ease;
+}
+.tf-join::before {
+  content: "";
+  position: absolute;
+  top: -20%;
+  bottom: -20%;
+  left: 0;
+  width: 55%;
+  border-radius: inherit;
+  background: linear-gradient(
+    105deg,
+    transparent 0%,
+    transparent 30%,
+    rgba(255, 255, 255, 0.18) 42%,
+    rgba(255, 255, 255, 0.9) 50%,
+    rgba(255, 255, 255, 0.18) 58%,
+    transparent 70%,
+    transparent 100%
+  );
+  animation: tf-join-sheen 6.5s ease-in-out infinite;
+  pointer-events: none;
+  mix-blend-mode: screen;
+}
+.tf-join::after {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  border-radius: inherit;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  pointer-events: none;
+}
+.tf-join > span {
+  position: relative;
+  z-index: 1;
+}
+.tf-join:hover {
+  transform: translateY(-1px);
+  background: #000000;
+  color: #ffffff;
+}
+.tf-join:active {
+  transform: translateY(0) scale(0.98);
+}
+.tf-join--light {
+  background: #ffffff;
+  color: #0a0a0a;
+  animation-name: tf-join-glow-light;
+}
+.tf-join--light::before {
+  mix-blend-mode: multiply;
+  background: linear-gradient(
+    105deg,
+    transparent 0%,
+    transparent 30%,
+    rgba(0, 0, 0, 0.06) 42%,
+    rgba(255, 255, 255, 0.95) 50%,
+    rgba(0, 0, 0, 0.06) 58%,
+    transparent 70%,
+    transparent 100%
+  );
+}
+.tf-join--light::after {
+  border-color: rgba(0, 0, 0, 0.08);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+.tf-join--light:hover {
+  background: #f4f4f2;
+  color: #0a0a0a;
+}
+@keyframes tf-join-glow-light {
+  0%, 100% {
+    box-shadow:
+      0 6px 16px rgba(0, 0, 0, 0.12),
+      0 0 0 0 rgba(255, 255, 255, 0);
+  }
+  50% {
+    box-shadow:
+      0 8px 22px rgba(0, 0, 0, 0.16),
+      0 0 0 4px rgba(255, 255, 255, 0.35);
+  }
+}
+.tf-join--block {
+  width: 100%;
+  min-width: 0;
+  height: 2.75rem;
+}
+@media (prefers-reduced-motion: reduce) {
+  .tf-join,
+  .tf-join::before {
+    animation: none;
+  }
+}
+
 /* Review submit — compact pill inside textarea (slow bright sheen) */
 @keyframes tf-review-sheen {
   0%, 62% { transform: translateX(-130%) skewX(-16deg); opacity: 0; }
@@ -1622,25 +1762,142 @@ input:focus, select:focus, textarea:focus {
   }
 }
 
-/* ===== RE : BIRTH / Arcs — light shell, ink milky-way title ===== */
+/* ===== RE : BIRTH / Arcs — light atlas atmosphere ===== */
 @keyframes tf-star-twinkle {
-  0%, 100% { opacity: 0.12; transform: scale(0.9); }
-  50% { opacity: 0.45; transform: scale(1.15); }
+  0%, 100% { opacity: 0.08; transform: translateY(0) scale(0.9); }
+  50% { opacity: 0.42; transform: translateY(-6px) scale(1.2); }
 }
 @keyframes tf-title-drift {
-  0%, 100% { background-position: 0% 50%, 100% 50%, 50% 50%, 80% 40%, 10% 50%; }
-  50% { background-position: 100% 40%, 0% 60%, 45% 55%, 20% 60%, 90% 40%; }
+  0% {
+    background-position:
+      0% 40%, 90% 60%, 40% 30%, 70% 70%,
+      0% 50%;
+  }
+  25% {
+    background-position:
+      40% 20%, 20% 80%, 80% 50%, 30% 40%,
+      35% 45%;
+  }
+  50% {
+    background-position:
+      100% 55%, 10% 30%, 55% 75%, 85% 20%,
+      100% 50%;
+  }
+  75% {
+    background-position:
+      60% 80%, 70% 15%, 15% 45%, 50% 60%,
+      65% 55%;
+  }
+  100% {
+    background-position:
+      0% 40%, 90% 60%, 40% 30%, 70% 70%,
+      0% 50%;
+  }
+}
+@keyframes tf-title-white-flash {
+  0%, 100% {
+    filter:
+      drop-shadow(0 1px 0 rgba(0, 0, 0, 0.35))
+      drop-shadow(0 10px 28px rgba(17, 17, 17, 0.18))
+      drop-shadow(0 0 0 rgba(255, 255, 255, 0));
+  }
+  40% {
+    filter:
+      drop-shadow(0 1px 0 rgba(0, 0, 0, 0.4))
+      drop-shadow(0 10px 28px rgba(17, 17, 17, 0.16))
+      drop-shadow(0 0 22px rgba(255, 255, 255, 0.75))
+      drop-shadow(0 0 48px rgba(255, 255, 255, 0.45));
+  }
+  50% {
+    filter:
+      drop-shadow(0 1px 0 rgba(0, 0, 0, 0.45))
+      drop-shadow(0 8px 24px rgba(17, 17, 17, 0.12))
+      drop-shadow(0 0 36px rgba(255, 255, 255, 1))
+      drop-shadow(0 0 72px rgba(255, 255, 255, 0.7))
+      drop-shadow(0 0 110px rgba(255, 255, 255, 0.4));
+  }
+  60% {
+    filter:
+      drop-shadow(0 1px 0 rgba(0, 0, 0, 0.4))
+      drop-shadow(0 10px 28px rgba(17, 17, 17, 0.16))
+      drop-shadow(0 0 18px rgba(255, 255, 255, 0.55));
+  }
+}
+@keyframes tf-arcs-orbit-breathe {
+  0%, 100% { opacity: 0.55; transform: scale(1); }
+  50% { opacity: 0.9; transform: scale(1.06); }
+}
+@keyframes tf-arcs-seal-pulse {
+  0%, 100% { opacity: 0.35; transform: scale(0.92); }
+  50% { opacity: 0.7; transform: scale(1.08); }
 }
 .tf-arcs-page {
-  background: #efefef;
+  background: #f4f4f2;
+}
+.tf-arcs-mist {
+  background:
+    radial-gradient(ellipse 70% 42% at 50% -8%, rgba(255, 255, 255, 0.95), transparent 58%),
+    radial-gradient(ellipse 48% 36% at 92% 18%, rgba(150, 165, 185, 0.14), transparent 55%),
+    radial-gradient(ellipse 42% 32% at 6% 55%, rgba(170, 155, 140, 0.1), transparent 52%),
+    radial-gradient(ellipse 58% 38% at 50% 108%, rgba(210, 200, 185, 0.28), transparent 58%),
+    linear-gradient(180deg, #f7f6f4 0%, #f4f4f2 42%, #ebe7e0 100%);
+}
+.tf-arcs-grain {
+  background-image:
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E");
+  background-size: 220px 220px;
+  mix-blend-mode: soft-light;
+  opacity: 0.22 !important;
+  pointer-events: none;
+}
+.tf-arcs-orbit {
+  border-radius: 9999px;
+  background: radial-gradient(circle, rgba(130, 140, 160, 0.2) 0%, transparent 68%);
+  animation: tf-arcs-orbit-breathe 12s ease-in-out infinite;
+  filter: blur(8px);
+}
+.tf-arcs-orbit--lag {
+  animation-duration: 16s;
+  animation-delay: -4s;
+  background: radial-gradient(circle, rgba(175, 155, 130, 0.16) 0%, transparent 70%);
+}
+.tf-arcs-orbit--soft {
+  animation-duration: 18s;
+  animation-delay: -8s;
+  background: radial-gradient(circle, rgba(110, 120, 145, 0.14) 0%, transparent 72%);
 }
 .tf-arcs-dust {
   animation-name: tf-star-twinkle;
   animation-timing-function: ease-in-out;
   animation-iteration-count: infinite;
 }
+.tf-arcs-map-glow {
+  background: radial-gradient(ellipse at 50% 45%, rgba(110, 85, 55, 0.18), transparent 70%);
+  filter: blur(28px);
+}
+.tf-arcs-map-frame {
+  border-radius: 3px;
+  box-shadow:
+    0 0 0 1px rgba(40, 32, 24, 0.32),
+    0 0 0 8px rgba(244, 244, 242, 0.95),
+    0 0 0 9px rgba(40, 32, 24, 0.14),
+    0 32px 80px rgba(20, 16, 12, 0.24);
+}
+.tf-arcs-seal-ring {
+  border: 1px solid rgba(20, 16, 10, 0.35);
+  animation: tf-arcs-seal-pulse 2.8s ease-in-out infinite;
+}
+.tf-arcs-gate-current {
+  background: linear-gradient(90deg, rgba(17, 17, 17, 0.05), transparent 70%);
+  margin-left: -0.35rem;
+  padding-left: calc(0.25rem + 0.35rem) !important;
+  border-radius: 2px;
+}
+.tf-arcs-ink-bar {
+  transform-origin: left center;
+}
 .tf-rebirth-page {
-  background: #efefef;
+  background: #f4f4f2;
 }
 .tf-rebirth-star {
   animation-name: tf-star-twinkle;
@@ -1648,41 +1905,53 @@ input:focus, select:focus, textarea:focus {
   animation-iteration-count: infinite;
 }
 .tf-rebirth-title {
-  font-size: clamp(2.6rem, 10vw, 5.75rem);
+  position: relative;
+  font-size: clamp(2.85rem, 11vw, 6.1rem);
   background-image:
-    radial-gradient(circle at 16% 32%, rgba(255, 255, 255, 0.95) 0 1.1px, transparent 2.2px),
-    radial-gradient(circle at 70% 45%, rgba(255, 255, 255, 0.75) 0 0.85px, transparent 1.7px),
-    radial-gradient(circle at 40% 72%, rgba(255, 255, 255, 0.55) 0 0.65px, transparent 1.3px),
-    radial-gradient(circle at 86% 26%, rgba(255, 255, 255, 0.65) 0 0.75px, transparent 1.5px),
+    radial-gradient(circle at 18% 30%, #ffffff 0 2.2px, transparent 3.6px),
+    radial-gradient(circle at 68% 48%, #ffffff 0 1.8px, transparent 3px),
+    radial-gradient(circle at 42% 74%, #ffffff 0 1.4px, transparent 2.6px),
+    radial-gradient(circle at 88% 24%, #ffffff 0 1.6px, transparent 2.8px),
     linear-gradient(
-      115deg,
-      #2a3348 0%,
-      #0a0c12 22%,
-      #4a5a7a 38%,
-      #050508 52%,
-      #1a2233 68%,
-      #e8eef8 82%,
-      #12151c 100%
+      105deg,
+      #000000 0%,
+      #050505 8%,
+      #ffffff 14%,
+      #ffffff 22%,
+      #000000 28%,
+      #0a0a0a 36%,
+      #f0f0f0 44%,
+      #ffffff 50%,
+      #ffffff 58%,
+      #000000 66%,
+      #111111 74%,
+      #ffffff 82%,
+      #ffffff 88%,
+      #000000 94%,
+      #050505 100%
     );
-  background-size: 130% 130%, 150% 150%, 170% 170%, 140% 140%, 200% 200%;
+  background-size: 180% 180%, 200% 200%, 220% 220%, 190% 190%, 340% 200%;
   background-clip: text;
   -webkit-background-clip: text;
   color: transparent;
   -webkit-text-fill-color: transparent;
-  filter: drop-shadow(0 10px 28px rgba(17, 17, 17, 0.12));
-  animation: tf-title-drift 16s ease-in-out infinite;
+  animation:
+    tf-title-drift 7s linear infinite,
+    tf-title-white-flash 3.2s ease-in-out infinite;
 }
 @supports not ((-webkit-background-clip: text) or (background-clip: text)) {
   .tf-rebirth-title {
-    color: #141414;
-    -webkit-text-fill-color: #141414;
+    color: #111111;
+    -webkit-text-fill-color: #111111;
     background: none;
   }
 }
 @media (prefers-reduced-motion: reduce) {
   .tf-arcs-dust,
   .tf-rebirth-star,
-  .tf-rebirth-title {
+  .tf-rebirth-title,
+  .tf-arcs-orbit,
+  .tf-arcs-seal-ring {
     animation: none;
   }
 }
@@ -1695,3 +1964,290 @@ input:focus, select:focus, textarea:focus {
 .tf-logo-mark { letter-spacing: 0.42em; }
 .tf-logo-mark--light { color: #111111; text-shadow: 0 1px 0 rgba(255,255,255,0.5); }
 .tf-logo-mark--dark { color: #ffffff; text-shadow: 0 1px 8px rgba(0,0,0,0.55); }
+
+/* Nav Sign In — bold outlined pill so it reads next to Join */
+.tf-sign-in {
+  display: inline-flex;
+  height: 2.35rem;
+  min-width: 5.5rem;
+  align-items: center;
+  justify-content: center;
+  padding: 0 1.05rem;
+  border-radius: 9999px;
+  border: 1.5px solid rgba(17, 17, 17, 0.88);
+  background: transparent;
+  color: #0a0a0a;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: background 0.25s ease, color 0.25s ease, border-color 0.25s ease, transform 0.25s ease;
+}
+.tf-sign-in:hover {
+  background: #0a0a0a;
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+.tf-sign-in--on-dark {
+  border-color: rgba(255, 255, 255, 0.85);
+  color: #ffffff;
+}
+.tf-sign-in--on-dark:hover {
+  background: #ffffff;
+  color: #0a0a0a;
+}
+.tf-sign-in--block {
+  width: 100%;
+  min-width: 0;
+  height: 2.75rem;
+}
+
+/* Founder / lore page */
+.tf-founder-page {
+  background:
+    radial-gradient(ellipse 70% 40% at 50% -5%, rgba(255, 255, 255, 0.9), transparent 55%),
+    radial-gradient(ellipse 40% 30% at 100% 20%, rgba(200, 170, 80, 0.07), transparent 50%),
+    #efefef;
+}
+.tf-founder-glow {
+  background: radial-gradient(ellipse at 50% 45%, rgba(201, 162, 39, 0.2), transparent 68%);
+  filter: blur(26px);
+}
+.tf-founder-frame {
+  border-radius: 1.15rem;
+  box-shadow:
+    0 0 0 1px rgba(17, 17, 17, 0.08),
+    0 22px 60px rgba(17, 17, 17, 0.16);
+}
+.tf-founder-close-glow {
+  background: radial-gradient(ellipse at 50% 50%, rgba(201, 162, 39, 0.1), transparent 70%);
+  filter: blur(18px);
+}
+
+/* Upper Ring hologram whisper */
+@keyframes tf-holo-scan {
+  0% { transform: translateY(-120%); opacity: 0; }
+  12% { opacity: 0.55; }
+  88% { opacity: 0.55; }
+  100% { transform: translateY(220%); opacity: 0; }
+}
+@keyframes tf-holo-shimmer {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+@keyframes tf-holo-pulse {
+  0%, 100% { box-shadow: 0 0 0 1px rgba(17, 17, 17, 0.06), 0 12px 36px rgba(17, 17, 17, 0.05); }
+  50% { box-shadow: 0 0 0 1px rgba(201, 162, 39, 0.22), 0 14px 40px rgba(201, 162, 39, 0.08); }
+}
+.tf-hologram {
+  position: relative;
+  overflow: hidden;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(10px);
+  animation: tf-holo-pulse 5s ease-in-out infinite;
+}
+.tf-hologram__scan {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 42%;
+  background: linear-gradient(
+    180deg,
+    transparent,
+    rgba(255, 255, 255, 0.55),
+    transparent
+  );
+  animation: tf-holo-scan 4.8s ease-in-out infinite;
+  pointer-events: none;
+}
+.tf-hologram__inner {
+  position: relative;
+  z-index: 1;
+  padding: 1.05rem 1.35rem;
+  text-align: center;
+}
+.tf-hologram__line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem 0.65rem;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background-image: linear-gradient(
+    100deg,
+    #1a1a1a 0%,
+    #1a1a1a 35%,
+    #c9a227 48%,
+    #ffffff 52%,
+    #c9a227 56%,
+    #1a1a1a 70%,
+    #1a1a1a 100%
+  );
+  background-size: 220% 100%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  animation: tf-holo-shimmer 5.5s ease-in-out infinite;
+}
+.tf-hologram__sep {
+  color: #c9a227;
+  -webkit-text-fill-color: #c9a227;
+  opacity: 0.7;
+  font-weight: 400;
+}
+@media (max-width: 480px) {
+  .tf-hologram {
+    border-radius: 1.25rem;
+  }
+  .tf-hologram__line {
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+  .tf-hologram__sep {
+    display: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tf-hologram,
+  .tf-hologram__scan,
+  .tf-hologram__line {
+    animation: none;
+  }
+  .tf-hologram__line {
+    color: #171717;
+    -webkit-text-fill-color: #171717;
+    background: none;
+  }
+}
+
+/* QR Scan page */
+@keyframes tf-scan-lens-glow {
+  0%, 100% {
+    box-shadow: 0 0 0 1px rgba(17, 17, 17, 0.08), 0 0 0 6px rgba(201, 162, 39, 0.06);
+  }
+  50% {
+    box-shadow: 0 0 0 1px rgba(17, 17, 17, 0.1), 0 0 0 10px rgba(201, 162, 39, 0.12);
+  }
+}
+@keyframes tf-scan-sweep {
+  0% { top: 8%; opacity: 0; }
+  15% { opacity: 1; }
+  85% { opacity: 1; }
+  100% { top: 88%; opacity: 0; }
+}
+.tf-scan-tabs {
+  display: flex;
+  gap: 0.35rem;
+  padding: 0.3rem;
+  border-radius: 9999px;
+  background: #ffffff;
+  box-shadow: 0 8px 24px rgba(17, 17, 17, 0.05);
+}
+.tf-scan-tab {
+  flex: 1;
+  height: 2.5rem;
+  border: none;
+  border-radius: 9999px;
+  background: transparent;
+  color: #737373;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.25s ease, color 0.25s ease, box-shadow 0.25s ease;
+}
+.tf-scan-tab--on {
+  background: #0a0a0a;
+  color: #ffffff;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
+}
+.tf-scan-tab:hover:not(.tf-scan-tab--on) {
+  color: #171717;
+  background: rgba(17, 17, 17, 0.04);
+}
+.tf-scan-stage {
+  border-radius: 1.25rem;
+  background: #e8e8e6;
+  box-shadow:
+    0 0 0 1px rgba(17, 17, 17, 0.06),
+    0 22px 56px rgba(17, 17, 17, 0.1);
+}
+.tf-scan-lens {
+  border-radius: 1.1rem;
+  background: #ffffff;
+  border: none;
+  animation: tf-scan-lens-glow 3s ease-in-out infinite;
+}
+.tf-scan-line {
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.95), transparent);
+  box-shadow: 0 0 12px rgba(255, 255, 255, 0.65);
+  animation: tf-scan-sweep 2.4s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .tf-scan-lens,
+  .tf-scan-line {
+    animation: none;
+  }
+}
+
+/* Shop filters — soft pills (override global sharp form chrome) */
+.tf-shop-pill {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 2.75rem;
+  border-radius: 9999px !important;
+  border: none !important;
+  background: #ffffff !important;
+  color: #171717 !important;
+  box-shadow: 0 1px 0 rgba(17, 17, 17, 0.04), 0 8px 24px rgba(17, 17, 17, 0.05);
+  outline: none;
+  transition: box-shadow 0.25s ease, background 0.25s ease;
+}
+.tf-shop-pill--input {
+  padding: 0 1.1rem 0 2.65rem !important;
+  font-size: 0.875rem !important;
+  letter-spacing: 0.01em !important;
+  font-family: inherit !important;
+}
+.tf-shop-pill--input::placeholder {
+  color: #a3a3a3 !important;
+}
+.tf-shop-pill--input:focus {
+  border: none !important;
+  box-shadow:
+    0 0 0 1.5px rgba(17, 17, 17, 0.18),
+    0 10px 28px rgba(17, 17, 17, 0.06) !important;
+}
+.tf-shop-pill--trigger {
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0 1.15rem !important;
+  cursor: pointer;
+  font-size: 0.6875rem !important;
+  font-weight: 600;
+  letter-spacing: 0.16em !important;
+  text-transform: uppercase;
+  font-family: inherit !important;
+  min-height: 2.75rem;
+}
+.tf-shop-pill--trigger:hover,
+.tf-shop-pill--trigger[aria-expanded="true"] {
+  box-shadow:
+    0 0 0 1.5px rgba(17, 17, 17, 0.14),
+    0 10px 28px rgba(17, 17, 17, 0.06);
+}
+.tf-shop-menu {
+  border-radius: 1.15rem;
+  background: #ffffff;
+  box-shadow:
+    0 0 0 1px rgba(17, 17, 17, 0.06),
+    0 18px 48px rgba(17, 17, 17, 0.12);
+}

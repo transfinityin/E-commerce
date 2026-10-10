@@ -120,6 +120,10 @@ class User(AbstractBaseUser, PermissionsMixin):
     def is_admin(self):
         return self.role == 'admin'
 
+    @property
+    def is_super_admin(self):
+        return bool(self.is_superuser and self.is_active)
+
 
 class Address(models.Model):
     id        = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)

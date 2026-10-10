@@ -66,6 +66,7 @@ export function ArcsTrailMap({ arcs }: Props) {
   const current = currentIndex >= 0 ? arcs[currentIndex] : arcs[0];
   const unlockedCount = arcs.filter((a) => a.unlocked).length;
   const doneCount = arcs.filter((_, i) => gateState(i, arcs) === "done").length;
+  const progressPct = Math.round((Math.max(unlockedCount, 1) / arcs.length) * 100);
 
   const progress =
     arcs.length <= 1
@@ -73,44 +74,49 @@ export function ArcsTrailMap({ arcs }: Props) {
       : (Math.max(0, currentIndex) + 0.08) / (arcs.length - 1);
 
   return (
-    <div className="space-y-6 md:space-y-8">
-      {/* Status strip — light, matches shop/home */}
-      <div className="relative overflow-hidden rounded-2xl border border-neutral-200/80 bg-white/70 px-5 py-5 shadow-[0_14px_40px_rgba(17,17,17,0.06)] backdrop-blur-sm md:px-7">
-        <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-          <div>
-            <p className="text-[10px] font-medium tracking-[0.32em] text-neutral-500 uppercase">
-              Charted course
-            </p>
-            <h2 className="mt-2 font-sans text-xl font-semibold tracking-[0.05em] text-neutral-950 uppercase md:text-2xl">
-              Arc {current?.no} — {current?.title}
-            </h2>
-            <p className="mt-1.5 max-w-md text-sm text-neutral-600 italic">
-              {current?.subtitle}
-            </p>
-          </div>
-          <div className="flex flex-col items-start gap-2.5 md:items-end">
-            <p className="text-[10px] tracking-[0.2em] text-neutral-500 uppercase">
-              Gate {Math.max(unlockedCount, 1)} of {arcs.length}
-              {doneCount > 0 ? ` · ${doneCount} cleared` : " · path begins"}
-            </p>
-            {current?.unlocked && (
-              <Link
-                to={current.href}
-                className="tf-buy-now !h-11 !w-auto min-w-[160px] !text-[10px]"
-              >
-                <span>
-                  Enter this gate
-                </span>
-              </Link>
-            )}
-          </div>
+    <div className="space-y-10 md:space-y-12">
+      {/* Editorial progress — no card chrome */}
+      <div className="mx-auto max-w-[640px] text-center">
+        <p className="text-[10px] font-medium tracking-[0.34em] text-neutral-500 uppercase">
+          Gate {Math.max(unlockedCount, 1)} of {arcs.length}
+          {doneCount > 0 ? ` · ${doneCount} cleared` : " · path begins"}
+        </p>
+
+        <h2 className="mt-3 font-sans text-2xl font-semibold tracking-[0.06em] text-neutral-950 uppercase sm:text-[1.75rem]">
+          Arc {current?.no}
+          <span className="mx-2 text-neutral-300">—</span>
+          {current?.title}
+        </h2>
+
+        <p className="mt-2 text-sm text-neutral-500 italic">{current?.subtitle}</p>
+
+        <div className="mx-auto mt-5 h-[2px] w-full max-w-[280px] overflow-hidden rounded-full bg-neutral-900/10">
+          <motion.div
+            className="tf-arcs-ink-bar h-full origin-left rounded-full bg-neutral-900"
+            initial={reduceMotion ? false : { scaleX: 0 }}
+            animate={{ scaleX: progressPct / 100 }}
+            transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
+          />
         </div>
+
+        {current?.unlocked && (
+          <div className="mt-6 flex justify-center">
+            <Link
+              to={current.href}
+              className="tf-buy-now !h-11 !w-auto min-w-[168px] !text-[10px]"
+            >
+              <span>Enter this gate</span>
+            </Link>
+          </div>
+        )}
       </div>
 
-      {/* Map — image unchanged */}
-      <div className="relative mx-auto w-full max-w-[720px]">
+      {/* Map — image unchanged; atlas mount, not a white app card */}
+      <div className="relative mx-auto w-full max-w-[700px]">
+        <div className="tf-arcs-map-glow pointer-events-none absolute -inset-6 sm:-inset-10" aria-hidden />
+
         <div
-          className="relative w-full overflow-hidden rounded-2xl bg-white shadow-[0_22px_60px_rgba(17,17,17,0.12)] ring-1 ring-black/[0.06]"
+          className="tf-arcs-map-frame relative w-full overflow-hidden"
           style={{ aspectRatio: MAP_ASPECT }}
         >
           <img
@@ -124,7 +130,7 @@ export function ArcsTrailMap({ arcs }: Props) {
             className="pointer-events-none absolute inset-0"
             style={{
               background:
-                "radial-gradient(ellipse at 50% 40%, transparent 45%, rgba(20,16,12,0.18) 100%)",
+                "radial-gradient(ellipse at 50% 42%, transparent 42%, rgba(18,14,10,0.22) 100%)",
             }}
           />
 
@@ -146,14 +152,14 @@ export function ArcsTrailMap({ arcs }: Props) {
             <motion.path
               d={d}
               fill="none"
-              stroke="rgba(20,16,10,0.88)"
+              stroke="rgba(20,16,10,0.9)"
               strokeWidth="0.7"
               strokeLinecap="round"
               vectorEffect="non-scaling-stroke"
               initial={reduceMotion ? false : { pathLength: 0 }}
               animate={{ pathLength: Math.min(1, Math.max(0.04, progress)) }}
               transition={{
-                duration: reduceMotion ? 0 : 1.2,
+                duration: reduceMotion ? 0 : 1.25,
                 ease: [0.22, 1, 0.36, 1],
               }}
             />
@@ -166,35 +172,38 @@ export function ArcsTrailMap({ arcs }: Props) {
 
               const node = (
                 <motion.div
-                  initial={reduceMotion ? false : { scale: 0.75, opacity: 0 }}
+                  initial={reduceMotion ? false : { scale: 0.7, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
                   transition={{
-                    duration: 0.4,
-                    delay: Math.min(i * 0.035, 0.3),
+                    duration: 0.45,
+                    delay: Math.min(i * 0.04, 0.35),
                     ease: [0.22, 1, 0.36, 1],
                   }}
                   className="relative"
                 >
                   {state === "current" && !reduceMotion && (
-                    <span className="absolute inset-[-7px] animate-ping rounded-full bg-neutral-900/20 [animation-duration:2.4s] sm:inset-[-9px]" />
+                    <>
+                      <span className="tf-arcs-seal-ring absolute inset-[-10px] rounded-full sm:inset-[-12px]" />
+                      <span className="absolute inset-[-6px] animate-ping rounded-full bg-neutral-950/25 [animation-duration:2.6s] sm:inset-[-8px]" />
+                    </>
                   )}
 
                   {state === "current" && (
-                    <span className="absolute -top-6 left-1/2 z-20 -translate-x-1/2 whitespace-nowrap rounded-full bg-neutral-950 px-2 py-0.5 text-[7px] font-semibold tracking-[0.16em] text-white uppercase shadow-md sm:-top-7 sm:text-[8px]">
+                    <span className="absolute -top-7 left-1/2 z-20 -translate-x-1/2 whitespace-nowrap rounded-sm bg-neutral-950 px-2.5 py-1 text-[7px] font-semibold tracking-[0.18em] text-[#F4F4F2] uppercase shadow-[0_6px_18px_rgba(0,0,0,0.35)] sm:-top-8 sm:text-[8px]">
                       You are here
                     </span>
                   )}
 
                   <div
                     className={cn(
-                      "relative grid place-items-center rounded-full border font-bold tracking-wider shadow-md",
+                      "relative grid place-items-center rounded-full border font-bold tracking-wider",
                       "size-7 text-[9px] sm:size-8 sm:text-[10px] md:size-9 md:text-[11px]",
                       state === "current" &&
-                        "border-neutral-950 bg-white text-neutral-950 ring-[3px] ring-neutral-950/20",
+                        "border-neutral-950 bg-[#F4F4F2] text-neutral-950 shadow-[0_0_0_3px_rgba(20,16,10,0.18),0_8px_20px_rgba(0,0,0,0.25)]",
                       state === "done" &&
-                        "border-neutral-900 bg-neutral-950 text-[#F4F4F2]",
+                        "border-neutral-900 bg-neutral-950 text-[#F4F4F2] shadow-md",
                       state === "open" &&
-                        "border-neutral-900/30 bg-white/85 text-neutral-500",
+                        "border-neutral-900/35 bg-[#F4F4F2]/88 text-neutral-500 shadow-sm backdrop-blur-[2px]",
                     )}
                   >
                     {state === "open" ? (
@@ -207,7 +216,7 @@ export function ArcsTrailMap({ arcs }: Props) {
                   {(state === "current" || state === "done") && (
                     <p
                       className={cn(
-                        "absolute top-[calc(100%+3px)] left-1/2 -translate-x-1/2 whitespace-nowrap text-[7px] font-semibold tracking-[0.14em] uppercase drop-shadow-[0_1px_0_rgba(255,255,255,0.9)] sm:text-[8px] md:text-[9px]",
+                        "absolute top-[calc(100%+4px)] left-1/2 -translate-x-1/2 whitespace-nowrap text-[7px] font-semibold tracking-[0.14em] uppercase drop-shadow-[0_1px_0_rgba(255,248,235,0.85)] sm:text-[8px] md:text-[9px]",
                         state === "current" ? "text-neutral-950" : "text-neutral-800",
                       )}
                     >
@@ -244,43 +253,52 @@ export function ArcsTrailMap({ arcs }: Props) {
             })}
           </div>
 
-          <div className="pointer-events-none absolute bottom-2 left-2 right-2 flex items-end justify-between gap-2 sm:bottom-4 sm:left-4 sm:right-4">
-            <p className="max-w-[160px] text-[7px] leading-relaxed tracking-[0.14em] text-white/85 uppercase drop-shadow sm:max-w-[220px] sm:text-[9px]">
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-black/35 to-transparent sm:h-20" />
+          <div className="pointer-events-none absolute bottom-3 left-3 right-3 flex items-end justify-between gap-2 sm:bottom-5 sm:left-5 sm:right-5">
+            <p className="max-w-[180px] text-[7px] leading-relaxed tracking-[0.16em] text-[#F4F4F2]/90 uppercase drop-shadow sm:max-w-[240px] sm:text-[9px]">
               Walk the inked road · clear each gate
             </p>
-            <p className="text-[7px] tracking-[0.24em] text-white/75 uppercase drop-shadow sm:text-[9px]">
+            <p className="text-[7px] tracking-[0.28em] text-[#F4F4F2]/80 uppercase drop-shadow sm:text-[9px]">
               ∞ RE : BIRTH
             </p>
           </div>
         </div>
       </div>
 
-      {/* Quest log */}
-      <div className="overflow-hidden rounded-2xl border border-neutral-200/80 bg-white/75 shadow-[0_14px_40px_rgba(17,17,17,0.05)] backdrop-blur-sm">
-        <div className="border-b border-neutral-200/80 px-5 py-3 md:px-6">
-          <p className="text-[10px] font-medium tracking-[0.28em] text-neutral-500 uppercase">
-            Quest log
+      {/* Gate index — timeline, not a frosted list card */}
+      <div className="mx-auto max-w-[560px]">
+        <div className="mb-5 flex items-center justify-center gap-3">
+          <span className="h-px w-8 bg-neutral-300" />
+          <p className="text-[10px] font-medium tracking-[0.32em] text-neutral-500 uppercase">
+            The twelve gates
           </p>
+          <span className="h-px w-8 bg-neutral-300" />
         </div>
-        <ol className="divide-y divide-neutral-200/70">
+
+        <ol className="relative space-y-0">
+          <span
+            className="absolute top-3 bottom-3 left-[15px] w-px bg-neutral-300/80 sm:left-[17px]"
+            aria-hidden
+          />
           {arcs.map((arc, i) => {
             const state = gateState(i, arcs);
             const row = (
               <div
                 className={cn(
-                  "flex items-center gap-4 px-5 py-3.5 transition-colors md:px-6",
-                  state === "current" && "bg-neutral-950/[0.04]",
-                  state === "open" && "opacity-55",
+                  "relative flex items-start gap-4 py-3.5 pl-1 transition-colors",
+                  state === "current" && "tf-arcs-gate-current",
+                  state === "open" && "opacity-50",
                 )}
               >
                 <span
                   className={cn(
-                    "grid size-8 shrink-0 place-items-center rounded-full border text-[10px] font-semibold",
+                    "relative z-[1] mt-0.5 grid size-7 shrink-0 place-items-center rounded-full border text-[9px] font-semibold sm:size-8 sm:text-[10px]",
                     state === "done" &&
-                      "border-neutral-900 bg-neutral-950 text-white",
+                      "border-neutral-900 bg-neutral-950 text-[#F4F4F2]",
                     state === "current" &&
-                      "border-neutral-950 bg-white text-neutral-950 shadow-sm",
-                    state === "open" && "border-neutral-300 text-neutral-400",
+                      "border-neutral-950 bg-[#F4F4F2] text-neutral-950 shadow-[0_0_0_3px_rgba(17,17,17,0.08)]",
+                    state === "open" &&
+                      "border-neutral-300 bg-[#F4F4F2] text-neutral-400",
                   )}
                 >
                   {state === "open" ? (
@@ -289,9 +307,9 @@ export function ArcsTrailMap({ arcs }: Props) {
                     arc.no
                   )}
                 </span>
-                <div className="min-w-0 flex-1">
-                  <div className="flex flex-wrap items-baseline gap-x-3">
-                    <h3 className="font-sans text-sm font-semibold tracking-[0.1em] text-neutral-950 uppercase">
+                <div className="min-w-0 flex-1 pt-0.5">
+                  <div className="flex flex-wrap items-baseline gap-x-3 gap-y-0.5">
+                    <h3 className="font-sans text-sm font-semibold tracking-[0.12em] text-neutral-950 uppercase">
                       {arc.title}
                     </h3>
                     <span className="text-[9px] tracking-[0.22em] text-neutral-500 uppercase">
@@ -314,7 +332,7 @@ export function ArcsTrailMap({ arcs }: Props) {
                 ) : (
                   <Link
                     to={arc.href}
-                    className="block no-underline hover:bg-neutral-950/[0.03]"
+                    className="block no-underline hover:opacity-90"
                   >
                     {row}
                   </Link>

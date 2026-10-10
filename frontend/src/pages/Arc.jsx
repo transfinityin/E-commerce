@@ -18,7 +18,7 @@ const ARC_DEFS = [
   { no: '12', title: 'Eternal', subtitle: 'The end that returns.', slug: 'eternal', href: '/arcs/eternal' },
 ]
 
-function useDust(count = 28) {
+function useMotes(count = 36) {
   return useMemo(() => {
     const dots = []
     for (let i = 0; i < count; i++) {
@@ -30,10 +30,11 @@ function useDust(count = 28) {
         id: i,
         left: `${(u * 100).toFixed(2)}%`,
         top: `${(v * 100).toFixed(2)}%`,
-        size: i % 7 === 0 ? 3 : i % 3 === 0 ? 2 : 1.2,
-        delay: `${(u * 5).toFixed(2)}s`,
-        dur: `${4 + v * 5}s`,
-        opacity: 0.15 + u * 0.35,
+        size: i % 9 === 0 ? 3.5 : i % 4 === 0 ? 2.2 : 1.1,
+        delay: `${(u * 7).toFixed(2)}s`,
+        dur: `${5 + v * 7}s`,
+        opacity: 0.1 + u * 0.28,
+        blur: i % 5 === 0,
       })
     }
     return dots
@@ -42,7 +43,7 @@ function useDust(count = 28) {
 
 export default function Arcs() {
   const { progress, fetchProgress } = useHuntStore()
-  const dust = useDust(32)
+  const motes = useMotes(40)
   const reduceMotion = useReducedMotion()
 
   useEffect(() => {
@@ -56,26 +57,19 @@ export default function Arcs() {
   }))
 
   return (
-    <div className="tf-arcs-page relative min-h-screen overflow-hidden pb-20 text-neutral-900">
-      {/* Soft light atmosphere — matches home / shop */}
+    <div className="tf-arcs-page relative min-h-screen overflow-hidden pb-24 text-neutral-900">
       <div className="pointer-events-none absolute inset-0" aria-hidden>
-        <div className="absolute inset-0 bg-[#EFEFEF]" />
-        <div
-          className="absolute inset-0"
-          style={{
-            backgroundImage: `
-              radial-gradient(ellipse 80% 45% at 50% -5%, rgba(255,255,255,0.95), transparent 55%),
-              radial-gradient(ellipse 50% 40% at 100% 20%, rgba(180,160,200,0.12), transparent 50%),
-              radial-gradient(ellipse 45% 35% at 0% 60%, rgba(160,180,210,0.1), transparent 50%),
-              radial-gradient(ellipse 60% 40% at 50% 100%, rgba(220,210,190,0.35), transparent 55%),
-              linear-gradient(180deg, #F4F4F2 0%, #EFEFEF 40%, #EAE6DF 100%)
-            `,
-          }}
-        />
-        {dust.map((d) => (
+        <div className="absolute inset-0 bg-[#F4F4F2]" />
+        <div className="tf-arcs-mist absolute inset-0" />
+        <div className="tf-arcs-grain absolute inset-0" />
+        <div className="tf-arcs-orbit absolute -top-24 left-1/2 h-[420px] w-[720px] -translate-x-1/2" />
+        <div className="tf-arcs-orbit tf-arcs-orbit--lag absolute top-[38%] -right-32 h-[320px] w-[320px]" />
+        <div className="tf-arcs-orbit tf-arcs-orbit--soft absolute bottom-0 left-[-10%] h-[280px] w-[480px]" />
+
+        {motes.map((d) => (
           <span
             key={d.id}
-            className="tf-arcs-dust absolute rounded-full bg-neutral-900"
+            className={`tf-arcs-dust absolute rounded-full ${d.blur ? 'bg-neutral-800/40' : 'bg-neutral-900'}`}
             style={{
               left: d.left,
               top: d.top,
@@ -84,37 +78,41 @@ export default function Arcs() {
               opacity: d.opacity,
               animationDelay: d.delay,
               animationDuration: d.dur,
+              filter: d.blur ? 'blur(1px)' : undefined,
             }}
           />
         ))}
       </div>
 
-      <div className="relative z-10 mx-auto max-w-[980px] px-4 pt-4 sm:px-6 sm:pt-6 md:px-8 md:pt-8">
-        <motion.div
-          initial={reduceMotion ? false : { opacity: 0, y: 16 }}
+      <div className="relative z-10 mx-auto max-w-[920px] px-5 pt-6 sm:px-8 sm:pt-8 md:pt-10">
+        <motion.header
+          initial={reduceMotion ? false : { opacity: 0, y: 18 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-          className="text-center md:text-left"
+          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+          className="text-center"
         >
-          <p className="text-[10px] font-medium tracking-[0.4em] text-neutral-500 uppercase">
-            The whole story
-          </p>
+          <div className="mx-auto mb-5 flex items-center justify-center gap-3">
+            <span className="tf-arcs-rule h-px w-10 bg-neutral-400/70" />
+            <p className="text-[10px] font-medium tracking-[0.42em] text-neutral-500 uppercase">
+              The whole story
+            </p>
+            <span className="tf-arcs-rule h-px w-10 bg-neutral-400/70" />
+          </div>
 
-          <h1 className="tf-rebirth-title mt-3 select-none font-sans font-semibold uppercase leading-[0.95] tracking-[0.06em]">
+          <h1 className="tf-rebirth-title select-none font-sans font-bold uppercase leading-[0.92] tracking-[0.08em]">
             RE&nbsp;:&nbsp;BIRTH
           </h1>
 
-          <p className="mx-auto mt-4 max-w-xl text-sm leading-relaxed text-neutral-600 md:mx-0 md:text-[15px]">
-            Twelve gates. One trail. Follow the map — each seal opens only when the last is
-            cleared.
+          <p className="mx-auto mt-5 max-w-md text-[13px] leading-relaxed text-neutral-600 sm:text-sm">
+            Twelve sealed gates on one inked trail. Clear a seal — the next path opens.
           </p>
-        </motion.div>
+        </motion.header>
 
         <motion.div
-          initial={reduceMotion ? false : { opacity: 0, y: 22 }}
+          initial={reduceMotion ? false : { opacity: 0, y: 26 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.75, delay: 0.08, ease: [0.22, 1, 0.36, 1] }}
-          className="mt-8 md:mt-10"
+          transition={{ duration: 0.85, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+          className="mt-10 md:mt-12"
         >
           <ArcsTrailMap arcs={arcs} />
         </motion.div>

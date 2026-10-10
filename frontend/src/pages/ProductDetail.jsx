@@ -683,7 +683,7 @@ export default function ProductDetail() {
                       {review.admin_reply}
                     </p>
                   )}
-                  {user?.is_staff && (
+                  {user?.is_superuser && (
                     <div className="mt-3">
                       {replyingTo === review.id ? (
                         <div className="space-y-2">

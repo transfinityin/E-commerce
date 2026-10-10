@@ -317,7 +317,7 @@ from .serializers import (
     RegisterSerializer, UserSerializer, UserUpdateSerializer,
     ChangePasswordSerializer, AddressSerializer,
     ForgotPasswordSerializer, ResetPasswordSerializer,
-    NotificationSettingsSerializer, UserMiniSerializer
+    NotificationSettingsSerializer, UserMiniSerializer, AdminUserUpdateSerializer
 )
 from .permissions import IsAdmin
 
@@ -475,9 +475,14 @@ class AdminUserListView(generics.ListAPIView):
 
 
 class AdminUserDetailView(generics.RetrieveUpdateAPIView):
-    serializer_class   = UserSerializer
-    permission_classes = [permissions.IsAdminUser]
+    serializer_class   = AdminUserUpdateSerializer
+    permission_classes = [IsAdmin]
     queryset           = User.objects.all()
+
+    def get_serializer_class(self):
+        if self.request.method in ('GET', 'HEAD', 'OPTIONS'):
+            return UserSerializer
+        return AdminUserUpdateSerializer
 
 
 # ── Google Auth ───────────────────────────────────────────────

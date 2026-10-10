@@ -2,8 +2,8 @@ import { Routes, Route, Navigate } from 'react-router-dom'
 import Layout from './components/Layout'
 import ProtectedRoute from './components/ProtectedRoute'
 import AdminRoute from './components/AdminRoute'
+import AdminLayout from './components/AdminLayout'
 import { useEffect } from 'react'
-import AdminHeroBanners from './pages/admin/AdminHeroBanners'
 
 import useAuthStore from './store/authStore'
 import useCartStore from './store/cartStore'
@@ -51,15 +51,17 @@ import Founderer from './pages/Arcs/Founderer'
 
 export default function App() {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated)
+  const refreshUser = useAuthStore((s) => s.refreshUser)
   const fetchCart = useCartStore((s) => s.fetchCart)
   const fetchWishlist = useWishlistStore((s) => s.fetchWishlist)
 
   useEffect(() => {
     if (isAuthenticated) {
+      refreshUser()
       fetchCart()
       fetchWishlist()
     }
-  }, [isAuthenticated, fetchCart, fetchWishlist])
+  }, [isAuthenticated, refreshUser, fetchCart, fetchWishlist])
 
   return (
     <Routes>
@@ -114,12 +116,13 @@ export default function App() {
       </Route>
 
       <Route element={<AdminRoute />}>
-        <Route path="/admin" element={<AdminDashboard />} />
-        <Route path="/admin/products" element={<AdminProducts />} />
-        <Route path="/admin/orders" element={<AdminOrders />} />
-        <Route path="/admin/users" element={<AdminUsers />} />
-        <Route path="/admin/hero-banners" element={<AdminHeroBanners />} />
-        <Route path="/admin/qr-offers" element={<QROffers />} />
+        <Route element={<AdminLayout />}>
+          <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/admin/products" element={<AdminProducts />} />
+          <Route path="/admin/orders" element={<AdminOrders />} />
+          <Route path="/admin/users" element={<AdminUsers />} />
+          <Route path="/admin/qr-offers" element={<QROffers />} />
+        </Route>
       </Route>
     </Routes>
   )
