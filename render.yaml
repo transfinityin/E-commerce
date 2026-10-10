@@ -1,24 +1,26 @@
+# One-click backend deploy on Render (Blueprint).
+# Dashboard → New → Blueprint → connect this repo → Apply.
 services:
   - type: web
     name: transfinity-api
     runtime: python
+    plan: free
+    region: ohio
     rootDir: backend
-    buildCommand: bash build.sh
-    startCommand: gunicorn backend.wsgi:application --bind 0.0.0.0:$PORT
+    buildCommand: chmod +x ./build.sh && ./build.sh
+    startCommand: gunicorn backend.wsgi:application
     envVars:
+      - key: PYTHON_VERSION
+        value: "3.11.11"  # required — pillow 10.x fails on Render's default 3.14
       - key: DEBUG
         value: "False"
-      - key: PYTHON_VERSION
-        value: "3.11.9"
-      - key: DATABASE_URL
-        sync: false
       - key: SECRET_KEY
         generateValue: true
-      - key: FRONTEND_URL
-        sync: false
-      - key: BACKEND_URL
-        sync: false
       - key: ALLOWED_HOSTS
+        value: ".onrender.com,api.transfinity.shop,www.transfinity.shop,transfinity.shop"
+      - key: FRONTEND_URL
+        value: "https://www.transfinity.shop"
+      - key: DATABASE_URL
         sync: false
       - key: CLOUDINARY_CLOUD_NAME
         sync: false
@@ -26,13 +28,15 @@ services:
         sync: false
       - key: CLOUDINARY_API_SECRET
         sync: false
+      - key: RAZORPAY_KEY_ID
+        sync: false
+      - key: RAZORPAY_KEY_SECRET
+        sync: false
       - key: GOOGLE_CLIENT_ID
         sync: false
       - key: GOOGLE_CLIENT_SECRET
         sync: false
-      - key: RAZORPAY_KEY_ID
-        sync: false
-      - key: RAZORPAY_KEY_SECRET
+      - key: EMAIL_HOST
         sync: false
       - key: EMAIL_HOST_USER
         sync: false
