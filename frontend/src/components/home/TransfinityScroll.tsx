@@ -16,10 +16,11 @@ import {
 } from "framer-motion";
 import { SiteNav } from "@/components/home/SiteNav";
 import { HeroFinale } from "@/components/home/HeroFinale";
+import { BootExperience } from "@/components/home/BootExperience";
 
-const FRAME_COUNT = 50;
+const FRAME_COUNT = 40;
 const FRAME_PATH = (index: number) =>
-  `/start/ezgif-frame-${String(FRAME_COUNT - index).padStart(3, "0")}.jpg`;
+  `/hero/ezgif-frame-${String(FRAME_COUNT - index).padStart(3, "0")}.jpg`;
 
 /** When scroll reaches this, hero copy + left vignette take over */
 const FINALE_START = 0.72;
@@ -165,16 +166,7 @@ export default function TransfinityScroll() {
 
   return (
     <>
-      {!ready ? (
-        <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center gap-5 bg-[#F4F4F2]">
-          <div className="relative size-10">
-            <div className="absolute inset-0 animate-spin rounded-full border border-neutral-300 border-t-neutral-800" />
-          </div>
-          <p className="font-mono text-[11px] tracking-[0.28em] text-neutral-500">
-            {loadProgress}%
-          </p>
-        </div>
-      ) : null}
+      {!ready ? <BootExperience progress={loadProgress} /> : null}
 
       {ready ? (
         <SiteNav tone={finaleActive ? "light" : "dark"} overlay />

@@ -14,3 +14,11 @@ createRoot(document.getElementById('root')).render(
     </BrowserRouter>
   </StrictMode>,
 )
+
+// Hand off from the HTML shell to React once the tree is mounted
+requestAnimationFrame(() => {
+  const shell = document.getElementById('tf-shell')
+  if (!shell) return
+  shell.classList.add('tf-shell-out')
+  window.setTimeout(() => shell.remove(), 480)
+})
