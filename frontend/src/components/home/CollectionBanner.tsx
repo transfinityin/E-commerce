@@ -5,9 +5,9 @@ import { ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 /** Stable cache bust — bump when you replace files in /public/banner */
-const BANNER_CACHE = "v7-mp4";
-const SLIDE_MS = 3000;
-const TEXT_OUT_MS = 280;
+const BANNER_CACHE = "v8-mp4";
+const SLIDE_MS = 7000;
+const TEXT_OUT_MS = 480;
 
 const BANNERS = [
   {
@@ -86,8 +86,8 @@ export function CollectionBanner() {
 
   return (
     <section className="relative w-full overflow-hidden bg-[#F4F4F2]">
-      {/* Taller on mobile so copy + Explore stay visible */}
-      <div className="relative aspect-[3/4] min-h-[28rem] w-full sm:aspect-[4/3] sm:min-h-[24rem] md:aspect-[8/3] md:min-h-0">
+      {/* Keep near original wide frame so the video reads fully; slight mobile height for Explore */}
+      <div className="relative aspect-[16/10] min-h-[16.5rem] w-full sm:aspect-[8/3] sm:min-h-0 md:aspect-[8/3]">
         <AnimatePresence initial={false} custom={direction} mode="wait">
           <motion.div
             key={`${slide.id}-${BANNER_CACHE}`}
@@ -95,7 +95,7 @@ export function CollectionBanner() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.35, ease }}
+            transition={{ duration: 0.7, ease }}
             className="absolute inset-0"
           >
             <video
@@ -112,13 +112,12 @@ export function CollectionBanner() {
               className="absolute inset-0"
               style={{
                 background: isRight
-                  ? "linear-gradient(270deg, rgba(244,244,242,0.92) 0%, rgba(244,244,242,0.55) 32%, rgba(244,244,242,0.12) 58%, transparent 78%)"
-                  : "linear-gradient(90deg, rgba(244,244,242,0.92) 0%, rgba(244,244,242,0.55) 32%, rgba(244,244,242,0.12) 58%, transparent 78%)",
+                  ? "linear-gradient(270deg, rgba(244,244,242,0.78) 0%, rgba(244,244,242,0.42) 28%, rgba(244,244,242,0.1) 52%, transparent 72%)"
+                  : "linear-gradient(90deg, rgba(244,244,242,0.78) 0%, rgba(244,244,242,0.42) 28%, rgba(244,244,242,0.1) 52%, transparent 72%)",
               }}
             />
-            {/* Mobile bottom fade so Explore never clips into the edge */}
             <div
-              className="absolute inset-x-0 bottom-0 h-36 bg-gradient-to-t from-[#F4F4F2] via-[#F4F4F2]/65 to-transparent md:hidden"
+              className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-[#F4F4F2]/80 to-transparent sm:hidden"
               aria-hidden
             />
           </motion.div>
@@ -127,7 +126,7 @@ export function CollectionBanner() {
         <div
           className={cn(
             "pointer-events-none relative z-10 flex h-full px-5 md:px-12 lg:px-16",
-            "items-end pb-16 pt-10 sm:pb-14 md:items-center md:pb-0 md:pt-0",
+            "items-end pb-12 pt-6 sm:items-center sm:pb-0 sm:pt-0",
             isRight
               ? "justify-end md:pr-20 lg:pr-24"
               : "justify-start md:pl-16 lg:pl-20",
@@ -192,17 +191,16 @@ export function CollectionBanner() {
           </AnimatePresence>
         </div>
 
-        {/* Dots: horizontal on mobile (won't cover Explore), vertical on desktop */}
         <div
           className={cn(
             "absolute z-20 flex items-center",
-            "bottom-4 left-1/2 -translate-x-1/2 flex-row gap-3",
-            "md:top-1/2 md:bottom-auto md:-translate-y-1/2 md:translate-x-0 md:flex-col md:gap-4",
-            isRight ? "md:right-4 md:left-auto lg:right-7" : "md:left-4 lg:left-7",
+            "bottom-3 left-1/2 -translate-x-1/2 flex-row gap-3",
+            "sm:top-1/2 sm:bottom-auto sm:-translate-y-1/2 sm:translate-x-0 sm:flex-col sm:gap-4",
+            isRight ? "sm:right-4 sm:left-auto lg:right-7" : "sm:left-4 lg:left-7",
           )}
         >
-          <div className="absolute inset-y-0 left-1/2 hidden w-px -translate-x-1/2 bg-neutral-400/50 md:block" />
-          <div className="relative flex flex-row items-center gap-3 md:flex-col md:gap-4">
+          <div className="absolute inset-y-0 left-1/2 hidden w-px -translate-x-1/2 bg-neutral-400/50 sm:block" />
+          <div className="relative flex flex-row items-center gap-3 sm:flex-col sm:gap-4">
             {BANNERS.map((b, i) => {
               const active = i === index;
               return (
