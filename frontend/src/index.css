@@ -57,7 +57,8 @@
    BASE STYLES
    ============================================ */
 html {
-  scroll-behavior: smooth;
+  /* Lenis owns inertia; native smooth fights wheel momentum */
+  scroll-behavior: auto;
   -webkit-tap-highlight-color: transparent;
   -webkit-text-size-adjust: 100%;
   background-color: var(--color-bg);

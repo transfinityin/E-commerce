@@ -125,28 +125,28 @@ export function SiteNav({ tone = "light", overlay = false }: SiteNavProps) {
 
           <div
             className={cn(
-              "flex items-center gap-3 md:gap-5",
+              "flex items-center gap-2.5 md:gap-4",
               isLight ? "text-neutral-800" : "text-white",
             )}
           >
             <Link
               to="/cart"
               aria-label="Cart"
-              className="relative transition-opacity hover:opacity-70"
+              className="relative inline-flex h-9 w-9 shrink-0 items-center justify-center transition-opacity hover:opacity-70 md:h-[2.35rem] md:w-10"
             >
               <ShoppingBag className="size-4" strokeWidth={1.5} />
               {cartCount > 0 && (
-                <span className="absolute -top-2 -right-2 flex size-4 items-center justify-center rounded-full bg-neutral-950 text-[9px] text-white">
+                <span className="absolute top-0.5 right-0.5 flex size-4 items-center justify-center rounded-full bg-neutral-950 text-[9px] text-white md:top-1 md:right-1">
                   {cartCount}
                 </span>
               )}
             </Link>
 
             {isAuthenticated ? (
-              <div className="hidden items-center gap-4 md:flex">
+              <div className="hidden h-[2.35rem] items-center gap-4 md:flex">
                 <Link
                   to="/profile"
-                  className="text-[11px] tracking-[0.22em] uppercase opacity-80 hover:opacity-100"
+                  className="inline-flex h-full items-center text-[11px] tracking-[0.22em] uppercase opacity-80 hover:opacity-100"
                 >
                   {user?.name || "Account"}
                 </Link>
@@ -156,7 +156,7 @@ export function SiteNav({ tone = "light", overlay = false }: SiteNavProps) {
                     logout();
                     navigate("/");
                   }}
-                  className="text-[11px] tracking-[0.22em] uppercase opacity-80 hover:opacity-100"
+                  className="inline-flex h-full items-center text-[11px] tracking-[0.22em] uppercase opacity-80 hover:opacity-100"
                 >
                   Sign Out
                 </button>
@@ -183,7 +183,7 @@ export function SiteNav({ tone = "light", overlay = false }: SiteNavProps) {
 
             <button
               type="button"
-              className="md:hidden"
+              className="inline-flex h-9 w-9 shrink-0 items-center justify-center md:hidden"
               aria-label="Menu"
               onClick={() => setOpen((v) => !v)}
             >

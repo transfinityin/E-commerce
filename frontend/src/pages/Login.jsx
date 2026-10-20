@@ -1,12 +1,14 @@
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { toast } from 'react-hot-toast'
 import { Eye, EyeOff } from 'lucide-react'
 import { useState } from 'react'
 import useAuthStore from '../store/authStore'
+import useCartStore from '../store/cartStore'
 import SocialAuth from './SocialAuth'
+import { flushPendingCart } from '../lib/pendingCart'
 
 const schema = z.object({
   email: z.string().email('Invalid email address'),
@@ -16,18 +18,37 @@ const schema = z.object({
 export default function Login() {
   const [showPass, setShowPass] = useState(false)
   const { login } = useAuthStore()
+  const addToCart = useCartStore((s) => s.addToCart)
   const navigate = useNavigate()
+  const [params] = useSearchParams()
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm({ resolver: zodResolver(schema) })
 
+  const finishAuth = async () => {
+    const pending = await flushPendingCart(addToCart)
+    if (pending?.ok) {
+      toast.success('Added to cart')
+      navigate(pending.returnTo?.startsWith('/') ? pending.returnTo : '/cart')
+      return
+    }
+    if (pending && !pending.ok) {
+      toast.error('Signed in, but could not add the item. Try again from the product.')
+    } else {
+      toast.success('Welcome back!')
+    }
+    const next = params.get('next')
+    if (next === 'cart') navigate('/cart')
+    else if (next?.startsWith('/')) navigate(next)
+    else navigate('/')
+  }
+
   const onSubmit = async (data) => {
     try {
       await login(data.email, data.password)
-      toast.success('Welcome back!')
-      navigate('/')
+      await finishAuth()
     } catch (err) {
       toast.error(err.response?.data?.error || 'Invalid credentials')
     }
@@ -42,7 +63,11 @@ export default function Login() {
         <h1 className="mt-3 font-sans text-3xl font-semibold tracking-[0.06em] text-neutral-900 uppercase">
           Welcome back
         </h1>
-        <p className="mt-2 text-sm text-neutral-600">Sign in to continue your arc.</p>
+        <p className="mt-2 text-sm text-neutral-600">
+          {params.get('next') === 'cart'
+            ? 'Sign in to add that item to your cart.'
+            : 'Sign in to continue your arc.'}
+        </p>
 
         <form
           onSubmit={handleSubmit(onSubmit)}
@@ -84,10 +109,11 @@ export default function Login() {
               />
               <button
                 type="button"
-                className="absolute right-0 top-1/2 -translate-y-1/2 p-2 text-neutral-500"
                 onClick={() => setShowPass((v) => !v)}
+                className="absolute top-1/2 right-0 -translate-y-1/2 text-neutral-500"
+                aria-label={showPass ? 'Hide password' : 'Show password'}
               >
-                {showPass ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                {showPass ? <EyeOff size={16} /> : <Eye size={16} />}
               </button>
             </div>
             {errors.password && (
@@ -98,22 +124,22 @@ export default function Login() {
           <button
             type="submit"
             disabled={isSubmitting}
-            data-testid="email-sign-in"
-            aria-label="Sign in with email"
-            className="mt-2 h-12 bg-neutral-950 text-[11px] font-semibold tracking-[0.22em] text-white uppercase hover:bg-neutral-800 disabled:opacity-60"
+            className="mt-2 bg-neutral-900 py-3.5 text-[11px] font-semibold tracking-[0.28em] text-white uppercase transition hover:bg-neutral-800 disabled:opacity-60"
           >
-            {isSubmitting ? 'Signing in…' : 'Sign in'}
+            {isSubmitting ? 'Signing in…' : 'Sign In'}
           </button>
-
-          <SocialAuth />
-
-          <p className="text-center text-sm text-neutral-600">
-            New here?{' '}
-            <Link to="/register" className="font-medium text-neutral-900 underline">
-              Create account
-            </Link>
-          </p>
         </form>
+
+        <div className="mt-8">
+          <SocialAuth mode="login" onAuthed={finishAuth} />
+        </div>
+
+        <p className="mt-8 text-center text-sm text-neutral-600">
+          New here?{' '}
+          <Link to="/register" className="font-medium text-neutral-900 underline-offset-4 hover:underline">
+            Create account
+          </Link>
+        </p>
       </div>
     </div>
   )

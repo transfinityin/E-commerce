@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   ArrowRight,
@@ -18,6 +18,7 @@ import {
 import api from "@/services/api";
 import useAuthStore from "@/store/authStore";
 import useCartStore from "@/store/cartStore";
+import { stashPendingCart } from "@/lib/pendingCart";
 
 type FeaturedItem = {
   id: string;
@@ -135,6 +136,7 @@ export function FeaturedProduct() {
   const [progressKey, setProgressKey] = useState(0);
   const [adding, setAdding] = useState(false);
   const idleTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const navigate = useNavigate();
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   const addToCart = useCartStore((s) => s.addToCart);
 
@@ -278,13 +280,19 @@ export function FeaturedProduct() {
       toast.error("Create this tee in Admin → Products to enable cart");
       return;
     }
+    const size = product.available_sizes?.[0] || "M";
     if (!isAuthenticated) {
-      toast.error("Please sign in first");
+      stashPendingCart({
+        productId: product.productId,
+        quantity: 1,
+        size,
+        returnTo: "/#featured",
+      });
+      navigate("/login?next=cart");
       return;
     }
     setAdding(true);
     try {
-      const size = product.available_sizes?.[0] || "M";
       await addToCart(product.productId, 1, size);
       toast.success("Added to cart");
     } catch {

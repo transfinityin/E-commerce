@@ -4,10 +4,19 @@ import { toast } from 'react-hot-toast'
 import useAuthStore from '../store/authStore'
 import api from '../services/api'
 
-export default function SocialAuth({ mode = 'login', className = '' }) {
+export default function SocialAuth({ mode = 'login', className = '', onAuthed }) {
   const navigate = useNavigate()
   const { googleLogin } = useAuthStore()
   const googleBtnRef = useRef(null)
+
+  const afterAuth = async (fallbackMessage) => {
+    if (onAuthed) {
+      await onAuthed()
+      return
+    }
+    toast.success(fallbackMessage)
+    navigate('/')
+  }
 
   // ── Google Identity Services Button ─────────────────────────
   useEffect(() => {
@@ -36,9 +45,10 @@ export default function SocialAuth({ mode = 'login', className = '' }) {
 
   const handleGoogleResponse = async (response) => {
     try {
-      const result = await googleLogin(response.credential)
-      toast.success(mode === 'login' ? 'Welcome back, wanderer.' : 'Identity forged. Welcome to the arc.')
-      navigate('/')
+      await googleLogin(response.credential)
+      await afterAuth(
+        mode === 'login' ? 'Welcome back, wanderer.' : 'Identity forged. Welcome to the arc.',
+      )
     } catch (err) {
       toast.error(err.response?.data?.error || 'Authentication failed. Signal interrupted.')
     }
@@ -78,7 +88,7 @@ export default function SocialAuth({ mode = 'login', className = '' }) {
             .post('/auth/facebook/', {
               access_token: response.authResponse.accessToken,
             })
-            .then((res) => {
+            .then(async (res) => {
               const data = res.data
               localStorage.setItem('access_token', data.access)
               localStorage.setItem('refresh_token', data.refresh)
@@ -88,8 +98,7 @@ export default function SocialAuth({ mode = 'login', className = '' }) {
                 refresh_token: data.refresh,
                 isAuthenticated: true,
               })
-              toast.success('Identity verified. Welcome.')
-              navigate('/')
+              await afterAuth('Identity verified. Welcome.')
             })
             .catch(() => {
               toast.error('Authentication failed.')
@@ -130,8 +139,7 @@ export default function SocialAuth({ mode = 'login', className = '' }) {
             refresh_token: payload.refresh,
             isAuthenticated: true,
           })
-          toast.success('Identity verified. Welcome.')
-          navigate('/')
+          afterAuth('Identity verified. Welcome.')
           window.removeEventListener('message', listener)
         }
       }

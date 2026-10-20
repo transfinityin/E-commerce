@@ -88,13 +88,24 @@ function StoryPanel({
         <img
           src={story.src}
           alt={story.title}
-          className="h-full w-full object-cover object-[center_20%]"
+          className={
+            story.id === "void"
+              ? "h-full w-full object-cover object-[center_42%] md:object-[center_48%]"
+              : "h-full w-full object-cover object-[center_20%]"
+          }
           draggable={false}
         />
         <div
           className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/55 via-black/10 to-transparent"
           aria-hidden
         />
+        {/* Keep desktop header readable over Ep1 character art */}
+        {story.id === "void" ? (
+          <div
+            className="pointer-events-none absolute inset-x-0 top-0 hidden h-28 bg-gradient-to-b from-[#F4F4F2]/92 via-[#F4F4F2]/45 to-transparent md:block lg:h-32"
+            aria-hidden
+          />
+        ) : null}
       </motion.div>
 
       <motion.div

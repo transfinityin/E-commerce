@@ -6,7 +6,9 @@ import { toast } from 'react-hot-toast'
 import { Eye, EyeOff } from 'lucide-react'
 import { useState } from 'react'
 import useAuthStore from '../store/authStore'
+import useCartStore from '../store/cartStore'
 import SocialAuth from './SocialAuth'
+import { flushPendingCart } from '../lib/pendingCart'
 
 const schema = z
   .object({
@@ -23,6 +25,7 @@ const schema = z
 
 export default function Register() {
   const { register: registerUser } = useAuthStore()
+  const addToCart = useCartStore((s) => s.addToCart)
   const navigate = useNavigate()
   const [showPass, setShowPass] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
@@ -33,11 +36,21 @@ export default function Register() {
     formState: { errors, isSubmitting },
   } = useForm({ resolver: zodResolver(schema) })
 
+  const finishAuth = async () => {
+    const pending = await flushPendingCart(addToCart)
+    if (pending?.ok) {
+      toast.success('Account created · item added to cart')
+      navigate(pending.returnTo?.startsWith('/') ? pending.returnTo : '/cart')
+      return
+    }
+    toast.success('Account created!')
+    navigate('/')
+  }
+
   const onSubmit = async (data) => {
     try {
       await registerUser(data)
-      toast.success('Account created!')
-      navigate('/')
+      await finishAuth()
     } catch (err) {
       toast.error(err.response?.data?.email?.[0] || 'Registration failed')
     }
@@ -119,7 +132,7 @@ export default function Register() {
             </Link>
           </p>
 
-          <SocialAuth />
+          <SocialAuth mode="register" onAuthed={finishAuth} />
         </form>
       </div>
     </div>

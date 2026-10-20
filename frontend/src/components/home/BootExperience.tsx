@@ -133,7 +133,14 @@ export function BootExperience({ progress }: BootExperienceProps) {
             <path
               d="M20 28c0-10 8-18 20-18 14 0 22 18 40 18s26-8 26-18-12-18-26-18c-18 0-26 18-40 18S8 18 8 28s12 18 26 18c14 0 22-18 40-18s26 8 26 18-12 18-26 18c-18 0-26-18-40-18S20 38 20 28z"
               stroke="currentColor"
-              strokeWidth="2.2"
+              strokeWidth="1.6"
+              strokeLinecap="round"
+              opacity="0.18"
+            />
+            <path
+              d="M20 28c0-10 8-18 20-18 14 0 22 18 40 18s26-8 26-18-12-18-26-18c-18 0-26 18-40 18S8 18 8 28s12 18 26 18c14 0 22-18 40-18s26 8 26 18-12 18-26 18c-18 0-26-18-40-18S20 38 20 28z"
+              stroke="currentColor"
+              strokeWidth="2.4"
               strokeLinecap="round"
               className="tf-boot-path"
             />
@@ -178,9 +185,9 @@ export function BootExperience({ progress }: BootExperienceProps) {
 
       <style>{`
         .tf-boot-path {
-          stroke-dasharray: 280;
-          stroke-dashoffset: 280;
-          animation: tf-boot-draw 2.4s ease forwards infinite alternate;
+          stroke-dasharray: 64 216;
+          stroke-dashoffset: 0;
+          animation: tf-boot-loop 1.65s linear infinite;
         }
         .tf-boot-mark {
           transition: transform 0.18s ease-out;
@@ -196,9 +203,9 @@ export function BootExperience({ progress }: BootExperienceProps) {
           margin-top: -6px;
           animation: tf-boot-ripple 0.85s ease-out forwards;
         }
-        @keyframes tf-boot-draw {
-          from { stroke-dashoffset: 280; opacity: 0.55; }
-          to { stroke-dashoffset: 0; opacity: 1; }
+        @keyframes tf-boot-loop {
+          from { stroke-dashoffset: 0; }
+          to { stroke-dashoffset: -280; }
         }
         @keyframes tf-boot-ripple {
           0% { transform: scale(1); opacity: 0.7; }
@@ -211,7 +218,7 @@ export function BootExperience({ progress }: BootExperienceProps) {
             animation: none !important;
             transition: none !important;
           }
-          .tf-boot-path { stroke-dashoffset: 0; }
+          .tf-boot-path { stroke-dasharray: none; stroke-dashoffset: 0; }
         }
       `}</style>
     </div>

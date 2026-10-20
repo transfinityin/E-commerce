@@ -1,5 +1,3 @@
-
-
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
@@ -61,7 +59,6 @@ export function CollectionBanner() {
 
       window.setTimeout(() => {
         setIndex(target);
-        // Let the new video paint, then bring text in
         requestAnimationFrame(() => {
           setTextVisible(true);
           transitioning.current = false;
@@ -89,7 +86,8 @@ export function CollectionBanner() {
 
   return (
     <section className="relative w-full overflow-hidden bg-[#F4F4F2]">
-      <div className="relative aspect-[8/3] w-full">
+      {/* Taller on mobile so copy + Explore stay visible */}
+      <div className="relative aspect-[3/4] min-h-[28rem] w-full sm:aspect-[4/3] sm:min-h-[24rem] md:aspect-[8/3] md:min-h-0">
         <AnimatePresence initial={false} custom={direction} mode="wait">
           <motion.div
             key={`${slide.id}-${BANNER_CACHE}`}
@@ -114,19 +112,25 @@ export function CollectionBanner() {
               className="absolute inset-0"
               style={{
                 background: isRight
-                  ? "linear-gradient(270deg, rgba(244,244,242,0.88) 0%, rgba(244,244,242,0.55) 28%, rgba(244,244,242,0.12) 52%, transparent 72%)"
-                  : "linear-gradient(90deg, rgba(244,244,242,0.88) 0%, rgba(244,244,242,0.55) 28%, rgba(244,244,242,0.12) 52%, transparent 72%)",
+                  ? "linear-gradient(270deg, rgba(244,244,242,0.92) 0%, rgba(244,244,242,0.55) 32%, rgba(244,244,242,0.12) 58%, transparent 78%)"
+                  : "linear-gradient(90deg, rgba(244,244,242,0.92) 0%, rgba(244,244,242,0.55) 32%, rgba(244,244,242,0.12) 58%, transparent 78%)",
               }}
+            />
+            {/* Mobile bottom fade so Explore never clips into the edge */}
+            <div
+              className="absolute inset-x-0 bottom-0 h-36 bg-gradient-to-t from-[#F4F4F2] via-[#F4F4F2]/65 to-transparent md:hidden"
+              aria-hidden
             />
           </motion.div>
         </AnimatePresence>
 
         <div
           className={cn(
-            "pointer-events-none relative z-10 flex h-full items-center px-6 md:px-12 lg:px-16",
+            "pointer-events-none relative z-10 flex h-full px-5 md:px-12 lg:px-16",
+            "items-end pb-16 pt-10 sm:pb-14 md:items-center md:pb-0 md:pt-0",
             isRight
-              ? "justify-end pr-14 md:pr-20 lg:pr-24"
-              : "justify-start pl-12 md:pl-16 lg:pl-20",
+              ? "justify-end md:pr-20 lg:pr-24"
+              : "justify-start md:pl-16 lg:pl-20",
           )}
         >
           <AnimatePresence mode="wait">
@@ -138,14 +142,14 @@ export function CollectionBanner() {
                 exit={{ opacity: 0, y: -8 }}
                 transition={{ duration: TEXT_OUT_MS / 1000, ease }}
                 className={cn(
-                  "pointer-events-auto max-w-sm",
-                  isRight && "text-right",
+                  "pointer-events-auto w-full max-w-sm",
+                  isRight && "md:text-right",
                 )}
               >
                 <div
                   className={cn(
-                    "mb-5 flex items-center gap-3",
-                    isRight && "flex-row-reverse",
+                    "mb-4 flex items-center gap-3 md:mb-5",
+                    isRight && "md:flex-row-reverse",
                   )}
                 >
                   <p className="font-sans text-[10px] font-medium tracking-[0.22em] text-neutral-500 uppercase md:text-[11px]">
@@ -154,7 +158,7 @@ export function CollectionBanner() {
                   <span className="h-px w-10 bg-neutral-800/70 md:w-14" />
                 </div>
 
-                <h2 className="font-sans text-[clamp(1.75rem,3.2vw,2.5rem)] font-semibold leading-[0.95] tracking-[0.04em] text-neutral-900 uppercase">
+                <h2 className="font-sans text-[clamp(1.75rem,6vw,2.5rem)] font-semibold leading-[0.95] tracking-[0.04em] text-neutral-900 uppercase">
                   {slide.title.map((line) => (
                     <span key={line} className="block">
                       {line}
@@ -162,7 +166,7 @@ export function CollectionBanner() {
                   ))}
                 </h2>
 
-                <p className="mt-4 text-[12px] leading-relaxed text-neutral-600 md:text-[13px]">
+                <p className="mt-3 text-[12px] leading-relaxed text-neutral-600 md:mt-4 md:text-[13px]">
                   {slide.tagline.map((line) => (
                     <span key={line} className="block">
                       {line}
@@ -173,8 +177,8 @@ export function CollectionBanner() {
                 <Link
                   to={slide.href}
                   className={cn(
-                    "mt-6 inline-flex flex-col gap-1.5 text-[11px] font-semibold tracking-[0.28em] text-neutral-900 uppercase transition-opacity hover:opacity-70",
-                    isRight && "items-end",
+                    "mt-5 inline-flex flex-col gap-1.5 text-[11px] font-semibold tracking-[0.28em] text-neutral-900 uppercase transition-opacity hover:opacity-70 md:mt-6",
+                    isRight && "md:items-end",
                   )}
                 >
                   <span className="inline-flex items-center gap-2">
@@ -188,14 +192,17 @@ export function CollectionBanner() {
           </AnimatePresence>
         </div>
 
+        {/* Dots: horizontal on mobile (won't cover Explore), vertical on desktop */}
         <div
           className={cn(
-            "absolute top-1/2 z-20 flex -translate-y-1/2 flex-col items-center",
-            isRight ? "right-4 md:right-7" : "left-4 md:left-7",
+            "absolute z-20 flex items-center",
+            "bottom-4 left-1/2 -translate-x-1/2 flex-row gap-3",
+            "md:top-1/2 md:bottom-auto md:-translate-y-1/2 md:translate-x-0 md:flex-col md:gap-4",
+            isRight ? "md:right-4 md:left-auto lg:right-7" : "md:left-4 lg:left-7",
           )}
         >
-          <div className="absolute top-0 bottom-0 w-px bg-neutral-400/50" />
-          <div className="relative flex flex-col items-center gap-4 py-0.5">
+          <div className="absolute inset-y-0 left-1/2 hidden w-px -translate-x-1/2 bg-neutral-400/50 md:block" />
+          <div className="relative flex flex-row items-center gap-3 md:flex-col md:gap-4">
             {BANNERS.map((b, i) => {
               const active = i === index;
               return (

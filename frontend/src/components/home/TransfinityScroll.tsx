@@ -1,5 +1,3 @@
-
-
 import {
   useCallback,
   useEffect,
@@ -14,6 +12,7 @@ import {
   useScroll,
   useTransform,
 } from "framer-motion";
+import Lenis from "lenis";
 import { SiteNav } from "@/components/home/SiteNav";
 import { HeroFinale } from "@/components/home/HeroFinale";
 import { BootExperience } from "@/components/home/BootExperience";
@@ -50,6 +49,9 @@ export default function TransfinityScroll() {
   const imagesRef = useRef<HTMLImageElement[]>([]);
   const lastFrameRef = useRef(-1);
   const rafRef = useRef(0);
+  const smoothFrameRef = useRef(0);
+  const targetFrameRef = useRef(0);
+  const lerpRafRef = useRef(0);
 
   const [loadProgress, setLoadProgress] = useState(0);
   const [ready, setReady] = useState(false);
@@ -101,6 +103,22 @@ export default function TransfinityScroll() {
     if (!ctx) return;
     drawCover(ctx, img, window.innerWidth, window.innerHeight);
   }, []);
+
+  const tickLerp = useCallback(() => {
+    const target = targetFrameRef.current;
+    const current = smoothFrameRef.current;
+    const next = current + (target - current) * 0.18;
+    smoothFrameRef.current = next;
+    const frame = clamp(Math.round(next), 0, FRAME_COUNT - 1);
+    paintFrame(frame);
+    if (Math.abs(target - next) > 0.02) {
+      lerpRafRef.current = requestAnimationFrame(tickLerp);
+    } else {
+      smoothFrameRef.current = target;
+      paintFrame(clamp(Math.round(target), 0, FRAME_COUNT - 1));
+      lerpRafRef.current = 0;
+    }
+  }, [paintFrame]);
 
   useLayoutEffect(() => {
     document.documentElement.classList.add("tf-scroll-lock");
@@ -156,13 +174,51 @@ export default function TransfinityScroll() {
     return () => window.removeEventListener("resize", resizeCanvas);
   }, [ready, resizeCanvas]);
 
+  // Inertial smooth scrolling for the whole page (fixes abrupt hero stop)
+  useEffect(() => {
+    if (!ready) return;
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduce) return;
+
+    const lenis = new Lenis({
+      duration: 1.15,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      smoothWheel: true,
+      touchMultiplier: 1.35,
+    });
+
+    let rafId = 0;
+    const raf = (time: number) => {
+      lenis.raf(time);
+      rafId = requestAnimationFrame(raf);
+    };
+    rafId = requestAnimationFrame(raf);
+
+    return () => {
+      cancelAnimationFrame(rafId);
+      lenis.destroy();
+    };
+  }, [ready]);
+
   useMotionValueEvent(scrollYProgress, "change", (latest) => {
     if (!ready) return;
-    const frame = clamp(Math.round(latest * (FRAME_COUNT - 1)), 0, FRAME_COUNT - 1);
+    const frame = clamp(latest * (FRAME_COUNT - 1), 0, FRAME_COUNT - 1);
+    targetFrameRef.current = frame;
+    if (!lerpRafRef.current) {
+      lerpRafRef.current = requestAnimationFrame(tickLerp);
+    }
     cancelAnimationFrame(rafRef.current);
-    rafRef.current = requestAnimationFrame(() => paintFrame(frame));
-    setFinaleActive(latest >= FINALE_START);
+    rafRef.current = requestAnimationFrame(() => {
+      setFinaleActive(latest >= FINALE_START);
+    });
   });
+
+  useEffect(() => {
+    return () => {
+      cancelAnimationFrame(lerpRafRef.current);
+      cancelAnimationFrame(rafRef.current);
+    };
+  }, []);
 
   return (
     <>

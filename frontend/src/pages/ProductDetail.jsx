@@ -20,6 +20,7 @@ import useCartStore from '../store/cartStore'
 import useWishlistStore from '../store/wishlistStore'
 import useAuthStore from '../store/authStore'
 import ProductCard from '../components/ProductCard'
+import { stashPendingCart } from '../lib/pendingCart'
 
 const GALLERY_AUTO_MS = 4200
 const SWIPE_THRESHOLD = 56
@@ -203,16 +204,22 @@ export default function ProductDetail() {
     return () => window.clearInterval(id)
   }, [images.length, galleryPaused, zoomOpen, reduceMotion, selImage])
 
-  const validateAndAdd = () => {
-    if (!isAuthenticated) {
-      toast.error('Please sign in first')
-      return false
-    }
+  const validateAndAdd = ({ requireAuth = true } = {}) => {
     if (hasSizes && !selSize) {
       toast.error('Please select a size first')
       document
         .getElementById('size-section')
         ?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      return false
+    }
+    if (requireAuth && !isAuthenticated) {
+      stashPendingCart({
+        productId: product.id,
+        quantity,
+        size: selSize,
+        returnTo: `/products/${product.slug || product.id}`,
+      })
+      navigate('/login?next=cart')
       return false
     }
     return true
