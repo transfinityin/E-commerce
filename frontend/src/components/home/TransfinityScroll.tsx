@@ -228,8 +228,11 @@ export default function TransfinityScroll() {
         <SiteNav tone={finaleActive ? "light" : "dark"} overlay />
       ) : null}
 
-      <div ref={containerRef} className="relative h-[560vh] bg-[#F4F4F2]">
-        <div className="sticky top-0 h-screen w-full overflow-hidden bg-[#F4F4F2]">
+      <div
+        ref={containerRef}
+        className="relative h-[380vh] bg-[#F4F4F2] md:h-[560vh]"
+      >
+        <div className="sticky top-0 h-[100svh] w-full overflow-hidden bg-[#F4F4F2]">
           <canvas
             ref={canvasRef}
             className="absolute inset-0 h-full w-full"
